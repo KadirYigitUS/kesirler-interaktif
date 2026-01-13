@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📐 Koordinat Düzleminde Kesirler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .canvas-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        #coordCanvas {
+            display: block;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            cursor: crosshair;
+        }
+
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .point-inputs {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 20px;
+            color: white;
+        }
+
+        .point-inputs h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .coord-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .coord-input label {
+            font-size: 1.5em;
+            font-weight: bold;
+            width: 30px;
+        }
+
+        .fraction-input {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .fraction-input input {
+            width: 50px;
+            height: 40px;
+            font-size: 1.2em;
+            text-align: center;
+            border: 2px solid white;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .fraction-input .slash {
+            font-size: 1.5em;
+            color: white;
+        }
+
+        .decimal-display {
+            margin-left: auto;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .add-point-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.3em;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            background: #11998e;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .add-point-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .points-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .points-list h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .point-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 10px;
+            margin: 5px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .point-item .point-name {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .point-item .point-coords {
+            color: #666;
+        }
+
+        .point-item .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .point-item .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .preset-section {
+            background: #e8f8f5;
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .preset-section h4 {
+            color: #11998e;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .preset-btn {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            border: 2px solid #11998e;
+            border-radius: 15px;
+            cursor: pointer;
+            background: white;
+            color: #11998e;
+            transition: all 0.3s;
+        }
+
+        .preset-btn:hover {
+            background: #11998e;
+            color: white;
+        }
+
+        .info-panel {
+            background: #fff9e6;
+            border-left: 5px solid #f39c12;
+            padding: 15px;
+            border-radius: 0 15px 15px 0;
+            margin-top: 20px;
+        }
+
+        .info-panel h4 {
+            color: #f39c12;
+            margin-bottom: 10px;
+        }
+
+        .info-panel p {
+            color: #2c3e50;
+            line-height: 1.5;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-clear {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-grid {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-mode {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .quadrant-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quadrant {
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .q1 {
+            background: #d5f5e3;
+            color: #27ae60;
+        }
+
+        .q2 {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+
+        .q3 {
+            background: #fdebd0;
+            color: #f39c12;
+        }
+
+        .q4 {
+            background: #d6eaf8;
+            color: #3498db;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📐 Koordinat Düzleminde Kesirler</h1>
+        <p class="subtitle">Kesirli noktaları düzleme yerleştir ve keşfet!</p>
+
+        <div class="main-content">
+            <div class="canvas-section">
+                <canvas id="coordCanvas" width="500" height="500"></canvas>
+
+                <div class="controls-row">
+                    <button class="control-btn btn-clear" onclick="clearAllPoints()">🗑️ Temizle</button>
+                    <button class="control-btn btn-grid" onclick="toggleGrid()">🔲 Izgara</button>
+                    <button class="control-btn btn-mode" onclick="toggleClickMode()">🖱️ Tıkla: <span
+                            id="clickModeText">Kapalı</span></button>
+                </div>
+
+                <div class="quadrant-info">
+                    <div class="quadrant q1">I. Bölge<br>(+, +)</div>
+                    <div class="quadrant q2">II. Bölge<br>(−, +)</div>
+                    <div class="quadrant q3">III. Bölge<br>(−, −)</div>
+                    <div class="quadrant q4">IV. Bölge<br>(+, −)</div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="point-inputs">
+                    <h3>📍 Yeni Nokta Ekle</h3>
+
+                    <div class="coord-input">
+                        <label>X:</label>
+                        <div class="fraction-input">
+                            <input type="number" id="x-num" value="1" min="-20" max="20">
+                            <span class="slash">/</span>
+                            <input type="number" id="x-den" value="2" min="1" max="20">
+                        </div>
+                        <span class="decimal-display" id="x-decimal">= 0.5</span>
+                    </div>
+
+                    <div class="coord-input">
+                        <label>Y:</label>
+                        <div class="fraction-input">
+                            <input type="number" id="y-num" value="3" min="-20" max="20">
+                            <span class="slash">/</span>
+                            <input type="number" id="y-den" value="4" min="1" max="20">
+                        </div>
+                        <span class="decimal-display" id="y-decimal">= 0.75</span>
+                    </div>
+
+                    <button class="add-point-btn" onclick="addPoint()">➕ Noktayı Ekle</button>
+                </div>
+
+                <div class="preset-section">
+                    <h4>⚡ Hazır Noktalar</h4>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" onclick="setAndAdd(1,2, 1,2)">(½, ½)</button>
+                        <button class="preset-btn" onclick="setAndAdd(3,4, 1,4)">(¾, ¼)</button>
+                        <button class="preset-btn" onclick="setAndAdd(-1,2, 3,4)">(−½, ¾)</button>
+                        <button class="preset-btn" onclick="setAndAdd(2,3, -1,3)">(⅔, −⅓)</button>
+                        <button class="preset-btn" onclick="setAndAdd(-3,4, -1,2)">(−¾, −½)</button>
+                        <button class="preset-btn" onclick="setAndAdd(5,4, 1,1)">(5/4, 1)</button>
+                    </div>
+                </div>
+
+                <div class="points-list">
+                    <h4>📋 Eklenen Noktalar</h4>
+                    <div id="pointsList">
+                        <p style="color: #999; text-align: center;">Henüz nokta eklenmedi</p>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <h4>💡 Bilgi</h4>
+                    <p id="infoText">
+                        Koordinat düzlemi, noktaların konumunu belirlemek için kullanılır.
+                        X ekseni yatay, Y ekseni dikey yönü gösterir.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('coordCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let points = [];
+        let pointCounter = 0;
+        let showGrid = true;
+        let clickMode = false;
+
+        const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e91e63', '#00bcd4'];
+        const names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+
+        function drawCoordinatePlane() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const scale = 50; // 1 birim = 50 piksel
+
+            // Izgara
+            if (showGrid) {
+                ctx.strokeStyle = '#ecf0f1';
+                ctx.lineWidth = 1;
+
+                for (let i = -10; i <= 10; i++) {
+                    // Dikey çizgiler
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + i * scale, 0);
+                    ctx.lineTo(centerX + i * scale, canvas.height);
+                    ctx.stroke();
+
+                    // Yatay çizgiler
+                    ctx.beginPath();
+                    ctx.moveTo(0, centerY + i * scale);
+                    ctx.lineTo(canvas.width, centerY + i * scale);
+                    ctx.stroke();
+                }
+
+                // Yarım birim çizgileri
+                ctx.strokeStyle = '#f5f5f5';
+                for (let i = -20; i <= 20; i++) {
+                    if (i % 2 !== 0) {
+                        ctx.beginPath();
+                        ctx.moveTo(centerX + i * scale / 2, 0);
+                        ctx.lineTo(centerX + i * scale / 2, canvas.height);
+                        ctx.stroke();
+
+                        ctx.beginPath();
+                        ctx.moveTo(0, centerY + i * scale / 2);
+                        ctx.lineTo(canvas.width, centerY + i * scale / 2);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Eksenler
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 3;
+
+            // X ekseni
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(canvas.width, centerY);
+            ctx.stroke();
+
+            // Y ekseni
+            ctx.beginPath();
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, canvas.height);
+            ctx.stroke();
+
+            // Oklar
+            ctx.beginPath();
+            ctx.moveTo(canvas.width - 10, centerY - 10);
+            ctx.lineTo(canvas.width, centerY);
+            ctx.lineTo(canvas.width - 10, centerY + 10);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(centerX - 10, 10);
+            ctx.lineTo(centerX, 0);
+            ctx.lineTo(centerX + 10, 10);
+            ctx.stroke();
+
+            // Eksen etiketleri
+            ctx.font = 'bold 18px Segoe UI';
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillText('X', canvas.width - 20, centerY - 20);
+            ctx.fillText('Y', centerX + 15, 20);
+
+            // Sayı etiketleri
+            ctx.font = '12px Segoe UI';
+            ctx.textAlign = 'center';
+
+            for (let i = -4; i <= 4; i++) {
+                if (i !== 0) {
+                    // X ekseni
+                    ctx.fillText(i.toString(), centerX + i * scale, centerY + 20);
+
+                    // X ekseni tick
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + i * scale, centerY - 5);
+                    ctx.lineTo(centerX + i * scale, centerY + 5);
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Y ekseni
+                    ctx.textAlign = 'right';
+                    ctx.fillText((-i).toString(), centerX - 10, centerY + i * scale + 5);
+                    ctx.textAlign = 'center';
+
+                    // Y ekseni tick
+                    ctx.beginPath();
+                    ctx.moveTo(centerX - 5, centerY + i * scale);
+                    ctx.lineTo(centerX + 5, centerY + i * scale);
+                    ctx.stroke();
+                }
+            }
+
+            // Orijin
+            ctx.fillText('0', centerX - 12, centerY + 18);
+
+            // Noktaları çiz
+            points.forEach((point, index) => {
+                const screenX = centerX + point.x * scale;
+                const screenY = centerY - point.y * scale;
+
+                // Eksen çizgileri
+                ctx.strokeStyle = point.color + '40';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 3]);
+
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY);
+                ctx.lineTo(screenX, centerY);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY);
+                ctx.lineTo(centerX, screenY);
+                ctx.stroke();
+
+                ctx.setLineDash([]);
+
+                // Nokta
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, 10, 0, Math.PI * 2);
+                ctx.fillStyle = point.color;
+                ctx.fill();
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Etiket
+                ctx.font = 'bold 14px Segoe UI';
+                ctx.fillStyle = '#2c3e50';
+                ctx.textAlign = 'left';
+                ctx.fillText(`${point.name}(${point.xLabel}, ${point.yLabel})`, screenX + 15, screenY - 10);
+            });
+        }
+
+        function updateDecimals() {
+            const xNum = parseInt(document.getElementById('x-num').value) || 0;
+            const xDen = parseInt(document.getElementById('x-den').value) || 1;
+            const yNum = parseInt(document.getElementById('y-num').value) || 0;
+            const yDen = parseInt(document.getElementById('y-den').value) || 1;
+
+            document.getElementById('x-decimal').textContent = `= ${(xNum / xDen).toFixed(2)}`;
+            document.getElementById('y-decimal').textContent = `= ${(yNum / yDen).toFixed(2)}`;
+        }
+
+        function addPoint() {
+            const xNum = parseInt(document.getElementById('x-num').value) || 0;
+            const xDen = parseInt(document.getElementById('x-den').value) || 1;
+            const yNum = parseInt(document.getElementById('y-num').value) || 0;
+            const yDen = parseInt(document.getElementById('y-den').value) || 1;
+
+            const x = xNum / xDen;
+            const y = yNum / yDen;
+
+            const color = colors[pointCounter % colors.length];
+            const name = names[pointCounter % names.length];
+
+            const xLabel = xDen === 1 ? xNum.toString() : `${xNum}/${xDen}`;
+            const yLabel = yDen === 1 ? yNum.toString() : `${yNum}/${yDen}`;
+
+            points.push({ x, y, xLabel, yLabel, color, name });
+            pointCounter++;
+
+            updatePointsList();
+            updateInfo(x, y, name);
+            drawCoordinatePlane();
+        }
+
+        function setAndAdd(xNum, xDen, yNum, yDen) {
+            document.getElementById('x-num').value = xNum;
+            document.getElementById('x-den').value = xDen;
+            document.getElementById('y-num').value = yNum;
+            document.getElementById('y-den').value = yDen;
+            updateDecimals();
+            addPoint();
+        }
+
+        function deletePoint(index) {
+            points.splice(index, 1);
+            updatePointsList();
+            drawCoordinatePlane();
+        }
+
+        function clearAllPoints() {
+            points = [];
+            pointCounter = 0;
+            updatePointsList();
+            drawCoordinatePlane();
+        }
+
+        function updatePointsList() {
+            const list = document.getElementById('pointsList');
+
+            if (points.length === 0) {
+                list.innerHTML = '<p style="color: #999; text-align: center;">Henüz nokta eklenmedi</p>';
+                return;
+            }
+
+            list.innerHTML = points.map((p, i) => `
+                <div class="point-item">
+                    <span class="point-name" style="color: ${p.color}">${p.name}</span>
+                    <span class="point-coords">(${p.xLabel}, ${p.yLabel})</span>
+                    <button class="delete-btn" onclick="deletePoint(${i})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function updateInfo(x, y, name) {
+            let quadrant = '';
+            if (x > 0 && y > 0) quadrant = 'I. bölge (sağ üst)';
+            else if (x < 0 && y > 0) quadrant = 'II. bölge (sol üst)';
+            else if (x < 0 && y < 0) quadrant = 'III. bölge (sol alt)';
+            else if (x > 0 && y < 0) quadrant = 'IV. bölge (sağ alt)';
+            else if (x === 0 && y !== 0) quadrant = 'Y ekseni üzerinde';
+            else if (y === 0 && x !== 0) quadrant = 'X ekseni üzerinde';
+            else quadrant = 'Orijinde';
+
+            document.getElementById('infoText').textContent =
+                `${name} noktası ${quadrant} konumunda. X = ${x.toFixed(2)}, Y = ${y.toFixed(2)}`;
+        }
+
+        function toggleGrid() {
+            showGrid = !showGrid;
+            drawCoordinatePlane();
+        }
+
+        function toggleClickMode() {
+            clickMode = !clickMode;
+            document.getElementById('clickModeText').textContent = clickMode ? 'Açık' : 'Kapalı';
+            canvas.style.cursor = clickMode ? 'crosshair' : 'default';
+        }
+
+        canvas.addEventListener('click', function (e) {
+            if (!clickMode) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const scale = 50;
+
+            // En yakın yarım birime yuvarla
+            let x = (mouseX - centerX) / scale;
+            let y = (centerY - mouseY) / scale;
+
+            x = Math.round(x * 2) / 2;
+            y = Math.round(y * 2) / 2;
+
+            // Kesir olarak ayarla
+            if (x % 1 === 0) {
+                document.getElementById('x-num').value = x;
+                document.getElementById('x-den').value = 1;
+            } else {
+                document.getElementById('x-num').value = x * 2;
+                document.getElementById('x-den').value = 2;
+            }
+
+            if (y % 1 === 0) {
+                document.getElementById('y-num').value = y;
+                document.getElementById('y-den').value = 1;
+            } else {
+                document.getElementById('y-num').value = y * 2;
+                document.getElementById('y-den').value = 2;
+            }
+
+            updateDecimals();
+            addPoint();
+        });
+
+        // Input event listeners
+        ['x-num', 'x-den', 'y-num', 'y-den'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateDecimals);
+        });
+
+        // İlk yükleme
+        updateDecimals();
+        drawCoordinatePlane();
+    </script>
+</body>
+
+</html>

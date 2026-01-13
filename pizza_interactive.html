@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍕 Pizza Kesir Makinesi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #e74c3c;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .pizza-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        #pizzaCanvas {
+            border-radius: 50%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+
+        .control-group {
+            margin: 20px 0;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 15px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #3498db, #e74c3c);
+            border-radius: 10px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 35px;
+            height: 35px;
+            background: #fff;
+            border: 4px solid #2c3e50;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .value-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #e74c3c;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .fraction-display {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+        }
+
+        .fraction-box {
+            display: inline-block;
+            text-align: center;
+            font-size: 3em;
+            font-weight: bold;
+        }
+
+        .fraction-box .numerator {
+            border-bottom: 5px solid white;
+            padding-bottom: 10px;
+            display: block;
+        }
+
+        .fraction-box .denominator {
+            padding-top: 10px;
+            display: block;
+        }
+
+        .fraction-value {
+            font-size: 1.5em;
+            margin-top: 15px;
+            opacity: 0.9;
+        }
+
+        .info-box {
+            background: #e8f6ff;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 15px 15px 0;
+        }
+
+        .info-box h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .emoji-row {
+            text-align: center;
+            font-size: 2em;
+            margin: 20px 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .preset-btn {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .preset-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-half {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-quarter {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-third {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .btn-eighth {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #2ecc71, #f39c12, #e74c3c);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🍕 Pizza Kesir Makinesi</h1>
+        <p class="subtitle">Slider'ları hareket ettirerek kendi kesrini oluştur!</p>
+
+        <div class="pizza-container">
+            <canvas id="pizzaCanvas" width="350" height="350"></canvas>
+        </div>
+
+        <div class="fraction-display">
+            <div class="fraction-box">
+                <span class="numerator" id="numDisplay">3</span>
+                <span class="denominator" id="denDisplay">8</span>
+            </div>
+            <div class="fraction-value">
+                = <span id="decimalValue">0.375</span> = <span id="percentValue">37.5%</span>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 37.5%">
+                <span id="progressText">37.5%</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>🔢 Pay (Kaç dilim aldın?)</label>
+                <div class="slider-container">
+                    <span>0</span>
+                    <input type="range" id="numerator" min="0" max="12" value="3">
+                    <span>12</span>
+                    <div class="value-display" id="numValue">3</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>🍕 Payda (Pizza kaç dilime bölündü?)</label>
+                <div class="slider-container">
+                    <span>1</span>
+                    <input type="range" id="denominator" min="1" max="12" value="8">
+                    <span>12</span>
+                    <div class="value-display" id="denValue">8</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="preset-btn btn-half" onclick="setFraction(1, 2)">½ Yarım</button>
+            <button class="preset-btn btn-quarter" onclick="setFraction(1, 4)">¼ Çeyrek</button>
+            <button class="preset-btn btn-third" onclick="setFraction(1, 3)">⅓ Üçte Bir</button>
+            <button class="preset-btn btn-quarter" onclick="setFraction(3, 4)">¾ Dörtte Üç</button>
+            <button class="preset-btn btn-eighth" onclick="setFraction(5, 8)">⅝ Sekizde Beş</button>
+        </div>
+
+        <div class="info-box" id="infoBox">
+            <h3>💡 Kesir Bilgisi</h3>
+            <p id="infoText">3/8 demek: Pizza 8 eşit dilime bölünmüş, sen 3 tanesini almışsın!</p>
+        </div>
+
+        <div class="emoji-row" id="emojiRow">
+            🍕🍕🍕⬜⬜⬜⬜⬜
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('pizzaCanvas');
+        const ctx = canvas.getContext('2d');
+        const numSlider = document.getElementById('numerator');
+        const denSlider = document.getElementById('denominator');
+
+        function drawPizza(numerator, denominator) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 150;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Pizza tabanı (kenar)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius + 15, 0, Math.PI * 2);
+            ctx.fillStyle = '#8B4513';
+            ctx.fill();
+
+            // Pizza sos
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#e74c3c';
+            ctx.fill();
+
+            // Peynir (sarı)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius - 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#f4d03f';
+            ctx.fill();
+
+            const sliceAngle = (Math.PI * 2) / denominator;
+
+            // Dilimleri çiz
+            for (let i = 0; i < denominator; i++) {
+                const startAngle = i * sliceAngle - Math.PI / 2;
+                const endAngle = (i + 1) * sliceAngle - Math.PI / 2;
+
+                // Seçili dilimler
+                if (i < numerator) {
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.arc(centerX, centerY, radius - 10, startAngle, endAngle);
+                    ctx.closePath();
+                    ctx.fillStyle = '#e74c3c';
+                    ctx.fill();
+                    ctx.strokeStyle = '#c0392b';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Malzeme ekle (pepperoni)
+                    const midAngle = (startAngle + endAngle) / 2;
+                    const pepX = centerX + Math.cos(midAngle) * (radius * 0.6);
+                    const pepY = centerY + Math.sin(midAngle) * (radius * 0.6);
+                    ctx.beginPath();
+                    ctx.arc(pepX, pepY, 12, 0, Math.PI * 2);
+                    ctx.fillStyle = '#922B21';
+                    ctx.fill();
+                } else {
+                    // Boş dilimler (yenmiş)
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.arc(centerX, centerY, radius - 10, startAngle, endAngle);
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                    ctx.fill();
+                    ctx.strokeStyle = '#bdc3c7';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+
+                // Dilim çizgileri
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(
+                    centerX + Math.cos(startAngle) * radius,
+                    centerY + Math.sin(startAngle) * radius
+                );
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            // Ortadaki daire
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
+            ctx.fillStyle = '#f4d03f';
+            ctx.fill();
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function updateDisplay() {
+            let num = parseInt(numSlider.value);
+            const den = parseInt(denSlider.value);
+
+            // Pay, paydayı geçemez
+            if (num > den) {
+                num = den;
+                numSlider.value = den;
+            }
+            numSlider.max = den;
+
+            // Değerleri güncelle
+            document.getElementById('numValue').textContent = num;
+            document.getElementById('denValue').textContent = den;
+            document.getElementById('numDisplay').textContent = num;
+            document.getElementById('denDisplay').textContent = den;
+
+            const decimal = num / den;
+            const percent = (decimal * 100).toFixed(1);
+
+            document.getElementById('decimalValue').textContent = decimal.toFixed(4);
+            document.getElementById('percentValue').textContent = percent + '%';
+
+            // Progress bar
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').textContent = percent + '%';
+
+            // Info text
+            let infoText = '';
+            if (num === 0) {
+                infoText = `Hiç pizza almadın! 😢 Pizza ${den} dilime bölünmüş ama sen 0 dilim aldın.`;
+            } else if (num === den) {
+                infoText = `Tüm pizzayı yedin! 🎉 ${den}/${den} = 1 tam pizza!`;
+            } else if (num * 2 === den) {
+                infoText = `${num}/${den} = ½ yarım pizza! 🍕`;
+            } else {
+                infoText = `${num}/${den} demek: Pizza ${den} eşit dilime bölünmüş, sen ${num} tanesini almışsın!`;
+            }
+            document.getElementById('infoText').textContent = infoText;
+
+            // Emoji satırı
+            let emojis = '';
+            for (let i = 0; i < den; i++) {
+                emojis += i < num ? '🍕' : '⬜';
+            }
+            document.getElementById('emojiRow').textContent = emojis;
+
+            drawPizza(num, den);
+        }
+
+        function setFraction(num, den) {
+            denSlider.value = den;
+            numSlider.max = den;
+            numSlider.value = num;
+            updateDisplay();
+        }
+
+        numSlider.addEventListener('input', updateDisplay);
+        denSlider.addEventListener('input', updateDisplay);
+
+        // İlk çizim
+        updateDisplay();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔲 Kare Kesir Makinesi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        #squareGrid {
+            display: grid;
+            width: 350px;
+            height: 350px;
+            border: 4px solid #2c3e50;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .grid-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .grid-cell.selected {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .grid-cell.empty {
+            background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+            color: #95a5a6;
+        }
+
+        .grid-cell:hover {
+            transform: scale(0.95);
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 12px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border-radius: 10px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 30px;
+            height: 30px;
+            background: #fff;
+            border: 3px solid #2c3e50;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .value-badge {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .fraction-display {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            border-radius: 20px;
+            color: white;
+        }
+
+        .fraction-main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .fraction-box {
+            display: inline-block;
+            text-align: center;
+            font-size: 3em;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 30px;
+            border-radius: 15px;
+        }
+
+        .fraction-box .numerator {
+            border-bottom: 4px solid white;
+            padding-bottom: 8px;
+            display: block;
+        }
+
+        .fraction-box .denominator {
+            padding-top: 8px;
+            display: block;
+        }
+
+        .equals {
+            font-size: 3em;
+            font-weight: bold;
+        }
+
+        .decimal-box {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .percent-box {
+            font-size: 2em;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .visual-bar {
+            height: 40px;
+            background: #ecf0f1;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .visual-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, #3498db, #9b59b6);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 5px solid;
+        }
+
+        .info-card.blue {
+            border-color: #3498db;
+        }
+
+        .info-card.green {
+            border-color: #2ecc71;
+        }
+
+        .info-card.purple {
+            border-color: #9b59b6;
+        }
+
+        .info-card.orange {
+            border-color: #f39c12;
+        }
+
+        .info-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .info-card .big-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .click-mode {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .click-mode label {
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(30px);
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .preset-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            color: white;
+        }
+
+        .preset-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-1 {
+            background: #e74c3c;
+        }
+
+        .btn-2 {
+            background: #3498db;
+        }
+
+        .btn-3 {
+            background: #2ecc71;
+        }
+
+        .btn-4 {
+            background: #9b59b6;
+        }
+
+        .btn-5 {
+            background: #f39c12;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔲 Kare Kesir Makinesi</h1>
+        <p class="subtitle">Karelere tıklayarak veya slider'ları kullanarak kesir oluştur!</p>
+
+        <div class="click-mode">
+            <label>🖱️ Tıklama Modu:</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="clickMode" checked>
+                <span class="toggle-slider"></span>
+            </label>
+            <span id="modeText" style="margin-left: 10px; color: #667eea; font-weight: bold;">AÇIK</span>
+        </div>
+
+        <div class="grid-container">
+            <div id="squareGrid"></div>
+        </div>
+
+        <div class="fraction-display">
+            <div class="fraction-main">
+                <div class="fraction-box">
+                    <span class="numerator" id="numDisplay">4</span>
+                    <span class="denominator" id="denDisplay">8</span>
+                </div>
+                <span class="equals">=</span>
+                <span class="decimal-box" id="decimalDisplay">0.5</span>
+                <span class="equals">=</span>
+                <span class="percent-box" id="percentDisplay">50%</span>
+            </div>
+        </div>
+
+        <div class="visual-bar">
+            <div class="visual-bar-fill" id="barFill" style="width: 50%">
+                <span id="barText">50%</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-row">
+                <div class="control-group">
+                    <label>📐 Satır Sayısı</label>
+                    <div class="slider-container">
+                        <span>1</span>
+                        <input type="range" id="rowSlider" min="1" max="6" value="2">
+                        <span>6</span>
+                        <div class="value-badge" id="rowValue">2</div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>📏 Sütun Sayısı</label>
+                    <div class="slider-container">
+                        <span>1</span>
+                        <input type="range" id="colSlider" min="1" max="6" value="4">
+                        <span>6</span>
+                        <div class="value-badge" id="colValue">4</div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>🎨 Seçili Kare Sayısı</label>
+                    <div class="slider-container">
+                        <span>0</span>
+                        <input type="range" id="selectedSlider" min="0" max="8" value="4">
+                        <span id="maxSelected">8</span>
+                        <div class="value-badge" id="selectedValue">4</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="preset-buttons">
+            <button class="preset-btn btn-1" onclick="setPreset(1, 2, 1)">½ Yarım</button>
+            <button class="preset-btn btn-2" onclick="setPreset(2, 2, 1)">¼ Çeyrek</button>
+            <button class="preset-btn btn-3" onclick="setPreset(2, 2, 3)">¾ Dörtte Üç</button>
+            <button class="preset-btn btn-4" onclick="setPreset(3, 3, 6)">⅔ Üçte İki</button>
+            <button class="preset-btn btn-5" onclick="setPreset(2, 5, 7)">7/10</button>
+        </div>
+
+        <div class="info-cards">
+            <div class="info-card blue">
+                <h4>📦 Toplam Kare</h4>
+                <div class="big-number" id="totalSquares">8</div>
+            </div>
+            <div class="info-card green">
+                <h4>✅ Seçili Kare</h4>
+                <div class="big-number" id="selectedSquares">4</div>
+            </div>
+            <div class="info-card purple">
+                <h4>⬜ Boş Kare</h4>
+                <div class="big-number" id="emptySquares">4</div>
+            </div>
+            <div class="info-card orange">
+                <h4>📊 Kesir Türü</h4>
+                <div id="fractionType" style="font-size: 1.2em; color: #f39c12; font-weight: bold;">Basit Kesir</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const grid = document.getElementById('squareGrid');
+        const rowSlider = document.getElementById('rowSlider');
+        const colSlider = document.getElementById('colSlider');
+        const selectedSlider = document.getElementById('selectedSlider');
+        const clickModeToggle = document.getElementById('clickMode');
+
+        let rows = 2;
+        let cols = 4;
+        let selected = 4;
+        let clickMode = true;
+
+        function createGrid() {
+            rows = parseInt(rowSlider.value);
+            cols = parseInt(colSlider.value);
+            const total = rows * cols;
+
+            // Seçili sayıyı sınırla
+            selectedSlider.max = total;
+            document.getElementById('maxSelected').textContent = total;
+            if (selected > total) {
+                selected = total;
+                selectedSlider.value = selected;
+            }
+
+            grid.innerHTML = '';
+            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+            for (let i = 0; i < total; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell ' + (i < selected ? 'selected' : 'empty');
+                cell.dataset.index = i;
+                cell.textContent = i + 1;
+
+                if (clickMode) {
+                    cell.addEventListener('click', () => toggleCell(i));
+                }
+
+                grid.appendChild(cell);
+            }
+
+            updateDisplay();
+        }
+
+        function toggleCell(index) {
+            if (!clickMode) return;
+
+            const cells = document.querySelectorAll('.grid-cell');
+            const cell = cells[index];
+
+            if (cell.classList.contains('selected')) {
+                // Seçimi kaldır, sonraki seçilileri kaydır
+                for (let i = index; i < cells.length - 1; i++) {
+                    if (cells[i + 1].classList.contains('selected')) {
+                        cells[i].classList.add('selected');
+                        cells[i].classList.remove('empty');
+                    } else {
+                        cells[i].classList.remove('selected');
+                        cells[i].classList.add('empty');
+                    }
+                }
+                cells[cells.length - 1].classList.remove('selected');
+                cells[cells.length - 1].classList.add('empty');
+                selected--;
+            } else {
+                // Seç
+                selected = index + 1;
+                for (let i = 0; i < cells.length; i++) {
+                    if (i < selected) {
+                        cells[i].classList.add('selected');
+                        cells[i].classList.remove('empty');
+                    } else {
+                        cells[i].classList.remove('selected');
+                        cells[i].classList.add('empty');
+                    }
+                }
+            }
+
+            selectedSlider.value = selected;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const total = rows * cols;
+            const decimal = selected / total;
+            const percent = (decimal * 100).toFixed(1);
+
+            // Değerleri güncelle
+            document.getElementById('rowValue').textContent = rows;
+            document.getElementById('colValue').textContent = cols;
+            document.getElementById('selectedValue').textContent = selected;
+
+            document.getElementById('numDisplay').textContent = selected;
+            document.getElementById('denDisplay').textContent = total;
+            document.getElementById('decimalDisplay').textContent = decimal.toFixed(3);
+            document.getElementById('percentDisplay').textContent = percent + '%';
+
+            document.getElementById('barFill').style.width = percent + '%';
+            document.getElementById('barText').textContent = percent + '%';
+
+            document.getElementById('totalSquares').textContent = total;
+            document.getElementById('selectedSquares').textContent = selected;
+            document.getElementById('emptySquares').textContent = total - selected;
+
+            // Kesir türü
+            let fractionType = '';
+            if (selected === 0) {
+                fractionType = 'Sıfır (0)';
+            } else if (selected === total) {
+                fractionType = 'Tam Sayı (1)';
+            } else if (selected < total) {
+                fractionType = 'Basit Kesir';
+            }
+            document.getElementById('fractionType').textContent = fractionType;
+        }
+
+        function setPreset(r, c, s) {
+            rowSlider.value = r;
+            colSlider.value = c;
+            rows = r;
+            cols = c;
+            selected = s;
+            selectedSlider.value = s;
+            createGrid();
+        }
+
+        rowSlider.addEventListener('input', () => {
+            rows = parseInt(rowSlider.value);
+            createGrid();
+        });
+
+        colSlider.addEventListener('input', () => {
+            cols = parseInt(colSlider.value);
+            createGrid();
+        });
+
+        selectedSlider.addEventListener('input', () => {
+            selected = parseInt(selectedSlider.value);
+            createGrid();
+        });
+
+        clickModeToggle.addEventListener('change', () => {
+            clickMode = clickModeToggle.checked;
+            document.getElementById('modeText').textContent = clickMode ? 'AÇIK' : 'KAPALI';
+            createGrid();
+        });
+
+        // İlk yükleme
+        createGrid();
+    </script>
+</body>
+
+</html>
