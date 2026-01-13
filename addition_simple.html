@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>➕ Kesir Toplama Görsel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00b894;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+        
+        .equation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .fraction-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .fraction-box.result {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+        }
+        
+        .fraction-box input {
+            width: 60px;
+            height: 45px;
+            font-size: 1.8em;
+            text-align: center;
+            border: 3px solid white;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .fraction-box .line {
+            width: 60px;
+            height: 4px;
+            background: white;
+            margin: 8px 0;
+        }
+        
+        .fraction-box .val {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .operator {
+            font-size: 3em;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .visual-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+        }
+        
+        .visual-section h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .bars-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .bar-label {
+            width: 80px;
+            text-align: right;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+        
+        .fraction-bar {
+            flex: 1;
+            height: 50px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .bar-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid rgba(255,255,255,0.5);
+            transition: all 0.3s;
+        }
+        
+        .bar-segment.filled1 {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+        }
+        
+        .bar-segment.filled2 {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+        }
+        
+        .bar-segment.result {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+        }
+        
+        .bar-segment.empty {
+            background: #ecf0f1;
+        }
+        
+        .steps-box {
+            background: #fff9e6;
+            border-left: 5px solid #f39c12;
+            padding: 20px;
+            border-radius: 0 15px 15px 0;
+            margin: 20px 0;
+        }
+        
+        .steps-box h4 {
+            color: #f39c12;
+            margin-bottom: 15px;
+        }
+        
+        .steps-box ol {
+            padding-left: 25px;
+            line-height: 2;
+            color: #2c3e50;
+        }
+        
+        .presets {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .preset-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: 2px solid #00b894;
+            border-radius: 20px;
+            cursor: pointer;
+            background: white;
+            color: #00b894;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .preset-btn:hover {
+            background: #00b894;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>➕ Kesir Toplama</h1>
+        
+        <div class="equation">
+            <div class="fraction-box">
+                <input type="number" id="num1" value="1" min="0" max="12" onchange="calculate()">
+                <div class="line"></div>
+                <input type="number" id="den1" value="4" min="1" max="12" onchange="calculate()">
+            </div>
+            
+            <span class="operator">+</span>
+            
+            <div class="fraction-box">
+                <input type="number" id="num2" value="2" min="0" max="12" onchange="calculate()">
+                <div class="line"></div>
+                <input type="number" id="den2" value="4" min="1" max="12" onchange="calculate()">
+            </div>
+            
+            <span class="operator">=</span>
+            
+            <div class="fraction-box result">
+                <span class="val" id="resultNum">3</span>
+                <div class="line"></div>
+                <span class="val" id="resultDen">4</span>
+            </div>
+        </div>
+        
+        <div class="visual-section">
+            <h3>📊 Görsel Gösterim</h3>
+            <div class="bars-container" id="barsContainer">
+                <!-- JavaScript ile doldurulacak -->
+            </div>
+        </div>
+        
+        <div class="steps-box">
+            <h4>📝 Çözüm Adımları</h4>
+            <ol id="stepsList">
+                <!-- JavaScript ile doldurulacak -->
+            </ol>
+        </div>
+        
+        <div class="presets">
+            <button class="preset-btn" onclick="setValues(1,4, 2,4)">¼ + 2/4</button>
+            <button class="preset-btn" onclick="setValues(1,2, 1,4)">½ + ¼</button>
+            <button class="preset-btn" onclick="setValues(2,3, 1,6)">⅔ + ⅙</button>
+            <button class="preset-btn" onclick="setValues(1,3, 1,3)">⅓ + ⅓</button>
+            <button class="preset-btn" onclick="setValues(3,8, 1,8)">⅜ + ⅛</button>
+        </div>
+    </div>
+    
+    <script>
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+        
+        function lcm(a, b) {
+            return (a * b) / gcd(a, b);
+        }
+        
+        function calculate() {
+            const num1 = parseInt(document.getElementById('num1').value) || 0;
+            const den1 = parseInt(document.getElementById('den1').value) || 1;
+            const num2 = parseInt(document.getElementById('num2').value) || 0;
+            const den2 = parseInt(document.getElementById('den2').value) || 1;
+            
+            // Ortak payda
+            const commonDen = lcm(den1, den2);
+            const newNum1 = num1 * (commonDen / den1);
+            const newNum2 = num2 * (commonDen / den2);
+            const resultNum = newNum1 + newNum2;
+            
+            // Sadeleştir
+            const divisor = gcd(resultNum, commonDen);
+            const simpleNum = resultNum / divisor;
+            const simpleDen = commonDen / divisor;
+            
+            // Sonucu göster
+            document.getElementById('resultNum').textContent = simpleNum;
+            document.getElementById('resultDen').textContent = simpleDen;
+            
+            // Görsel çubuklar
+            const container = document.getElementById('barsContainer');
+            container.innerHTML = `
+                <div class="bar-row">
+                    <span class="bar-label">${num1}/${den1}</span>
+                    <div class="fraction-bar">${createBar(num1, den1, 'filled1')}</div>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">${num2}/${den2}</span>
+                    <div class="fraction-bar">${createBar(num2, den2, 'filled2')}</div>
+                </div>
+                <div class="bar-row" style="margin-top: 10px; padding-top: 20px; border-top: 3px dashed #bdc3c7;">
+                    <span class="bar-label">${simpleNum}/${simpleDen}</span>
+                    <div class="fraction-bar">${createBar(simpleNum, simpleDen, 'result')}</div>
+                </div>
+            `;
+            
+            // Adımlar
+            const steps = document.getElementById('stepsList');
+            if (den1 === den2) {
+                steps.innerHTML = `
+                    <li>Paydalar aynı: ${den1} = ${den2} ✅</li>
+                    <li>Payları topla: ${num1} + ${num2} = ${resultNum}</li>
+                    <li>Sonuç: <strong>${resultNum}/${commonDen}</strong>${divisor > 1 ? ` = <strong>${simpleNum}/${simpleDen}</strong>` : ''}</li>
+                `;
+            } else {
+                steps.innerHTML = `
+                    <li>Paydalar farklı: ${den1} ≠ ${den2}</li>
+                    <li>Ortak payda bul: EKOK(${den1}, ${den2}) = ${commonDen}</li>
+                    <li>Genişlet: ${num1}/${den1} = ${newNum1}/${commonDen}</li>
+                    <li>Genişlet: ${num2}/${den2} = ${newNum2}/${commonDen}</li>
+                    <li>Payları topla: ${newNum1} + ${newNum2} = ${resultNum}</li>
+                    <li>Sonuç: <strong>${resultNum}/${commonDen}</strong>${divisor > 1 ? ` = <strong>${simpleNum}/${simpleDen}</strong>` : ''}</li>
+                `;
+            }
+        }
+        
+        function createBar(num, den, className) {
+            let html = '';
+            const segmentWidth = 100 / den;
+            for (let i = 0; i < den; i++) {
+                const filled = i < num;
+                html += `<div class="bar-segment ${filled ? className : 'empty'}" style="width: ${segmentWidth}%"></div>`;
+            }
+            return html;
+        }
+        
+        function setValues(n1, d1, n2, d2) {
+            document.getElementById('num1').value = n1;
+            document.getElementById('den1').value = d1;
+            document.getElementById('num2').value = n2;
+            document.getElementById('den2').value = d2;
+            calculate();
+        }
+        
+        // İlk yükleme
+        calculate();
+    </script>
+</body>
+</html>

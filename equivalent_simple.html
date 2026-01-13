@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🟰 Denk Kesirler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #f39c12;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .main-fraction {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .fraction-input {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #f39c12, #fdcb6e);
+            border-radius: 20px;
+            color: white;
+        }
+        
+        .fraction-input input {
+            width: 80px;
+            height: 60px;
+            font-size: 2.5em;
+            text-align: center;
+            border: 4px solid white;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .fraction-input .line {
+            width: 80px;
+            height: 5px;
+            background: white;
+            margin: 10px 0;
+        }
+        
+        .equals {
+            font-size: 3em;
+            color: #2c3e50;
+        }
+        
+        .simplified {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            border-radius: 20px;
+            color: white;
+        }
+        
+        .simplified .val {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        
+        .simplified .line {
+            width: 80px;
+            height: 5px;
+            background: white;
+            margin: 10px 0;
+        }
+        
+        .equivalents-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+        }
+        
+        .equivalents-section h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .equivalents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        
+        .eq-card {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+        
+        .eq-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .eq-card.original {
+            background: linear-gradient(135deg, #f39c12, #fdcb6e);
+            color: white;
+            border-color: #e67e22;
+        }
+        
+        .eq-card.simplest {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            border-color: #00a085;
+        }
+        
+        .eq-card .fraction {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        
+        .eq-card .multiplier {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .visual-comparison {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .comparison-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .comparison-label {
+            width: 70px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: right;
+        }
+        
+        .comparison-bar {
+            flex: 1;
+            height: 40px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+        }
+        
+        .comparison-bar .filled {
+            height: 100%;
+            background: linear-gradient(135deg, #f39c12, #fdcb6e);
+            transition: width 0.5s;
+        }
+        
+        .comparison-bar .segment {
+            height: 100%;
+            border-right: 2px solid rgba(255,255,255,0.5);
+        }
+        
+        .info-box {
+            background: #fff9e6;
+            border-left: 5px solid #f39c12;
+            padding: 20px;
+            border-radius: 0 15px 15px 0;
+            margin-top: 20px;
+        }
+        
+        .info-box h4 {
+            color: #f39c12;
+            margin-bottom: 10px;
+        }
+        
+        .presets {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .preset-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: 2px solid #f39c12;
+            border-radius: 20px;
+            cursor: pointer;
+            background: white;
+            color: #f39c12;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .preset-btn:hover {
+            background: #f39c12;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🟰 Denk Kesirler</h1>
+        <p class="subtitle">Aynı değeri gösteren farklı kesirler!</p>
+        
+        <div class="main-fraction">
+            <div class="fraction-input">
+                <input type="number" id="num" value="2" min="1" max="20" onchange="calculate()">
+                <div class="line"></div>
+                <input type="number" id="den" value="4" min="1" max="20" onchange="calculate()">
+            </div>
+            
+            <span class="equals">=</span>
+            
+            <div class="simplified">
+                <span class="val" id="simpleNum">1</span>
+                <div class="line"></div>
+                <span class="val" id="simpleDen">2</span>
+            </div>
+        </div>
+        
+        <div class="equivalents-section">
+            <h3>🔗 Denk Kesirler Ailesi</h3>
+            <div class="equivalents-grid" id="eqGrid">
+                <!-- JavaScript ile doldurulacak -->
+            </div>
+            
+            <div class="visual-comparison" id="visualComparison">
+                <!-- JavaScript ile doldurulacak -->
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h4>💡 Denk Kesir Nedir?</h4>
+            <p id="infoText">
+                2/4 ve 1/2 denk kesirlerdir çünkü aynı miktarı gösterirler. 
+                Pay ve paydayı aynı sayıyla çarparak veya bölerek denk kesirler bulabiliriz.
+            </p>
+        </div>
+        
+        <div class="presets">
+            <button class="preset-btn" onclick="setFraction(1,2)">1/2</button>
+            <button class="preset-btn" onclick="setFraction(2,6)">2/6</button>
+            <button class="preset-btn" onclick="setFraction(3,9)">3/9</button>
+            <button class="preset-btn" onclick="setFraction(4,8)">4/8</button>
+            <button class="preset-btn" onclick="setFraction(6,10)">6/10</button>
+            <button class="preset-btn" onclick="setFraction(8,12)">8/12</button>
+        </div>
+    </div>
+    
+    <script>
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+        
+        function calculate() {
+            const num = parseInt(document.getElementById('num').value) || 1;
+            const den = parseInt(document.getElementById('den').value) || 1;
+            
+            // En sade hali
+            const divisor = gcd(num, den);
+            const simpleNum = num / divisor;
+            const simpleDen = den / divisor;
+            
+            document.getElementById('simpleNum').textContent = simpleNum;
+            document.getElementById('simpleDen').textContent = simpleDen;
+            
+            // Denk kesirler
+            const eqGrid = document.getElementById('eqGrid');
+            let html = '';
+            
+            for (let mult = 1; mult <= 8; mult++) {
+                const eqNum = simpleNum * mult;
+                const eqDen = simpleDen * mult;
+                
+                const isOriginal = eqNum === num && eqDen === den;
+                const isSimplest = mult === 1;
+                
+                let className = 'eq-card';
+                if (isOriginal) className += ' original';
+                else if (isSimplest) className += ' simplest';
+                
+                html += `
+                    <div class="${className}" onclick="setFraction(${eqNum}, ${eqDen})">
+                        <div class="fraction">${eqNum}/${eqDen}</div>
+                        <div class="multiplier">×${mult}</div>
+                    </div>
+                `;
+            }
+            eqGrid.innerHTML = html;
+            
+            // Görsel karşılaştırma
+            const visual = document.getElementById('visualComparison');
+            let visHtml = '';
+            
+            for (let mult = 1; mult <= 4; mult++) {
+                const eqNum = simpleNum * mult;
+                const eqDen = simpleDen * mult;
+                const percentage = (eqNum / eqDen) * 100;
+                
+                let segments = '';
+                for (let i = 0; i < eqDen; i++) {
+                    const isFilled = i < eqNum;
+                    segments += `<div class="segment" style="width: ${100/eqDen}%; background: ${isFilled ? 'linear-gradient(135deg, #f39c12, #fdcb6e)' : '#ecf0f1'};"></div>`;
+                }
+                
+                visHtml += `
+                    <div class="comparison-row">
+                        <span class="comparison-label">${eqNum}/${eqDen}</span>
+                        <div class="comparison-bar">${segments}</div>
+                    </div>
+                `;
+            }
+            visual.innerHTML = visHtml;
+            
+            // Bilgi metni
+            const info = document.getElementById('infoText');
+            if (divisor === 1) {
+                info.innerHTML = `<strong>${num}/${den}</strong> zaten en sade halidir! EBOB(${num}, ${den}) = 1`;
+            } else {
+                info.innerHTML = `<strong>${num}/${den}</strong> kesrinin en sade hali <strong>${simpleNum}/${simpleDen}</strong>'dir. 
+                Pay ve paydayı ${divisor}'e böldük (EBOB = ${divisor}).`;
+            }
+        }
+        
+        function setFraction(num, den) {
+            document.getElementById('num').value = num;
+            document.getElementById('den').value = den;
+            calculate();
+        }
+        
+        // İlk yükleme
+        calculate();
+    </script>
+</body>
+</html>

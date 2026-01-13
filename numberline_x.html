@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📍 Sayı Doğrusu - X Ekseni</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #0984e3;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .slider-group {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .slider-group label {
+            display: block;
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .slider-group input[type="range"] {
+            width: 180px;
+            height: 12px;
+            cursor: pointer;
+        }
+        
+        .slider-group .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #0984e3;
+            margin-top: 10px;
+        }
+        
+        .fraction-box {
+            text-align: center;
+            background: linear-gradient(135deg, #0984e3, #74b9ff);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+        }
+        
+        .fraction-box .num {
+            font-size: 2.5em;
+            font-weight: bold;
+            border-bottom: 4px solid white;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .fraction-box .den {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        
+        .numberline-container {
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+        
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .info-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .info-card .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-card .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #0984e3;
+        }
+        
+        .presets {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+        
+        .preset-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: 2px solid #0984e3;
+            border-radius: 20px;
+            cursor: pointer;
+            background: white;
+            color: #0984e3;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .preset-btn:hover {
+            background: #0984e3;
+            color: white;
+        }
+        
+        .type-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .type-basit {
+            background: #00b894;
+            color: white;
+        }
+        
+        .type-bilesik {
+            background: #e74c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📍 Sayı Doğrusunda Kesirler</h1>
+        <p class="subtitle">Kesrin sayı doğrusundaki yerini bul!</p>
+        
+        <div class="controls">
+            <div class="slider-group">
+                <label>Pay</label>
+                <input type="range" id="numSlider" min="0" max="20" value="3">
+                <div class="value" id="numVal">3</div>
+            </div>
+            
+            <div class="fraction-box">
+                <div class="num" id="fracNum">3</div>
+                <div class="den" id="fracDen">4</div>
+            </div>
+            
+            <div class="slider-group">
+                <label>Payda</label>
+                <input type="range" id="denSlider" min="1" max="12" value="4">
+                <div class="value" id="denVal">4</div>
+            </div>
+        </div>
+        
+        <div class="numberline-container">
+            <canvas id="numberlineCanvas" width="900" height="180"></canvas>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-card">
+                <div class="label">Ondalık Gösterim</div>
+                <div class="value" id="decimalVal">0.75</div>
+            </div>
+            <div class="info-card">
+                <div class="label">Yüzde</div>
+                <div class="value" id="percentVal">75%</div>
+            </div>
+            <div class="info-card">
+                <div class="label">Tam Sayı Kısmı</div>
+                <div class="value" id="wholeVal">0</div>
+            </div>
+            <div class="info-card">
+                <div class="label">Kesir Tipi</div>
+                <div class="value">
+                    <span class="type-badge" id="typeBadge">Basit Kesir</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="presets">
+            <button class="preset-btn" onclick="setFraction(1,2)">½</button>
+            <button class="preset-btn" onclick="setFraction(1,4)">¼</button>
+            <button class="preset-btn" onclick="setFraction(3,4)">¾</button>
+            <button class="preset-btn" onclick="setFraction(1,3)">⅓</button>
+            <button class="preset-btn" onclick="setFraction(2,3)">⅔</button>
+            <button class="preset-btn" onclick="setFraction(5,8)">⅝</button>
+            <button class="preset-btn" onclick="setFraction(5,4)">5/4</button>
+            <button class="preset-btn" onclick="setFraction(7,3)">7/3</button>
+            <button class="preset-btn" onclick="setFraction(11,5)">11/5</button>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('numberlineCanvas');
+        const ctx = canvas.getContext('2d');
+        const numSlider = document.getElementById('numSlider');
+        const denSlider = document.getElementById('denSlider');
+        
+        function drawNumberLine() {
+            const num = parseInt(numSlider.value);
+            const den = parseInt(denSlider.value);
+            const value = num / den;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Sayı doğrusu parametreleri
+            const padding = 50;
+            const lineY = 100;
+            const lineStart = padding;
+            const lineEnd = canvas.width - padding;
+            const lineLength = lineEnd - lineStart;
+            
+            // Maximum değer (en az 1, kesirden büyük ise yukarı yuvarla)
+            const maxVal = Math.max(Math.ceil(value), 2);
+            const unitWidth = lineLength / maxVal;
+            
+            // Ana çizgi
+            ctx.beginPath();
+            ctx.moveTo(lineStart, lineY);
+            ctx.lineTo(lineEnd, lineY);
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // Ok ucu
+            ctx.beginPath();
+            ctx.moveTo(lineEnd, lineY);
+            ctx.lineTo(lineEnd - 15, lineY - 10);
+            ctx.lineTo(lineEnd - 15, lineY + 10);
+            ctx.fillStyle = '#2c3e50';
+            ctx.fill();
+            
+            // Tam sayı işaretleri
+            for (let i = 0; i <= maxVal; i++) {
+                const x = lineStart + i * unitWidth;
+                
+                ctx.beginPath();
+                ctx.moveTo(x, lineY - 20);
+                ctx.lineTo(x, lineY + 20);
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                ctx.font = 'bold 18px Segoe UI';
+                ctx.fillStyle = '#2c3e50';
+                ctx.textAlign = 'center';
+                ctx.fillText(i.toString(), x, lineY + 45);
+            }
+            
+            // Kesir bölümleri (her tam sayı arasında)
+            ctx.strokeStyle = '#bdc3c7';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < maxVal; i++) {
+                for (let j = 1; j < den; j++) {
+                    const x = lineStart + i * unitWidth + (j / den) * unitWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(x, lineY - 10);
+                    ctx.lineTo(x, lineY + 10);
+                    ctx.stroke();
+                }
+            }
+            
+            // 0 ile kesir arası renkli alan
+            const pointX = lineStart + value * unitWidth;
+            ctx.fillStyle = 'rgba(9, 132, 227, 0.3)';
+            ctx.fillRect(lineStart, lineY - 15, pointX - lineStart, 30);
+            
+            // Kesir noktası
+            ctx.beginPath();
+            ctx.arc(pointX, lineY, 15, 0, Math.PI * 2);
+            ctx.fillStyle = '#e74c3c';
+            ctx.fill();
+            ctx.strokeStyle = '#c0392b';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Kesir etiketi (üstte)
+            ctx.font = 'bold 20px Segoe UI';
+            ctx.fillStyle = '#e74c3c';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${num}/${den}`, pointX, lineY - 35);
+            
+            // Ondalık etiketi (altta küçük)
+            ctx.font = '14px Segoe UI';
+            ctx.fillStyle = '#666';
+            ctx.fillText(`≈ ${value.toFixed(2)}`, pointX, lineY + 70);
+            
+            // Değerleri güncelle
+            document.getElementById('numVal').textContent = num;
+            document.getElementById('denVal').textContent = den;
+            document.getElementById('fracNum').textContent = num;
+            document.getElementById('fracDen').textContent = den;
+            document.getElementById('decimalVal').textContent = value.toFixed(3);
+            document.getElementById('percentVal').textContent = (value * 100).toFixed(1) + '%';
+            document.getElementById('wholeVal').textContent = Math.floor(value);
+            
+            // Kesir tipi
+            const typeBadge = document.getElementById('typeBadge');
+            if (num < den) {
+                typeBadge.textContent = 'Basit Kesir';
+                typeBadge.className = 'type-badge type-basit';
+            } else {
+                typeBadge.textContent = 'Bileşik Kesir';
+                typeBadge.className = 'type-badge type-bilesik';
+            }
+        }
+        
+        function setFraction(num, den) {
+            numSlider.value = num;
+            denSlider.value = den;
+            drawNumberLine();
+        }
+        
+        numSlider.addEventListener('input', drawNumberLine);
+        denSlider.addEventListener('input', drawNumberLine);
+        
+        // İlk çizim
+        drawNumberLine();
+    </script>
+</body>
+</html>
