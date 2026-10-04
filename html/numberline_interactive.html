@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📏 Sayı Doğrusu Keşfi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #11998e;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .numberline-container {
+            background: #f8f9fa;
+            padding: 40px 20px;
+            border-radius: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        #numberlineCanvas {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .fraction-input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .fraction-input-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 30px;
+            border-radius: 20px;
+            color: white;
+        }
+
+        .fraction-input-box label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .fraction-input-box input {
+            width: 80px;
+            height: 60px;
+            font-size: 2em;
+            text-align: center;
+            border: 3px solid white;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: bold;
+        }
+
+        .fraction-input-box input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .fraction-line {
+            width: 80px;
+            height: 5px;
+            background: white;
+            margin: 10px 0;
+        }
+
+        .equals-sign {
+            font-size: 3em;
+            color: #2c3e50;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 20px 40px;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .result-box .decimal {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .result-box .percent {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-mark {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+
+        .btn-zoom-in {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .btn-zoom-out {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+
+        .marker-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .marker-list h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .markers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .marker-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .marker-tag .remove {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1em;
+            line-height: 1;
+        }
+
+        .marker-tag .remove:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .preset-fractions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .preset-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: 2px solid #11998e;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            background: white;
+            color: #11998e;
+        }
+
+        .preset-btn:hover {
+            background: #11998e;
+            color: white;
+        }
+
+        .info-panel {
+            background: #e8f8f5;
+            border-left: 5px solid #11998e;
+            padding: 20px;
+            border-radius: 0 15px 15px 0;
+            margin: 20px 0;
+        }
+
+        .info-panel h4 {
+            color: #11998e;
+            margin-bottom: 10px;
+        }
+
+        .comparison-box {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .compare-item {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .compare-item.highlight {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+
+        .compare-item .fraction {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .compare-item .value {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .zoom-info {
+            text-align: center;
+            margin: 10px 0;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📏 Sayı Doğrusu Keşfi</h1>
+        <p class="subtitle">Kesirler sayı doğrusunda nerede yaşar? Keşfet!</p>
+
+        <div class="numberline-container">
+            <canvas id="numberlineCanvas" width="900" height="200"></canvas>
+            <div class="zoom-info">
+                Görünüm: <span id="zoomRange">-50</span> ile <span id="zoomEnd">50</span> arası
+                (Yakınlaştırma: <span id="zoomLevel">1x</span>)
+            </div>
+        </div>
+
+        <div class="fraction-input">
+            <div class="fraction-input-box">
+                <label>PAY</label>
+                <input type="number" id="numerator" value="3" min="0" max="20" placeholder="Pay">
+                <div class="fraction-line"></div>
+                <label>PAYDA</label>
+                <input type="number" id="denominator" value="4" min="1" max="20" placeholder="Payda">
+            </div>
+
+            <span class="equals-sign">=</span>
+
+            <div class="result-box">
+                <div class="decimal" id="decimalResult">0.75</div>
+                <div class="percent" id="percentResult">= 75%</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn btn-mark" onclick="markFraction()">📍 İşaretle</button>
+            <button class="control-btn btn-clear" onclick="clearMarkers()">🗑️ Temizle</button>
+            <button class="control-btn btn-zoom-in" onclick="zoomIn()">🔍+ Yakınlaştır</button>
+            <button class="control-btn btn-zoom-out" onclick="zoomOut()">🔍- Uzaklaştır</button>
+        </div>
+
+        <div class="preset-fractions">
+            <button class="preset-btn" onclick="setFraction(1, 2)">½</button>
+            <button class="preset-btn" onclick="setFraction(1, 4)">¼</button>
+            <button class="preset-btn" onclick="setFraction(3, 4)">¾</button>
+            <button class="preset-btn" onclick="setFraction(1, 3)">⅓</button>
+            <button class="preset-btn" onclick="setFraction(2, 3)">⅔</button>
+            <button class="preset-btn" onclick="setFraction(1, 5)">⅕</button>
+            <button class="preset-btn" onclick="setFraction(3, 5)">⅗</button>
+            <button class="preset-btn" onclick="setFraction(5, 4)">5/4</button>
+            <button class="preset-btn" onclick="setFraction(7, 8)">⅞</button>
+        </div>
+
+        <div class="marker-list">
+            <h3>📌 İşaretlenen Kesirler</h3>
+            <div class="markers" id="markerList">
+                <span style="color: #999;">Henüz kesir işaretlemedin. Yukarıdan bir kesir seç ve "İşaretle" butonuna
+                    tıkla!</span>
+            </div>
+        </div>
+
+        <div class="comparison-box" id="comparisonBox">
+            <!-- Dinamik olarak doldurulacak -->
+        </div>
+
+        <div class="info-panel">
+            <h4>💡 Bilgi Kutusu</h4>
+            <p id="infoText">
+                3/4 kesri, sayı doğrusunda 0 ile 1 arasında, 1'e daha yakın bir yerde bulunur.
+                Bu kesir 0.75'e eşittir, yani 1'in dörtte üçü kadar!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('numberlineCanvas');
+        const ctx = canvas.getContext('2d');
+        const numInput = document.getElementById('numerator');
+        const denInput = document.getElementById('denominator');
+
+        let markers = [];
+        let zoomStart = -50;
+        let zoomEnd = 50;
+
+        function drawNumberLine() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const padding = 50;
+            const lineY = 100;
+            const lineStart = padding;
+            const lineEnd = canvas.width - padding;
+            const lineWidth = lineEnd - lineStart;
+
+            // Ana çizgi
+            ctx.beginPath();
+            ctx.moveTo(lineStart, lineY);
+            ctx.lineTo(lineEnd, lineY);
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Oklar
+            ctx.beginPath();
+            ctx.moveTo(lineStart, lineY);
+            ctx.lineTo(lineStart + 15, lineY - 10);
+            ctx.lineTo(lineStart + 15, lineY + 10);
+            ctx.closePath();
+            ctx.fillStyle = '#2c3e50';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(lineEnd, lineY);
+            ctx.lineTo(lineEnd - 15, lineY - 10);
+            ctx.lineTo(lineEnd - 15, lineY + 10);
+            ctx.closePath();
+            ctx.fill();
+
+            // Sayı işaretleri
+            const range = zoomEnd - zoomStart;
+            const majorStep = range <= 1 ? 0.25 : range <= 2 ? 0.5 : range <= 10 ? 1 : range <= 50 ? 5 : 10;
+            const minorStep = majorStep / (range <= 10 ? 4 : 5);
+
+            // Minor ticks
+            for (let val = zoomStart; val <= zoomEnd; val += minorStep) {
+                const x = lineStart + ((val - zoomStart) / range) * lineWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, lineY - 5);
+                ctx.lineTo(x, lineY + 5);
+                ctx.strokeStyle = '#bdc3c7';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+
+            // Major ticks ve etiketler
+            for (let val = zoomStart; val <= zoomEnd; val += majorStep) {
+                const x = lineStart + ((val - zoomStart) / range) * lineWidth;
+
+                ctx.beginPath();
+                ctx.moveTo(x, lineY - 15);
+                ctx.lineTo(x, lineY + 15);
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Etiket
+                ctx.font = 'bold 14px Segoe UI';
+                ctx.fillStyle = '#2c3e50';
+                ctx.textAlign = 'center';
+
+                let label;
+                if (Number.isInteger(val)) {
+                    label = val.toString();
+                } else {
+                    // Kesir olarak göster
+                    const frac = decimalToFraction(val);
+                    label = frac.num + '/' + frac.den;
+                }
+                ctx.fillText(label, x, lineY + 35);
+            }
+
+            // Mevcut kesri göster (kırmızı nokta)
+            const num = parseInt(numInput.value) || 0;
+            const den = parseInt(denInput.value) || 1;
+            const currentValue = num / den;
+
+            if (currentValue >= zoomStart && currentValue <= zoomEnd) {
+                const currentX = lineStart + ((currentValue - zoomStart) / range) * lineWidth;
+
+                // Dikey çizgi
+                ctx.beginPath();
+                ctx.moveTo(currentX, lineY - 40);
+                ctx.lineTo(currentX, lineY + 45);
+                ctx.strokeStyle = 'rgba(231, 76, 60, 0.3)';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Nokta
+                ctx.beginPath();
+                ctx.arc(currentX, lineY, 12, 0, Math.PI * 2);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fill();
+                ctx.strokeStyle = '#c0392b';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Etiket
+                ctx.font = 'bold 16px Segoe UI';
+                ctx.fillStyle = '#e74c3c';
+                ctx.textAlign = 'center';
+                ctx.fillText(num + '/' + den, currentX, lineY - 50);
+            }
+
+            // İşaretlenmiş kesirleri göster
+            markers.forEach((marker, index) => {
+                if (marker.value >= zoomStart && marker.value <= zoomEnd) {
+                    const markerX = lineStart + ((marker.value - zoomStart) / range) * lineWidth;
+
+                    // Nokta
+                    ctx.beginPath();
+                    ctx.arc(markerX, lineY, 8, 0, Math.PI * 2);
+                    ctx.fillStyle = marker.color;
+                    ctx.fill();
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Etiket
+                    ctx.font = '12px Segoe UI';
+                    ctx.fillStyle = marker.color;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(marker.label, markerX, lineY - 25);
+                }
+            });
+
+            // Zoom bilgisini güncelle
+            document.getElementById('zoomRange').textContent = zoomStart;
+            document.getElementById('zoomEnd').textContent = zoomEnd;
+            document.getElementById('zoomLevel').textContent = (2 / (zoomEnd - zoomStart)).toFixed(1) + 'x';
+        }
+
+        function decimalToFraction(decimal) {
+            const precision = 1000;
+            const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+            const num = Math.round(decimal * precision);
+            const den = precision;
+            const divisor = gcd(num, den);
+            return { num: num / divisor, den: den / divisor };
+        }
+
+        function updateDisplay() {
+            const num = parseInt(numInput.value) || 0;
+            const den = parseInt(denInput.value) || 1;
+            const decimal = num / den;
+            const percent = (decimal * 100).toFixed(1);
+
+            document.getElementById('decimalResult').textContent = decimal.toFixed(4);
+            document.getElementById('percentResult').textContent = '= ' + percent + '%';
+
+            // Bilgi metni
+            let info = '';
+            if (num === 0) {
+                info = 'Pay 0 olduğunda kesir değeri 0\'dır. Sayı doğrusunda başlangıç noktasındayız!';
+            } else if (num === den) {
+                info = `${num}/${den} = 1 tam sayı! Bütünün tamamını aldık.`;
+            } else if (num < den) {
+                info = `${num}/${den} kesri bir basit kesirdir (pay < payda). Değeri 0 ile 1 arasındadır.`;
+            } else {
+                info = `${num}/${den} bir bileşik kesirdir (pay > payda). Değeri 1\'den büyüktür!`;
+            }
+            document.getElementById('infoText').textContent = info;
+
+            drawNumberLine();
+        }
+
+        function setFraction(num, den) {
+            numInput.value = num;
+            denInput.value = den;
+            updateDisplay();
+        }
+
+        function markFraction() {
+            const num = parseInt(numInput.value) || 0;
+            const den = parseInt(denInput.value) || 1;
+            const value = num / den;
+            const label = num + '/' + den;
+
+            // Aynı kesir zaten işaretli mi?
+            if (markers.some(m => m.label === label)) {
+                alert('Bu kesir zaten işaretli!');
+                return;
+            }
+
+            const colors = ['#3498db', '#2ecc71', '#9b59b6', '#f39c12', '#1abc9c', '#e91e63', '#00bcd4', '#ff5722'];
+            const color = colors[markers.length % colors.length];
+
+            markers.push({ num, den, value, label, color });
+            updateMarkerList();
+            updateComparison();
+            drawNumberLine();
+        }
+
+        function removeMarker(index) {
+            markers.splice(index, 1);
+            updateMarkerList();
+            updateComparison();
+            drawNumberLine();
+        }
+
+        function clearMarkers() {
+            markers = [];
+            updateMarkerList();
+            updateComparison();
+            drawNumberLine();
+        }
+
+        function updateMarkerList() {
+            const list = document.getElementById('markerList');
+
+            if (markers.length === 0) {
+                list.innerHTML = '<span style="color: #999;">Henüz kesir işaretlemedin. Yukarıdan bir kesir seç ve "İşaretle" butonuna tıkla!</span>';
+                return;
+            }
+
+            list.innerHTML = markers.map((m, i) => `
+                <span class="marker-tag" style="background: linear-gradient(135deg, ${m.color}, ${m.color}dd)">
+                    ${m.label} = ${m.value.toFixed(3)}
+                    <button class="remove" onclick="removeMarker(${i})">×</button>
+                </span>
+            `).join('');
+        }
+
+        function updateComparison() {
+            const box = document.getElementById('comparisonBox');
+
+            if (markers.length < 2) {
+                box.innerHTML = '';
+                return;
+            }
+
+            // Kesirleri sırala
+            const sorted = [...markers].sort((a, b) => a.value - b.value);
+
+            box.innerHTML = '<h4 style="width: 100%; text-align: center; color: #2c3e50;">📊 Karşılaştırma (Küçükten Büyüğe)</h4>' +
+                sorted.map((m, i) => `
+                    <div class="compare-item ${i === sorted.length - 1 ? 'highlight' : ''}">
+                        <div class="fraction">${m.label}</div>
+                        <div class="value">${m.value.toFixed(3)}</div>
+                    </div>
+                `).join('<span style="font-size: 2em; color: #2c3e50;">‹</span>');
+        }
+
+        function zoomIn() {
+            const range = zoomEnd - zoomStart;
+            if (range <= 0.5) return;
+
+            const center = (zoomStart + zoomEnd) / 2;
+            const newRange = range / 2;
+            zoomStart = Math.max(-50, center - newRange / 2);
+            zoomEnd = Math.min(50, zoomStart + newRange); zoomStart = Math.max(-50, zoomEnd - newRange);
+            drawNumberLine();
+        }
+
+        function zoomOut() {
+            const range = zoomEnd - zoomStart;
+            if (range >= 100) return;
+
+            const center = (zoomStart + zoomEnd) / 2;
+            const newRange = range * 2;
+            zoomStart = Math.max(-50, center - newRange / 2);
+            zoomEnd = Math.min(50, zoomStart + newRange); zoomStart = Math.max(-50, zoomEnd - newRange);
+            drawNumberLine();
+        }
+
+        numInput.addEventListener('input', updateDisplay);
+        denInput.addEventListener('input', updateDisplay);
+
+        // İlk yükleme
+        updateDisplay();
+    </script>
+</body>
+
+</html>

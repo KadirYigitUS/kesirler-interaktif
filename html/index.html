@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧮 Kesirler - İnteraktif Öğrenme Merkezi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .student-info {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 20px;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .feature-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+        }
+
+        .card-new {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .card-wrapper {
+            position: relative;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 2em;
+            margin: 40px 0 20px;
+            text-align: center;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-divider {
+            width: 100px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            margin: 0 auto 30px;
+            border-radius: 2px;
+        }
+
+        /* Renk varyasyonları */
+        .card-pizza .card-icon {
+            color: #f39c12;
+        }
+
+        .card-pizza:hover {
+            border-bottom: 5px solid #f39c12;
+        }
+
+        .card-squares .card-icon {
+            color: #3498db;
+        }
+
+        .card-squares:hover {
+            border-bottom: 5px solid #3498db;
+        }
+
+        .card-numberline .card-icon {
+            color: #11998e;
+        }
+
+        .card-numberline:hover {
+            border-bottom: 5px solid #11998e;
+        }
+
+        .card-operations .card-icon {
+            color: #f5576c;
+        }
+
+        .card-operations:hover {
+            border-bottom: 5px solid #f5576c;
+        }
+
+        .card-coordinate .card-icon {
+            color: #667eea;
+        }
+
+        .card-coordinate:hover {
+            border-bottom: 5px solid #667eea;
+        }
+
+        .card-division .card-icon {
+            color: #e74c3c;
+        }
+
+        .card-division:hover {
+            border-bottom: 5px solid #e74c3c;
+        }
+
+        footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 50px;
+            padding: 20px;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🧮 Kesirler Dünyası</h1>
+            <p>İnteraktif Öğrenme Merkezi</p>
+            <div class="student-info">
+                👩‍🎓 Öğrenci: <strong>Uzay</strong> | 📚 Konu: Kesirler
+            </div>
+        </header>
+
+        <h2 class="section-title">🎮 İnteraktif Araçlar</h2>
+        <div class="section-divider"></div>
+
+        <div class="cards-grid">
+            <!-- Pizza İnteraktif -->
+            <div class="card-wrapper">
+                <span class="card-new">YENİ!</span>
+                <a href="pizza_interactive.html" class="card card-pizza">
+                    <div class="card-icon">🍕</div>
+                    <h2>Pizza Kesir Aracı</h2>
+                    <p>
+                        Bir pizzayı dilimle ve kesir kavramını keşfet!
+                        Pay ve paydayı kaydırıcılarla değiştir, pizza dilimlerinin
+                        nasıl değiştiğini gör.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">🎚️ Kaydırıcılar</span>
+                        <span class="feature-tag">📊 Yüzde</span>
+                        <span class="feature-tag">🎯 Hazır Kesirler</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Kareler İnteraktif -->
+            <div class="card-wrapper">
+                <span class="card-new">YENİ!</span>
+                <a href="squares_interactive.html" class="card card-squares">
+                    <div class="card-icon">🔲</div>
+                    <h2>Kare Izgara Aracı</h2>
+                    <p>
+                        Kare ızgarada kesir oluştur! Satır ve sütun sayısını ayarla,
+                        karelere tıklayarak seç veya kaydırıcıyla kesir belirle.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">🖱️ Tıkla Seç</span>
+                        <span class="feature-tag">🔢 Dinamik Izgara</span>
+                        <span class="feature-tag">📐 Alan Modeli</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Sayı Doğrusu İnteraktif -->
+            <div class="card-wrapper">
+                <span class="card-new">YENİ!</span>
+                <a href="numberline_interactive.html" class="card card-numberline">
+                    <div class="card-icon">📏</div>
+                    <h2>Sayı Doğrusu Keşfi</h2>
+                    <p>
+                        Kesirleri sayı doğrusunda bul ve işaretle!
+                        Yakınlaştır, uzaklaştır ve kesirleri karşılaştır.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">📍 İşaretle</span>
+                        <span class="feature-tag">🔍 Yakınlaştır</span>
+                        <span class="feature-tag">⚖️ Karşılaştır</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Kesir İşlemleri İnteraktif -->
+            <div class="card-wrapper">
+                <span class="card-new">YENİ!</span>
+                <a href="operations_interactive.html" class="card card-operations">
+                    <div class="card-icon">➕</div>
+                    <h2>Kesir İşlemleri</h2>
+                    <p>
+                        Kesirlerle toplama, çıkarma, çarpma ve bölme öğren!
+                        Adım adım çözüm ve görsel gösterimler.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">➕ Toplama</span>
+                        <span class="feature-tag">✖️ Çarpma</span>
+                        <span class="feature-tag">🟰 Denk Kesirler</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Koordinat Düzlemi İnteraktif -->
+            <div class="card-wrapper">
+                <span class="card-new">YENİ!</span>
+                <a href="coordinate_interactive.html" class="card card-coordinate">
+                    <div class="card-icon">📐</div>
+                    <h2>Koordinat Düzlemi</h2>
+                    <p>
+                        Kesirli noktaları koordinat düzlemine yerleştir!
+                        Tıkla veya değer gir, bölgeleri keşfet.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">🖱️ Tıkla Ekle</span>
+                        <span class="feature-tag">📊 4 Bölge</span>
+                        <span class="feature-tag">🔲 Izgara</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Sıfıra Bölme İnteraktif -->
+            <div class="card-wrapper">
+                <span class="card-new">YENİ!</span>
+                <a href="division_zero_interactive.html" class="card card-division">
+                    <div class="card-icon">🚫</div>
+                    <h2>Sıfıra Bölme Keşfi</h2>
+                    <p>
+                        Neden hiçbir sayı sıfıra bölünemez?
+                        x küçüldükçe y'nin nasıl büyüdüğünü izle ve keşfet!
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">📈 Grafik</span>
+                        <span class="feature-tag">🎬 Animasyon</span>
+                        <span class="feature-tag">🍕 Pizza Örneği</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <h2 class="section-title">🎯 Basit Araçlar</h2>
+        <div class="section-divider"></div>
+
+        <div class="cards-grid">
+            <!-- Sayı Doğrusu X Ekseni -->
+            <div class="card-wrapper">
+                <a href="numberline_x.html" class="card card-numberline">
+                    <div class="card-icon">📍</div>
+                    <h2>Sayı Doğrusu (X Ekseni)</h2>
+                    <p>
+                        Kesrin sayı doğrusundaki yerini bul!
+                        Basit ve odaklı bir araç.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">🎚️ Kaydırıcı</span>
+                        <span class="feature-tag">📊 Ondalık</span>
+                        <span class="feature-tag">📏 Basit Görünüm</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Basit Pizza -->
+            <div class="card-wrapper">
+                <a href="pizza_simple.html" class="card card-pizza">
+                    <div class="card-icon">🍕</div>
+                    <h2>Basit Pizza Kesiri</h2>
+                    <p>
+                        Pizzayı kesirlerle paylaş! Kaydırıcılarla
+                        dilim sayısını ayarla.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">🎚️ Kaydırıcı</span>
+                        <span class="feature-tag">🔢 Yüzde</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Denk Kesirler -->
+            <div class="card-wrapper">
+                <a href="equivalent_simple.html" class="card card-operations">
+                    <div class="card-icon">🟰</div>
+                    <h2>Denk Kesirler</h2>
+                    <p>
+                        Aynı değeri gösteren farklı kesirleri keşfet!
+                        En sade hali bul.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">🔗 Ailesi</span>
+                        <span class="feature-tag">📊 Görsel</span>
+                        <span class="feature-tag">🧮 EBOB</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Kesir Toplama -->
+            <div class="card-wrapper">
+                <a href="addition_simple.html" class="card card-squares">
+                    <div class="card-icon">➕</div>
+                    <h2>Kesir Toplama</h2>
+                    <p>
+                        İki kesri topla! Adım adım çözüm
+                        ve görsel gösterim.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">📊 Çubuk</span>
+                        <span class="feature-tag">🔢 EKOK</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Kesir Çarpma -->
+            <div class="card-wrapper">
+                <a href="multiplication_simple.html" class="card card-coordinate">
+                    <div class="card-icon">✖️</div>
+                    <h2>Kesir Çarpma</h2>
+                    <p>
+                        Kesir çarpımını alan modeli ile gör!
+                        Renkli ızgara ile öğren.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">📐 Alan</span>
+                        <span class="feature-tag">🎨 Renkli</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <p>
+                Hazırlayan: Ben 💜 | 2024
+            </p>
+        </footer>
+    </div>
+</body>
+
+</html>
