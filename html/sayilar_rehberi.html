@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sayma sayıları, doğal sayılar, tam sayılar, rasyonel ve irrasyonel sayılar, reel sayılar; dört işlemin özellikleri, asal sayılar ve bölünebilme. 12 yaş için Türkçe sayı rehberi.">
+    <title>📘 Sayıların Dünyası — Sayı Kümeleri ve İşlem Özellikleri Rehberi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; color: #2c3e50; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header { text-align: center; color: #fff; padding: 25px 0 10px; }
+        .header h1 { font-size: 2.6em; text-shadow: 0 3px 10px rgba(0,0,0,.3); margin-bottom: 8px; }
+        .header p { font-size: 1.2em; opacity: .92; }
+        .back { display: inline-block; color: #fff; text-decoration: none; background: rgba(255,255,255,.2); padding: 8px 18px; border-radius: 30px; margin-bottom: 10px; }
+        .back:hover { background: rgba(255,255,255,.35); }
+
+        nav.toc { position: sticky; top: 8px; z-index: 50; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+            background: rgba(255,255,255,.93); border-radius: 18px; padding: 8px 10px; margin: 14px 0 22px; box-shadow: 0 6px 24px rgba(0,0,0,.2); }
+        nav.toc a { text-decoration: none; color: #4a3f9f; font-weight: 600; font-size: .92em; padding: 6px 12px; border-radius: 14px; }
+        nav.toc a:hover { background: #ece9ff; }
+
+        section.card { background: #fff; border-radius: 22px; padding: 26px 28px; margin-bottom: 22px; box-shadow: 0 10px 40px rgba(0,0,0,.2); }
+        section.card > h2 { font-size: 1.7em; margin-bottom: 6px; color: #3b3486; }
+        section.card h3 { font-size: 1.2em; margin: 18px 0 8px; color: #4a3f9f; }
+        .lead { color: #555; line-height: 1.65; margin-bottom: 12px; }
+        p, li { line-height: 1.65; }
+        ul.liste, ol.liste { padding-left: 22px; margin: 6px 0 10px; }
+        .sim { display: inline-block; font-weight: 700; background: #efeaff; color: #4a3f9f; border-radius: 8px; padding: 0 8px; font-size: 1.05em; }
+        .formul { background: #f4f6ff; border-left: 5px solid #667eea; border-radius: 10px; padding: 10px 16px; margin: 10px 0; font-size: 1.08em; }
+        .kutu { border-radius: 14px; padding: 12px 16px; margin: 12px 0; line-height: 1.6; }
+        .kutu.dikkat { background: #fff6e0; border-left: 5px solid #f39c12; }
+        .kutu.bil { background: #e8f8f2; border-left: 5px solid #16a085; }
+        .kutu.hata { background: #fdecea; border-left: 5px solid #e74c3c; }
+        .kutu b.baslik { display: block; margin-bottom: 3px; }
+        .fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 3px; line-height: 1.15; }
+        .fr > i { font-style: normal; border-bottom: 1.6px solid currentColor; padding: 0 3px; }
+        .fr > b { font-weight: inherit; padding: 0 3px; }
+
+        /* ---- Harita ---- */
+        .harita { background: #f7f8ff; border-radius: 18px; padding: 14px; }
+        .harita-kutu { border: 3px solid; border-radius: 18px; padding: 12px; cursor: pointer; transition: transform .2s, box-shadow .2s; position: relative; }
+        .harita-kutu:hover { box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+        .harita-kutu.secili { box-shadow: 0 0 0 4px rgba(102,126,234,.45); }
+        .harita-kutu > .etiket { font-weight: 700; font-size: 1.02em; display: block; margin-bottom: 8px; }
+        .harita-kutu small { font-weight: 400; color: #555; display: block; font-size: .8em; }
+        .hk-r { border-color: #34495e; background: #fff; }
+        .hk-ic { display: flex; gap: 12px; flex-wrap: wrap; }
+        .hk-q { border-color: #16a085; background: #e9f9f5; flex: 3 1 420px; }
+        .hk-i { border-color: #c0392b; background: #fdeeee; flex: 1 1 170px; }
+        .hk-z { border-color: #2980b9; background: #e7f2fb; margin-top: 4px; }
+        .hk-n { border-color: #e67e22; background: #fdf0e1; margin-top: 4px; }
+        .hk-np { border-color: #8e44ad; background: #f1e7f8; margin-top: 4px; }
+        .harita-ek { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .harita-ek span { background: #fff; border: 1px dashed #aab; border-radius: 10px; padding: 3px 10px; font-size: .88em; }
+
+        /* ---- Küme sekmeleri ---- */
+        .set-sekmeler { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+        .set-sekme { border: 2px solid #d9d4f7; background: #fff; color: #4a3f9f; font-weight: 700; font-size: 1em; padding: 8px 14px; border-radius: 14px; cursor: pointer; }
+        .set-sekme:hover { background: #f1eeff; }
+        .set-sekme.aktif { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border-color: transparent; }
+        .set-panel { display: none; animation: gir .3s ease; }
+        .set-panel.aktif { display: block; }
+        @keyframes gir { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        .iki-kolon { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 10px 0; }
+        .mini { background: #f8f9fe; border-radius: 14px; padding: 12px 16px; }
+        .mini h4 { color: #3b3486; margin-bottom: 4px; }
+        .evet-liste li::marker { content: '✔  '; color: #1e9e5a; }
+        .hayir-liste li::marker { content: '✘  '; color: #d63a2f; }
+
+        /* ---- Tablolar ---- */
+        .tablo-sar { overflow-x: auto; margin: 10px 0; }
+        table { border-collapse: collapse; width: 100%; font-size: .96em; }
+        th, td { border: 1px solid #d8dcf0; padding: 8px 10px; text-align: center; }
+        thead th { background: #eef0ff; color: #3b3486; }
+        tbody th { background: #f7f8ff; text-align: left; }
+        td.sol { text-align: left; }
+        .ok { color: #1e9e5a; font-weight: 700; } .no { color: #d63a2f; font-weight: 700; }
+        .kapali-hucre { border: 0; width: 100%; padding: 8px 0; font-size: 1.3em; border-radius: 10px; cursor: pointer; font-weight: 700; }
+        .kapali-hucre.evet { background: #e3f7ea; color: #1e9e5a; } .kapali-hucre.hayir { background: #fde9e7; color: #d63a2f; }
+        .kapali-hucre:hover, .kapali-hucre.secili { outline: 3px solid #667eea; }
+        .kapali-aciklama { margin-top: 10px; padding: 12px 16px; border-radius: 12px; background: #f4f6ff; border-left: 5px solid #667eea; }
+        .kapali-aciklama.evet { background: #e8f8ef; border-color: #1e9e5a; } .kapali-aciklama.hayir { background: #fdeeec; border-color: #d63a2f; }
+
+        /* ---- Araçlar ---- */
+        .arac { background: #f7f8ff; border: 2px solid #e1e5fb; border-radius: 18px; padding: 16px; margin-top: 10px; }
+        .arac-satir { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .arac input[type=text] { flex: 1 1 220px; font-size: 1.25em; padding: 10px 14px; border: 2px solid #c9d0f5; border-radius: 12px; min-width: 0; }
+        .arac input[type=text]:focus { outline: 3px solid rgba(102,126,234,.35); border-color: #667eea; }
+        .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: 0; border-radius: 12px; padding: 11px 20px; font-size: 1.05em; font-weight: 700; cursor: pointer; }
+        .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+        .ornek-chip { background: #fff; border: 2px solid #d9d4f7; border-radius: 20px; padding: 4px 12px; cursor: pointer; font-size: .95em; color: #4a3f9f; font-weight: 600; }
+        .ornek-chip:hover { background: #efeaff; }
+        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 2px; }
+        .det-baslik { font-size: 2em; font-weight: 800; color: #3b3486; margin: 12px 0 4px; }
+        .det-satir { padding-left: 20px; margin-bottom: 10px; }
+        .det-hata { background: #fdecea; border-left: 5px solid #e74c3c; padding: 10px 14px; border-radius: 10px; margin-top: 12px; }
+        .det-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+        .det-chip { border-radius: 14px; padding: 10px 14px; border: 2px solid; cursor: default; }
+        .det-chip.evet { background: #e8f8ef; border-color: #1e9e5a; } .det-chip.hayir { background: #fff; border-color: #e1d6d6; opacity: .88; }
+        .det-chip-ust { font-weight: 700; } .det-chip .tik { float: right; font-size: 1.2em; }
+        .det-chip.evet .tik { color: #1e9e5a; } .det-chip.hayir .tik { color: #d63a2f; }
+        .det-chip-alt { font-size: .86em; color: #555; margin-top: 3px; }
+        .det-ozet { margin-top: 12px; background: #eef0ff; padding: 10px 14px; border-radius: 12px; }
+        .div-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 8px; }
+        .div-kutu { border-radius: 12px; padding: 8px 12px; border: 2px solid; font-weight: 600; }
+        .div-kutu small { display: block; font-weight: 400; color: #555; }
+        .div-kutu.evet { background: #e8f8ef; border-color: #1e9e5a; } .div-kutu.hayir { background: #fff; border-color: #ddd; }
+        .arac-etiket { font-weight: 600; margin-right: 4px; }
+        .arac input.kisa { flex: 0 1 140px; }
+
+        /* ---- Quiz ---- */
+        .soru { background: #f8f9fe; border-radius: 14px; padding: 12px 16px; margin-bottom: 12px; }
+        .soru-baslik { font-weight: 700; margin-bottom: 8px; }
+        .secenekler { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+        .secenek { background: #fff; border: 2px solid #d9d4f7; border-radius: 12px; padding: 8px 12px; cursor: pointer; text-align: left; font-size: 1em; }
+        .secenek:hover:not(:disabled) { background: #efeaff; }
+        .secenek.dogru { background: #e3f7ea; border-color: #1e9e5a; } .secenek.yanlis { background: #fde9e7; border-color: #d63a2f; }
+        .geri-bildirim { margin-top: 6px; font-size: .95em; } .geri-bildirim.evet { color: #17794a; } .geri-bildirim.hayir { color: #b02a21; }
+        #quizSkor { font-weight: 700; color: #3b3486; margin-bottom: 10px; }
+
+        details { background: #f8f9fe; border-radius: 12px; padding: 10px 16px; margin: 10px 0; }
+        summary { cursor: pointer; font-weight: 700; color: #4a3f9f; }
+        footer { text-align: center; color: rgba(255,255,255,.8); padding: 20px; font-size: .95em; }
+        footer a { color: #fff; }
+        .renk-np { color: #8e44ad; } .renk-n { color: #e67e22; } .renk-z { color: #2980b9; } .renk-q { color: #16a085; } .renk-i { color: #c0392b; }
+        @media (max-width: 600px) { .header h1 { font-size: 1.9em; } section.card { padding: 18px 14px; } }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <a class="back" href="index.html" id="geriBaglanti">← Ana sayfaya dön</a>
+            <h1>📘 Sayıların Dünyası</h1>
+            <p>Sayı kümeleri, tanımları ve dört işlemin özellikleri — her zaman başvurabileceğin rehber</p>
+        </header>
+
+        <nav class="toc" aria-label="Rehber bölümleri">
+            <a href="#harita">🗺️ Harita</a>
+            <a href="#kumeler">🔢 Kümeler</a>
+            <a href="#dedektif">🕵️ Sayı Dedektifi</a>
+            <a href="#bolunebilme">🧩 Çarpan &amp; Asal</a>
+            <a href="#islemler">➕ İşlem Özellikleri</a>
+            <a href="#isaret">±  İşaret Kuralları</a>
+            <a href="#ondalik">0,3̅ Ondalık Açılım</a>
+            <a href="#quiz">🎯 Kontrol Et</a>
+            <a href="#hatalar">⚠️ Sık Hatalar</a>
+            <a href="#sozluk">📖 Sözlük</a>
+        </nav>
+
+        <main>
+            <!-- ================= 1. HARİTA ================= -->
+            <section class="card" id="harita">
+                <h2>🗺️ Sayıların Haritası</h2>
+                <p class="lead">Sayılar tek bir torba değil, <b>iç içe geçmiş kümelerdir</b>. Her yeni küme, bir öncekinin yapamadığı bir işi yapabilmek için bulundu.
+                    Aşağıdaki kutulardan birine tıkla: o kümenin ayrıntıları açılsın.</p>
+
+                <div class="harita" aria-label="Sayı kümelerinin iç içe gösterimi">
+                    <div class="harita-kutu hk-r" data-set="r" role="button" tabindex="0">
+                        <span class="etiket">ℝ — Reel (Gerçel) Sayılar <small>sayı doğrusunun tüm noktaları = rasyonel + irrasyonel</small></span>
+                        <div class="hk-ic">
+                            <div class="harita-kutu hk-q" data-set="q" role="button" tabindex="0">
+                                <span class="etiket">ℚ — Rasyonel Sayılar <small>a/b biçiminde yazılabilenler (a, b tam sayı, b ≠ 0)</small></span>
+                                <div class="harita-kutu hk-z" data-set="z" role="button" tabindex="0">
+                                    <span class="etiket">ℤ — Tam Sayılar <small>…, −3, −2, −1, 0, 1, 2, 3, …</small></span>
+                                    <div class="harita-kutu hk-n" data-set="n" role="button" tabindex="0">
+                                        <span class="etiket">ℕ — Doğal Sayılar <small>0, 1, 2, 3, …</small></span>
+                                        <div class="harita-kutu hk-np" data-set="np" role="button" tabindex="0">
+                                            <span class="etiket">ℕ⁺ — Sayma Sayıları <small>1, 2, 3, …</small></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="harita-ek"><span>−3/4</span><span>0,25</span><span>0,(3)</span><span>2 1/2</span><span>−1,5</span></div>
+                            </div>
+                            <div class="harita-kutu hk-i" data-set="i" role="button" tabindex="0">
+                                <span class="etiket">ℚ′ — İrrasyonel Sayılar <small>kesir olarak yazılamayanlar</small></span>
+                                <div class="harita-ek"><span>√2</span><span>√3</span><span>π</span><span>−√5</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🧠 Neden yeni sayılara ihtiyaç duyduk? (Neden–sonuç zinciri)</h3>
+                <div class="tablo-sar">
+                    <table>
+                        <thead><tr><th>İhtiyaç / Sorun</th><th>Çözüm</th><th>Yeni küme</th></tr></thead>
+                        <tbody>
+                            <tr><td class="sol">Nesneleri <b>saymak</b>: 1 elma, 2 elma, 3 elma …</td><td class="sol">Sayma sayıları</td><td><span class="sim">ℕ⁺</span></td></tr>
+                            <tr><td class="sol">“<b>Hiç</b> elma yok” demek (boş kutu)</td><td class="sol">0 eklenir → doğal sayılar</td><td><span class="sim">ℕ</span></td></tr>
+                            <tr><td class="sol"><b>3 − 5</b> gibi çıkarmalar, borç, sıfırın altındaki sıcaklık, bodrum katı</td><td class="sol">Doğal sayıların <b>karşıtları</b> (negatifler) eklenir → tam sayılar</td><td><span class="sim">ℤ</span></td></tr>
+                            <tr><td class="sol"><b>1 ÷ 4</b> gibi bölmeler, parçalara ayırma, yarım–çeyrek</td><td class="sol">İki tam sayının oranı: a/b (b ≠ 0) → rasyonel sayılar</td><td><span class="sim">ℚ</span></td></tr>
+                            <tr><td class="sol">Kenarı 1 olan karenin <b>köşegeni</b>, çemberin <b>çevresi</b>: sayı doğrusunda bu noktalar var ama hiçbir kesirle yazılamıyor</td><td class="sol">İrrasyonel sayılar</td><td><span class="sim">ℚ′</span></td></tr>
+                            <tr><td class="sol">Sayı doğrusunun <b>hiç boşluğu kalmasın</b></td><td class="sol">Rasyonel ∪ İrrasyonel → reel sayılar</td><td><span class="sim">ℝ</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="formul"><b>Alt küme zinciri:</b> ℕ⁺ ⊂ ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ &nbsp;ve&nbsp; ℚ′ ⊂ ℝ &nbsp;|&nbsp; ℚ ∩ ℚ′ = ∅ (bir sayı hem rasyonel hem irrasyonel olamaz) &nbsp;|&nbsp; ℚ ∪ ℚ′ = ℝ</div>
+                <p class="lead"><b>Sayı doğrusunda küme örnekleri</b> (noktaların üstüne gelip kutuya bak):</p>
+                <div id="haritaDogru"></div>
+                <p class="lead"><span class="renk-n"><b>●</b> doğal/sayma</span> &nbsp; <span class="renk-z"><b>●</b> tam (negatif)</span> &nbsp; <span class="renk-q"><b>●</b> rasyonel</span> &nbsp; <span class="renk-i"><b>●</b> irrasyonel</span>
+                    — Sayı doğrusunu kendin gezmek için: <a href="numberline_interactive.html">📏 Sayı Doğrusu Keşfi</a> (−50 … +50).</p>
+                <div class="kutu bil"><b class="baslik">📝 Gösterim hakkında</b>
+                    Kitaplarda sayma sayıları <b>ℕ⁺</b> (ya da N*), doğal sayılar <b>ℕ</b> (Türkiye müfredatında 0 dahildir), tam sayılar <b>ℤ</b>, rasyonel sayılar <b>ℚ</b>, irrasyonel sayılar <b>ℚ′</b> (ya da 𝕀), reel sayılar <b>ℝ</b> ile gösterilir.
+                    Bazı ülkelerde ℕ = {1, 2, 3, …} alınır; bu yüzden “doğal sayı” dediğimizde 0 dahil mi, hep sor!</div>
+            </section>
+
+            <!-- ================= 2. KÜMELER ================= -->
+            <section class="card" id="kumeler">
+                <h2>🔢 Sayı Kümeleri: Tanım, Örnek ve Dikkat Edilecekler</h2>
+                <p class="lead">Bir kümeye tıkla, tanımını, örneklerini ve karıştırılan noktaları gör.</p>
+                <div class="set-sekmeler" role="tablist">
+                    <button type="button" class="set-sekme" data-set="np" role="tab">ℕ⁺ Sayma</button>
+                    <button type="button" class="set-sekme" data-set="n" role="tab">ℕ Doğal</button>
+                    <button type="button" class="set-sekme" data-set="z" role="tab">ℤ Tam</button>
+                    <button type="button" class="set-sekme" data-set="q" role="tab">ℚ Rasyonel</button>
+                    <button type="button" class="set-sekme" data-set="i" role="tab">ℚ′ İrrasyonel</button>
+                    <button type="button" class="set-sekme" data-set="r" role="tab">ℝ Reel</button>
+                </div>
+
+                <!-- Sayma sayıları -->
+                <div class="set-panel" id="set-np">
+                    <h3>ℕ⁺ — Sayma Sayıları</h3>
+                    <div class="formul">ℕ⁺ = {1, 2, 3, 4, 5, …}</div>
+                    <p><b>Tanım:</b> Nesneleri saymak için kullandığımız, <b>1’den başlayıp sonsuza giden</b> sayılardır. Her sayma sayısının bir <b>ardışığı</b> (kendinden 1 fazlası) vardır; bu yüzden <b>en büyük sayma sayısı yoktur</b>. En küçüğü 1’dir.</p>
+                    <div class="iki-kolon">
+                        <div class="mini"><h4>Örnekler</h4><ul class="evet-liste"><li>1, 7, 25, 1000</li><li>Sınıftaki öğrenci sayısı (28)</li></ul></div>
+                        <div class="mini"><h4>Örnek olmayanlar</h4><ul class="hayir-liste"><li>0 (sayma 1’den başlar)</li><li>−4 (negatif)</li><li>1/2 (tam sayı değil)</li></ul></div>
+                    </div>
+                    <div class="kutu dikkat"><b class="baslik">Dikkat</b> 0 doğal sayıdır ama <b>sayma sayısı değildir</b>. “0 tane elma” demek, saymaya hiç başlayamamak demektir.</div>
+                    <p><b>Önemli özellikler:</b> toplama ve çarpmaya göre kapalıdır; çıkarma ve bölmede kapalı değildir. Sayma sayıları <b>tek–çift</b>, <b>asal–bileşik</b> diye sınıflanır (bir sonraki bölümlerde).</p>
+                </div>
+
+                <!-- Doğal sayılar -->
+                <div class="set-panel" id="set-n">
+                    <h3>ℕ — Doğal Sayılar</h3>
+                    <div class="formul">ℕ = {0, 1, 2, 3, 4, …} = ℕ⁺ ∪ {0}</div>
+                    <p><b>Tanım:</b> Sayma sayılarına <b>0</b> eklenerek elde edilen sayılardır. En küçük doğal sayı 0’dır; en büyüğü yoktur. “Hiç yok” (boşluk) ile başlayan çoklukları gösterir.</p>
+                    <div class="iki-kolon">
+                        <div class="mini"><h4>Örnekler</h4><ul class="evet-liste"><li>0, 1, 15, 2025</li><li>Cebindeki bozuk para sayısı (0 da olabilir)</li></ul></div>
+                        <div class="mini"><h4>Örnek olmayanlar</h4><ul class="hayir-liste"><li>−1 (negatif)</li><li>3/4 (kesir)</li><li>2,5 (ondalık, tam sayı değil)</li></ul></div>
+                    </div>
+                    <div class="kutu bil"><b class="baslik">0 hakkında bilmen gerekenler</b>
+                        0 bir doğal sayıdır • 0 çifttir • 0 <b>pozitif de negatif de değildir</b> • 0 asal da bileşik de değildir • 0, her sayının katıdır • 0 ile bölme tanımsızdır, ama 0 ÷ 5 = 0’dır.</div>
+                    <p><b>Sıralama:</b> Doğal sayılar sayı doğrusunda 0’ın sağında, birer birim aralıkla dizilir. 0 ile 1 arasında başka doğal sayı yoktur; fakat başka <i>sayılar</i> vardır (örn. 1/2). Doğal sayılar ardışık olduğu için “bir sonraki sayı” vardır; rasyonel sayılarda ise “bir sonraki sayı” yoktur.</p>
+                </div>
+
+                <!-- Tam sayılar -->
+                <div class="set-panel" id="set-z">
+                    <h3>ℤ — Tam Sayılar</h3>
+                    <div class="formul">ℤ = {…, −3, −2, −1, 0, 1, 2, 3, …} = ℤ⁻ ∪ {0} ∪ ℤ⁺</div>
+                    <p><b>Tanım:</b> Doğal sayılara, her sayma sayısının <b>karşıtı</b> (eksi işaretli hâli) eklenerek oluşan kümedir. Pozitif tam sayılar (ℤ⁺ = ℕ⁺), <b>sıfır</b> ve negatif tam sayılar (ℤ⁻) birleşiminden oluşur.</p>
+                    <div class="iki-kolon">
+                        <div class="mini"><h4>Örnekler</h4><ul class="evet-liste"><li>−12, −1, 0, 5, 300</li><li>Sıcaklık: −5 °C</li><li>Bodrum kat: −2 · Borç: −50 TL</li></ul></div>
+                        <div class="mini"><h4>Örnek olmayanlar</h4><ul class="hayir-liste"><li>−1/2 (kesir)</li><li>0,5 (ondalık)</li><li>√2</li></ul></div>
+                    </div>
+                    <h4>Bilmen gereken kavramlar</h4>
+                    <ul class="liste">
+                        <li><b>Karşıt sayı:</b> Sayı doğrusunda 0’a eşit uzaklıkta, ters yönde olan sayı. a’nın karşıtı −a. Toplamları 0’dır: a + (−a) = 0. Örnek: 5’in karşıtı −5; <b>−7’nin karşıtı 7</b>; 0’ın karşıtı 0.</li>
+                        <li><b>Mutlak değer:</b> Sayının sayı doğrusunda <b>0’a olan uzaklığı</b>; hiçbir zaman negatif olmaz. |−6| = 6, |6| = 6, |0| = 0.</li>
+                        <li><b>Sıralama:</b> Sayı doğrusunda sağdaki sayı daha büyüktür. Her negatif sayı sıfırdan küçük, her pozitif sayı sıfırdan büyüktür. Negatif sayılarda mutlak değer büyüdükçe sayı <b>küçülür</b>: −9 &lt; −2.</li>
+                        <li><b>İşaret:</b> Pozitif sayının önündeki “+” yazılmayabilir (+4 = 4). 0’ın işareti yoktur.</li>
+                    </ul>
+                    <div class="kutu dikkat"><b class="baslik">Neden önemli?</b> ℤ’de <b>her çıkarma yapılabilir</b>: 3 − 5 = −2. Bu yüzden ℕ’den ℤ’ye geçildi. Fakat 1 ÷ 2 gibi bölmeler hâlâ yapılamaz; bunun için rasyonel sayılar gerekir.</div>
+                    <a href="numberline_interactive.html">📏 Negatif sayıları sayı doğrusunda keşfet →</a>
+                </div>
+
+                <!-- Rasyonel -->
+                <div class="set-panel" id="set-q">
+                    <h3>ℚ — Rasyonel Sayılar</h3>
+                    <div class="formul">ℚ = { a/b : a ∈ ℤ, b ∈ ℤ, <b>b ≠ 0</b> }</div>
+                    <p><b>Tanım:</b> <b>a bir tam sayı, b sıfırdan farklı bir tam sayı</b> olmak üzere a/b biçiminde yazılabilen sayılara rasyonel sayı denir. (“Rasyonel”, <i>ratio</i> = <b>oran</b> sözcüğünden gelir: sayı, iki tam sayının oranı olarak yazılabilir.)</p>
+                    <div class="iki-kolon">
+                        <div class="mini"><h4>Örnekler</h4><ul class="evet-liste"><li>3/4, −5/2, 7/1 = 7, 0 = 0/1</li><li>Ondalık: 0,25 = 1/4 ; −1,5 = −3/2</li><li>Devirli: 0,(3) = 1/3</li><li>Karışık sayı: 2 1/2 = 5/2</li></ul></div>
+                        <div class="mini"><h4>Örnek olmayanlar</h4><ul class="hayir-liste"><li>5/0 (payda 0 olamaz!)</li><li>√2, π (kesir olarak yazılamaz)</li></ul></div>
+                    </div>
+                    <h4>Bilmen gereken noktalar</h4>
+                    <ul class="liste">
+                        <li><b>Paydası 1 olan rasyonel sayı = tam sayı:</b> 7/1 = 7. Bu yüzden ℤ ⊂ ℚ’dur. Her tam sayı rasyoneldir; her rasyonel sayı tam sayı değildir.</li>
+                        <li><b>Payda sıfır olamaz:</b> 5/0 olsaydı “□ × 0 = 5” olurdu; hiçbir sayıyı 0 ile çarpınca 5 elde edilmez. 0/0 için ise “□ × 0 = 0” her sayıyla doğru olur, tek bir cevap yoktur; bu yüzden o da tanımsızdır.</li>
+                        <li><b>İşaret:</b> −3/5 = 3/(−5) = −(3/5). Eksi işareti payda, paydada ya da kesrin önünde olabilir; (−3)/(−5) = 3/5.</li>
+                        <li><b>Denk kesirler:</b> a/b = (a·k)/(b·k) (k ≠ 0). Pay ve payda aralarında asal olunca kesir <b>sadeleşmiş</b> olur: 6/(−8) = −3/4.</li>
+                        <li><b>Üç gösterim:</b> kesir (3/4), ondalık (0,75) ve yüzde (%75) aynı sayıdır.</li>
+                        <li><b>Sıralama:</b> a/b &lt; c/d ⟺ a·d &lt; c·b (b, d &gt; 0). Pozitif rasyoneller negatiflerden büyük; negatiflerde mutlak değer büyüdükçe sayı küçülür: −3/4 &lt; −1/2.</li>
+                        <li><b>Yoğunluk:</b> İki rasyonel sayının arasında <b>sonsuz çok</b> rasyonel sayı vardır. Örneğin 1/3 ile 1/2 arasında ortalamaları 5/12 vardır; yine ortalama alınarak sonsuza dek yeni sayılar bulunur. (Bu yüzden rasyonellerde “bir sonraki sayı” yoktur.)</li>
+                        <li><b>Ondalık açılım:</b> Her rasyonel sayının ondalık açılımı ya <b>biter</b> (0,25) ya da <b>devreder</b> (0,(3) ya da 0,1(6)). Bu kural bölümü ayrıntılı: <a href="#ondalik">Ondalık Açılım</a>.</li>
+                    </ul>
+                    <a href="numberline_interactive.html">📏 Rasyonel sayıları sayı doğrusunda göster →</a> &nbsp;|&nbsp; <a href="operations_interactive.html">➕ Rasyonel sayılarla işlemler →</a>
+                </div>
+
+                <!-- İrrasyonel -->
+                <div class="set-panel" id="set-i">
+                    <h3>ℚ′ — İrrasyonel Sayılar</h3>
+                    <div class="formul">İrrasyonel sayı = rasyonel olmayan reel sayı = a/b (a, b ∈ ℤ, b ≠ 0) biçiminde <b>yazılamayan</b> sayı</div>
+                    <p><b>Tanım:</b> İki tam sayının oranı olarak yazılamayan sayılara irrasyonel sayı denir. Ondalık açılımları <b>sonsuza gider ve hiçbir zaman tekrar etmez</b> (devretmez).</p>
+                    <div class="iki-kolon">
+                        <div class="mini"><h4>Örnekler</h4><ul class="evet-liste"><li>√2 = 1,41421356…</li><li>√3, √5, √7, √10 (tam kare olmayan sayıların kareköküdür)</li><li>π = 3,14159265358979…</li><li>0,101001000100001… (kuralı var ama devretmiyor)</li></ul></div>
+                        <div class="mini"><h4>Örnek olmayanlar</h4><ul class="hayir-liste"><li>√4 = 2 ; √9 = 3 ; √(1/4) = 1/2 (tam kareler rasyoneldir)</li><li>3,14 ve 22/7 (π değil; π’ye yakın rasyonel sayılar)</li><li>0,333… = 0,(3) = 1/3 (devrediyor → rasyonel)</li></ul></div>
+                    </div>
+                    <h4>Nereden çıkar?</h4>
+                    <ul class="liste">
+                        <li><b>Karenin köşegeni:</b> Kenarı 1 birim olan karenin köşegeni, Pisagor teoremine göre √(1² + 1²) = <b>√2</b> birimdir. Bu uzunluk sayı doğrusunda var, ama kesir olarak yazılamaz.</li>
+                        <li><b>Çemberin çevresi:</b> Çevre ÷ çap her çember için aynıdır ve <b>π</b>’dir.</li>
+                        <li><b>Yaklaşım:</b> 1,4² = 1,96 ; 1,41² = 1,9881 ; 1,414² = 1,999396 ; … hep 2’ye yaklaşır ama hiçbirinin karesi tam 2 olmaz.</li>
+                    </ul>
+                    <div class="kutu dikkat"><b class="baslik">Kök işareti görmek yetmez!</b> √9 = 3 rasyoneldir (hatta tam sayıdır). Bir doğal sayının karekökü, ancak sayı <b>tam kare</b> değilse irrasyoneldir (1, 4, 9, 16, 25, 36, … tam karelerdir).</div>
+                    <details>
+                        <summary>🔍 İleri okuma: √2 neden irrasyoneldir? (Çelişki yöntemiyle kanıt)</summary>
+                        <ol class="liste">
+                            <li>Diyelim ki √2 = a/b ve bu kesir <b>sadeleşmiş</b> (a ile b’nin ortak çarpanı yok).</li>
+                            <li>Her iki tarafın karesini al: 2 = a²/b², yani <b>a² = 2·b²</b>.</li>
+                            <li>Demek ki a² çifttir. Tek sayının karesi tek olduğundan <b>a da çifttir</b>: a = 2k.</li>
+                            <li>Yerine yaz: (2k)² = 2b² → 4k² = 2b² → <b>b² = 2k²</b>. Yani b² çifttir, dolayısıyla <b>b de çifttir</b>.</li>
+                            <li>Hem a hem b çift ⇒ ikisi de 2’ye bölünür. Ama kesri sadeleşmiş almıştık! <b>Çelişki.</b></li>
+                            <li>O hâlde varsayımımız yanlıştı: √2 kesir olarak yazılamaz → <b>irrasyoneldir.</b> ∎</li>
+                        </ol>
+                    </details>
+                    <h4>İşlemlerde irrasyoneller</h4>
+                    <ul class="liste">
+                        <li>Rasyonel + irrasyonel = <b>her zaman irrasyonel</b> (1 + √2).</li>
+                        <li>Sıfırdan farklı rasyonel × irrasyonel = <b>her zaman irrasyonel</b> (3·√2, π/2).</li>
+                        <li>İki irrasyonel sayının toplamı, farkı, çarpımı ya da bölümü <b>rasyonel de olabilir, irrasyonel de</b>: √2 − √2 = 0, √2 · √2 = 2 (rasyonel) fakat √2 + √3 irrasyoneldir. Bu yüzden irrasyoneller işlemlere göre kapalı değildir.</li>
+                    </ul>
+                </div>
+
+                <!-- Reel -->
+                <div class="set-panel" id="set-r">
+                    <h3>ℝ — Reel (Gerçel) Sayılar</h3>
+                    <div class="formul">ℝ = ℚ ∪ ℚ′ &nbsp; (rasyonel sayılar ile irrasyonel sayıların birleşimi)</div>
+                    <p><b>Tanım:</b> Sayı doğrusu üzerindeki <b>her noktaya</b> karşılık gelen sayıların kümesidir. Sayı doğrusunda hiç boşluk yoktur: her nokta tam olarak bir reel sayıya, her reel sayı tam olarak bir noktaya karşılık gelir.</p>
+                    <ul class="liste">
+                        <li>ℕ⁺ ⊂ ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ ve ℚ′ ⊂ ℝ.</li>
+                        <li>Reel sayılar <b>sıralıdır</b>: Herhangi iki reel sayıdan biri diğerinden küçüktür ya da ikisi eşittir.</li>
+                        <li>Dört işlem reel sayılarda yapılır (sıfıra bölme hariç); <b>kapalılık</b> her dört işlemde de geçerlidir.</li>
+                        <li>İki reel sayının arasında hem sonsuz çok rasyonel hem de sonsuz çok irrasyonel sayı vardır.</li>
+                    </ul>
+                    <div class="kutu dikkat"><b class="baslik">Negatif sayının karekökü?</b> Hiçbir reel sayının karesi negatif olmaz: (−3)² = 9, 3² = 9. Bu yüzden √(−4) gibi ifadeler reel sayılarda <b>tanımsızdır</b> (bu ifadeler ileride “karmaşık sayılar”da incelenir).</div>
+                </div>
+            </section>
+
+            <!-- ================= 3. DEDEKTİF ================= -->
+            <section class="card" id="dedektif">
+                <h2>🕵️ Sayı Dedektifi: Bu sayı hangi kümelerde?</h2>
+                <p class="lead">Bir sayı yaz; bilgisayar o sayının hangi kümelere ait olduğunu <b>nedenleriyle</b> söylesin. Kesir (3/4), ondalık (0,25), devirli (0,(3)), kök (√2) ve π yazabilirsin; negatif sayılar da olur.</p>
+                <div class="arac">
+                    <div class="arac-satir">
+                        <label class="arac-etiket" for="detGiris">Sayı:</label>
+                        <input type="text" id="detGiris" value="−3/4" inputmode="text" autocomplete="off" aria-label="Sınıflandırılacak sayı">
+                        <button type="button" class="btn" id="detBtn">🔎 İncele</button>
+                    </div>
+                    <div class="chips" aria-label="Örnek sayılar">
+                        <button type="button" class="ornek-chip" data-v="7">7</button>
+                        <button type="button" class="ornek-chip" data-v="0">0</button>
+                        <button type="button" class="ornek-chip" data-v="−7">−7</button>
+                        <button type="button" class="ornek-chip" data-v="3/4">3/4</button>
+                        <button type="button" class="ornek-chip" data-v="−5/2">−5/2</button>
+                        <button type="button" class="ornek-chip" data-v="8/4">8/4</button>
+                        <button type="button" class="ornek-chip" data-v="0,25">0,25</button>
+                        <button type="button" class="ornek-chip" data-v="0,(3)">0,(3)</button>
+                        <button type="button" class="ornek-chip" data-v="0,1(6)">0,1(6)</button>
+                        <button type="button" class="ornek-chip" data-v="0,(9)">0,(9)</button>
+                        <button type="button" class="ornek-chip" data-v="√2">√2</button>
+                        <button type="button" class="ornek-chip" data-v="√16">√16</button>
+                        <button type="button" class="ornek-chip" data-v="√(9/4)">√(9/4)</button>
+                        <button type="button" class="ornek-chip" data-v="−√5">−√5</button>
+                        <button type="button" class="ornek-chip" data-v="π">π</button>
+                        <button type="button" class="ornek-chip" data-v="22/7">22/7</button>
+                        <button type="button" class="ornek-chip" data-v="3,14">3,14</button>
+                        <button type="button" class="ornek-chip" data-v="5/0">5/0</button>
+                        <button type="button" class="ornek-chip" data-v="√(−4)">√(−4)</button>
+                    </div>
+                    <div id="detSonuc" aria-live="polite"></div>
+                </div>
+            </section>
+
+            <!-- ================= 4. ÇARPAN & ASAL ================= -->
+            <section class="card" id="bolunebilme">
+                <h2>🧩 Doğal Sayılarda Çarpan, Kat, Asal Sayı ve Bölünebilme</h2>
+                <ul class="liste">
+                    <li><b>Çarpan (bölen):</b> a, b doğal sayı ve a = b × c ise b ve c, a’nın çarpanlarıdır. 15 = 3 × 5 → 15’in çarpanları 1, 3, 5, 15. (Sıfırdan farklı bir doğal sayının en küçük çarpanı 1, en büyük çarpanı kendisidir.)</li>
+                    <li><b>Kat:</b> a’nın katları a × 0, a × 1, a × 2, … sayılarıdır. 4’ün katları: 0, 4, 8, 12, … (sonsuz tane).</li>
+                    <li><b>Asal sayı:</b> <b>tam olarak iki farklı doğal sayı çarpanı</b> (1 ve kendisi) olan sayı: 2, 3, 5, 7, 11, 13, … Hem asal hem çift olan tek sayı 2’dir. <b>1 asal değildir</b> (yalnız bir çarpanı var), 0 da asal değildir. İkiden çok çarpanı olan sayılara <b>bileşik sayı</b> denir.</li>
+                    <li><b>Asal çarpan:</b> Bir sayının asal olan çarpanları. Her 1’den büyük doğal sayı, asal çarpanların çarpımı olarak <b>tek türlü</b> yazılır (aritmetiğin temel teoremi): 60 = 2² × 3 × 5.</li>
+                    <li><b>Aralarında asal:</b> 1’den başka ortak böleni olmayan iki sayı (EBOB = 1). Örn. 8 ve 15 (ikisi de asal değil!).</li>
+                    <li><b>EBOB / EKOK:</b> Ortak bölenlerin en büyüğü / ortak katların en küçüğü (sıfırdan büyük). EBOB × EKOK = iki sayının çarpımı.</li>
+                </ul>
+                <h3>🔧 Çarpan ve Asal Aracı</h3>
+                <div class="arac">
+                    <div class="arac-satir">
+                        <label class="arac-etiket" for="carpanGiris">Doğal sayı:</label>
+                        <input type="text" id="carpanGiris" value="360" inputmode="numeric" autocomplete="off" aria-label="Çarpanları incelenecek doğal sayı">
+                        <button type="button" class="btn" id="carpanBtn">🧮 İncele</button>
+                    </div>
+                    <div id="carpanSonuc" aria-live="polite"></div>
+                </div>
+                <h3>🤝 EBOB ve EKOK</h3>
+                <div class="arac">
+                    <div class="arac-satir">
+                        <label class="arac-etiket" for="ebobA">İki sayı:</label>
+                        <input type="text" id="ebobA" class="kisa" value="12" inputmode="numeric" aria-label="Birinci sayı">
+                        <input type="text" id="ebobB" class="kisa" value="18" inputmode="numeric" aria-label="İkinci sayı">
+                        <button type="button" class="btn" id="ebobBtn">⚙️ Hesapla</button>
+                    </div>
+                    <div id="ebobSonuc" aria-live="polite"></div>
+                </div>
+                <h3>Bölünebilme kuralları (kısa hatırlatma)</h3>
+                <div class="tablo-sar"><table>
+                    <thead><tr><th>Sayı</th><th>Kural</th></tr></thead>
+                    <tbody>
+                        <tr><th scope="row">2</th><td class="sol">Son rakam çift (0, 2, 4, 6, 8)</td></tr>
+                        <tr><th scope="row">3</th><td class="sol">Rakamlar toplamı 3’ün katı</td></tr>
+                        <tr><th scope="row">4</th><td class="sol">Son iki basamaklı sayı 4’ün katı (ya da 00)</td></tr>
+                        <tr><th scope="row">5</th><td class="sol">Son rakam 0 veya 5</td></tr>
+                        <tr><th scope="row">6</th><td class="sol">Hem 2’ye hem 3’e bölünür</td></tr>
+                        <tr><th scope="row">8</th><td class="sol">Son üç basamaklı sayı 8’in katı</td></tr>
+                        <tr><th scope="row">9</th><td class="sol">Rakamlar toplamı 9’un katı</td></tr>
+                        <tr><th scope="row">10</th><td class="sol">Son rakam 0</td></tr>
+                        <tr><th scope="row">11</th><td class="sol">Sağdan başlayarak rakamlara +, −, +, − … işaretleri koyup toplayınca sonuç 11’in katı (0 dahil)</td></tr>
+                    </tbody></table></div>
+                <p class="lead"><b>Çift–tek sayı toplamı/çarpımı:</b> çift + çift = çift; tek + tek = çift; çift + tek = tek; çift × herhangi = çift; tek × tek = tek. (Bu bilgi √2’nin irrasyonelliğini kanıtlarken kullanıldı!)</p>
+            </section>
+
+            <!-- ================= 5. İŞLEM ÖZELLİKLERİ ================= -->
+            <section class="card" id="islemler">
+                <h2>➕ Dört İşlemin Özellikleri</h2>
+                <h3>1) Kapalılık: İşlemin sonucu aynı kümede mi kalıyor?</h3>
+                <p class="lead">Bir kümeden alınan <b>herhangi iki</b> sayıyla işlem yapınca sonuç yine <b>aynı kümeden</b> çıkıyorsa, küme o işleme göre <b>kapalıdır</b>. Kapalı olmadığını göstermek için <b>bir tek karşı örnek</b> yeter. Hücrelere tıkla, nedenini oku. <small>(Bölmede bölen 0 olamaz.)</small></p>
+                <div class="tablo-sar"><table id="kapaliTablo" aria-label="Kümelerin dört işleme göre kapalılığı"></table></div>
+                <div id="kapaliAciklama" class="kapali-aciklama" aria-live="polite">👆 Tablodaki bir hücreye tıkla.</div>
+                <div class="kutu bil"><b class="baslik">Hikâye</b> ℕ → ℤ: çıkarmanın kapalı olması için • ℤ → ℚ: bölmenin kapalı olması için • ℚ → ℝ: sayı doğrusundaki boşlukları doldurmak için (kökler, π gibi uzunluklar) — işlem kapalılığı yeni sayıların bulunma nedenidir.</div>
+
+                <h3>2) Temel özellikler</h3>
+                <p class="lead">Çıkarma ve bölme aslında yeni işlem değildir: <b>a − b = a + (−b)</b> (karşıtını toplama) ve <b>a ÷ b = a × (1/b)</b>, b ≠ 0 (tersiyle çarpma). Bu yüzden özellikler esas olarak toplama ve çarpmada geçerlidir.</p>
+                <div class="tablo-sar"><table>
+                    <thead><tr><th>Özellik</th><th>Toplama</th><th>Çıkarma</th><th>Çarpma</th><th>Bölme</th></tr></thead>
+                    <tbody>
+                        <tr><th scope="row">Değişme<br><small>sıra değişirse sonuç değişmez</small></th>
+                            <td><span class="ok">✔</span><br><small>a + b = b + a<br>3 + 5 = 5 + 3</small></td>
+                            <td><span class="no">✘</span><br><small>5 − 3 = 2<br>3 − 5 = −2</small></td>
+                            <td><span class="ok">✔</span><br><small>a × b = b × a<br>(−2)×7 = 7×(−2)</small></td>
+                            <td><span class="no">✘</span><br><small>6 ÷ 3 = 2<br>3 ÷ 6 = 1/2</small></td></tr>
+                        <tr><th scope="row">Birleşme<br><small>gruplama değişirse sonuç değişmez</small></th>
+                            <td><span class="ok">✔</span><br><small>(a+b)+c = a+(b+c)</small></td>
+                            <td><span class="no">✘</span><br><small>(8−4)−2 = 2<br>8−(4−2) = 6</small></td>
+                            <td><span class="ok">✔</span><br><small>(a×b)×c = a×(b×c)</small></td>
+                            <td><span class="no">✘</span><br><small>(8÷4)÷2 = 1<br>8÷(4÷2) = 4</small></td></tr>
+                        <tr><th scope="row">Etkisiz eleman<br><small>sayıyı değiştirmeyen sayı</small></th>
+                            <td><span class="ok">0</span><br><small>a + 0 = a</small></td>
+                            <td><span class="no">yok</span><br><small>a − 0 = a ama<br>0 − a ≠ a</small></td>
+                            <td><span class="ok">1</span><br><small>a × 1 = a</small></td>
+                            <td><span class="no">yok</span><br><small>a ÷ 1 = a ama<br>1 ÷ a ≠ a</small></td></tr>
+                        <tr><th scope="row">Ters eleman<br><small>etkisiz elemanı veren</small></th>
+                            <td class="sol" colspan="2"><b>Karşıt (toplamaya göre ters):</b> a + (−a) = 0.<br>ℤ, ℚ, ℝ’de her sayının karşıtı var. ℕ’de yok (2’nin karşıtı −2 doğal sayı değil; 0 hariç).</td>
+                            <td class="sol" colspan="2"><b>Ters (çarpmaya göre ters):</b> a × (1/a) = 1, a ≠ 0.<br>ℚ ve ℝ’de 0 dışında her sayının tersi var. ℤ’de yok (2’nin tersi 1/2 tam sayı değil; yalnız 1 ve −1’in tersi tam sayı).</td></tr>
+                        <tr><th scope="row">Yutan eleman</th>
+                            <td colspan="2">—</td>
+                            <td class="sol" colspan="2"><b>0</b>: a × 0 = 0 (her sayıyla çarpılınca 0 olur). 0 ÷ a = 0 (a ≠ 0). a ÷ 0 tanımsızdır!</td></tr>
+                        <tr><th scope="row">Dağılma</th>
+                            <td class="sol" colspan="4">Çarpma, toplama ve çıkarma üzerine dağılır: <b>a × (b + c) = a×b + a×c</b> ve <b>a × (b − c) = a×b − a×c</b>. Örnek: 4 × (10 − 3) = 40 − 12 = 28.<br>
+                                Bölme, <b>sağdan</b> dağılır: (b + c) ÷ a = b÷a + c÷a (a ≠ 0). Ama <b>soldan dağılmaz</b>: a ÷ (b + c) ≠ a÷b + a÷c (12 ÷ (2+4) = 2 fakat 12÷2 + 12÷4 = 9).</td></tr>
+                    </tbody></table></div>
+
+                <h3>3) Özel durumlar ve sık sorulan sorular</h3>
+                <div class="iki-kolon">
+                    <div class="mini"><h4>0 ile işlemler</h4><ul class="liste"><li>a + 0 = a, a − 0 = a, 0 − a = −a</li><li>a × 0 = 0</li><li>0 ÷ a = 0 (a ≠ 0)</li><li><b>a ÷ 0 tanımsız</b> (0 ÷ 0 de)</li></ul></div>
+                    <div class="mini"><h4>1 ve −1 ile işlemler</h4><ul class="liste"><li>a × 1 = a ; a ÷ 1 = a</li><li>a × (−1) = −a (karşıtı)</li><li>a ÷ a = 1 (a ≠ 0)</li></ul></div>
+                    <div class="mini"><h4>Üs (kuvvet)</h4><ul class="liste"><li>aⁿ = a × a × … × a (n tane)</li><li>(−2)² = 4 ama −2² = −4</li><li>Çift kuvvet negatif olmaz; (−2)³ = −8</li><li>a⁰ = 1 (a ≠ 0), a¹ = a</li></ul></div>
+                    <div class="mini"><h4>Karekök</h4><ul class="liste"><li>√a, karesi a olan <b>negatif olmayan</b> sayı: √49 = 7 (−7 değil)</li><li>√(a²) = |a| ; √(−4) reel değil</li><li>√a × √b = √(a·b), a,b ≥ 0</li></ul></div>
+                </div>
+                <h3>4) Sıralama ve işlemler</h3>
+                <ul class="liste">
+                    <li>Eşitsizliğin iki yanına <b>aynı sayıyı eklersen ya da çıkarırsan</b> yön değişmez: 2 &lt; 5 ⇒ 2 + (−3) &lt; 5 + (−3) (yani −1 &lt; 2).</li>
+                    <li><b>Pozitif</b> bir sayıyla çarpınca/bölünce yön değişmez: 2 &lt; 5 ⇒ 2×3 &lt; 5×3.</li>
+                    <li><b>Negatif</b> bir sayıyla çarpınca/bölünce <b>yön değişir</b>: 2 &lt; 5 ⇒ 2×(−3) &gt; 5×(−3) (yani −6 &gt; −15).</li>
+                </ul>
+                <h3>5) Rasyonel / irrasyonel işlem sonucu türü</h3>
+                <div class="tablo-sar"><table>
+                    <thead><tr><th>İşlem</th><th>Sonuç</th><th>Örnek</th></tr></thead>
+                    <tbody>
+                        <tr><td class="sol">Rasyonel ⊕ Rasyonel</td><td>Her zaman rasyonel (⊕ = +, −, ×, ÷ ; bölen ≠ 0)</td><td class="sol">1/2 + 1/3 = 5/6</td></tr>
+                        <tr><td class="sol">Rasyonel ± İrrasyonel</td><td>Her zaman irrasyonel</td><td class="sol">1 + √2, 3 − π</td></tr>
+                        <tr><td class="sol">Rasyonel (≠ 0) × / ÷ İrrasyonel</td><td>Her zaman irrasyonel</td><td class="sol">3·√2, π/2</td></tr>
+                        <tr><td class="sol">0 × İrrasyonel</td><td>0 (rasyonel)</td><td class="sol">0 · √2 = 0</td></tr>
+                        <tr><td class="sol">İrrasyonel ⊕ İrrasyonel</td><td>Rasyonel de olabilir irrasyonel de</td><td class="sol">√2 − √2 = 0 ; √2 · √2 = 2 ; √2 + √3 irrasyonel</td></tr>
+                    </tbody></table></div>
+            </section>
+
+            <!-- ================= 6. İŞARET KURALLARI ================= -->
+            <section class="card" id="isaret">
+                <h2>± İşaret Kuralları (Tam ve Rasyonel Sayılar)</h2>
+                <div class="iki-kolon">
+                    <div class="mini"><h4>Toplama</h4>
+                        <ul class="liste">
+                            <li><b>Aynı işaretliler:</b> mutlak değerleri toplanır, ortak işaret yazılır. (−3) + (−4) = −7</li>
+                            <li><b>Zıt işaretliler:</b> mutlak değerlerin farkı alınır; <b>mutlak değeri büyük olanın işareti</b> yazılır. (−9) + 4 = −5 ; (−2) + 6 = 4</li>
+                            <li>Karşıtlar toplamı 0: 7 + (−7) = 0</li>
+                        </ul></div>
+                    <div class="mini"><h4>Çıkarma</h4>
+                        <ul class="liste">
+                            <li><b>Çıkarma = karşıtını toplama:</b> a − b = a + (−b)</li>
+                            <li>5 − (−3) = 5 + 3 = 8</li>
+                            <li>(−5) − (−3) = −5 + 3 = −2</li>
+                            <li>Sayı doğrusunda: a − b, a ile b arasındaki yönlü uzaklıktır.</li>
+                        </ul></div>
+                </div>
+                <div class="tablo-sar"><table>
+                    <thead><tr><th>Çarpma / Bölme</th><th>Sonucun işareti</th><th>Örnek</th></tr></thead>
+                    <tbody>
+                        <tr><td>(+) × (+) &nbsp;/&nbsp; (+) ÷ (+)</td><td class="ok">+</td><td class="sol">3 × 4 = 12 ; 12 ÷ 3 = 4</td></tr>
+                        <tr><td>(−) × (−) &nbsp;/&nbsp; (−) ÷ (−)</td><td class="ok">+</td><td class="sol">(−3) × (−4) = 12 ; (−12) ÷ (−3) = 4</td></tr>
+                        <tr><td>(+) × (−) &nbsp;/&nbsp; (−) × (+)</td><td class="no">−</td><td class="sol">3 × (−4) = −12 ; (−3) × 4 = −12</td></tr>
+                        <tr><td>(+) ÷ (−) &nbsp;/&nbsp; (−) ÷ (+)</td><td class="no">−</td><td class="sol">12 ÷ (−3) = −4 ; (−12) ÷ 3 = −4</td></tr>
+                    </tbody></table></div>
+                <div class="kutu bil"><b class="baslik">Aynı işaret → +, farklı işaret → −</b>
+                    Çarpmada ve bölmede “aynı işaret artı, farklı işaret eksi” demek yeterlidir. Çok sayıda çarpanda <b>negatiflerin sayısı çiftse sonuç +, tekse −</b>.
+                    Rasyonel sayılarda da aynıdır: (−2/3) × (3/4) = −1/2 ; (−1/2) ÷ (−1/4) = 2.</div>
+                <p class="lead">Dene: <a href="operations_interactive.html">➕ Kesir İşlemleri (negatif sayılarla)</a> • <a href="division_zero_interactive.html">🚫 Sıfıra Bölme</a></p>
+            </section>
+
+            <!-- ================= 7. ONDALIK AÇILIM ================= -->
+            <section class="card" id="ondalik">
+                <h2>0,3̅ Ondalık Açılım: Biten, Devreden, Devretmeyen</h2>
+                <div class="tablo-sar"><table>
+                    <thead><tr><th>Tür</th><th>Örnek</th><th>Hangi küme?</th></tr></thead>
+                    <tbody>
+                        <tr><td>Biten (sonlu) ondalık</td><td class="sol">0,25 = 1/4 ; −1,5 = −3/2</td><td>Rasyonel</td></tr>
+                        <tr><td>Devirli ondalık</td><td class="sol">0,(3) = 1/3 ; 0,1(6) = 1/6 ; 0,(142857) = 1/7</td><td>Rasyonel</td></tr>
+                        <tr><td>Sonsuz ve devirsiz ondalık</td><td class="sol">√2 = 1,41421356… ; π = 3,14159265…</td><td>İrrasyonel</td></tr>
+                    </tbody></table></div>
+                <h3>Kesir ↔ Ondalık</h3>
+                <ul class="liste">
+                    <li><b>Kesirden ondalığa:</b> Payı paydaya böl (uzun bölme). Kalanlar tekrar edince basamaklar devreder. 1 ÷ 3 = 0,333… = 0,(3).</li>
+                    <li><b>Hangi kesir biter?</b> Kesir sadeleşmiş olsun. <b>Paydanın asal çarpanları yalnız 2 ve/veya 5</b> ise ondalık açılım biter (çünkü payda 10’un kuvvetine genişletilebilir); aksi hâlde devirlidir. 3/8 = 0,375 (8 = 2³) • 7/20 = 0,35 • <b>1/6 = 0,1(6)</b> (6 = 2 × 3, asal çarpan 3 var) • 1/7 devirli.</li>
+                    <li><b>Biten ondalıktan kesre:</b> 0,25 = 25/100 = 1/4.</li>
+                    <li><b>Devirli ondalıktan kesre:</b>
+                        <div class="formul">0,(3): x = 0,333… → 10x = 3,333… → 10x − x = 3 → 9x = 3 → x = 1/3<br>
+                            0,(45) = 45/99 = 5/11 &nbsp;|&nbsp; 0,1(6) = (16 − 1)/90 = 15/90 = 1/6<br>
+                            Kural: (virgülden sonraki tüm rakamlardan oluşan sayı − devretmeyen kısımdan oluşan sayı) / (devreden kadar 9, devretmeyen kadar 0)</div></li>
+                    <li><b>İlginç:</b> 0,(9) = 1. Çünkü 1/3 = 0,(3) ve 3 × 1/3 = 1 olduğundan 3 × 0,(3) = 0,(9) = 1.</li>
+                </ul>
+                <div class="kutu dikkat"><b class="baslik">3,14 ve 22/7 neden π değil?</b>
+                    3,14 = 314/100 ve 22/7 = 3,(142857) birer rasyonel sayıdır; π ise irrasyoneldir. Bunlar π’ye yakın birer <b>yaklaşık değerdir</b>. π’nin ilk basamakları 3,14159265358979… olarak sonsuza gider.</div>
+                <p class="lead">Kendi sayını “🕵️ Sayı Dedektifi”ne yazarak ondalık açılımını görebilirsin.</p>
+            </section>
+
+            <!-- ================= 8. QUIZ ================= -->
+            <section class="card" id="quiz">
+                <h2>🎯 Hızlı Kontrol</h2>
+                <p class="lead">Öğrendiklerini 12 kısa soruyla kontrol et. Yanlış yaptığında nedenini oku; tekrar denemek için sayfayı yenile.</p>
+                <div id="quizSkor" aria-live="polite">Cevaplanan: 0/12 — Doğru: 0</div>
+                <div id="quizAlan"></div>
+            </section>
+
+            <!-- ================= 9. SIK HATALAR ================= -->
+            <section class="card" id="hatalar">
+                <h2>⚠️ Sık Yapılan Hatalar</h2>
+                <div class="tablo-sar"><table>
+                    <thead><tr><th>❌ Yanlış inanış</th><th>✔ Doğrusu</th></tr></thead>
+                    <tbody>
+                        <tr><td class="sol">“0 bir sayma sayısıdır.”</td><td class="sol">0 doğal sayıdır; sayma sayıları 1’den başlar.</td></tr>
+                        <tr><td class="sol">“0 pozitiftir (ya da negatiftir).”</td><td class="sol">0 ne pozitif ne negatiftir.</td></tr>
+                        <tr><td class="sol">“−a her zaman negatiftir.”</td><td class="sol">−a, a’nın karşıtıdır. a = −3 ise −a = 3 pozitiftir.</td></tr>
+                        <tr><td class="sol">“−9 &gt; −2, çünkü 9 &gt; 2.”</td><td class="sol">Negatiflerde mutlak değer büyüdükçe sayı küçülür: −9 &lt; −2.</td></tr>
+                        <tr><td class="sol">“5/0 = 0” ya da “5/0 = 5”.</td><td class="sol">Payda 0 olamaz; 5/0 tanımsızdır.</td></tr>
+                        <tr><td class="sol">“−3/4, rasyonel sayı değildir; çünkü negatif.”</td><td class="sol">Pay tam sayı (−3), payda 0 değil (4): rasyoneldir.</td></tr>
+                        <tr><td class="sol">“Rasyonel sayılar kesirlerdir, tam sayılar rasyonel değildir.”</td><td class="sol">Tam sayı = paydası 1 olan rasyonel sayı: 5 = 5/1. ℤ ⊂ ℚ.</td></tr>
+                        <tr><td class="sol">“0,333… irrasyoneldir çünkü bitmiyor.”</td><td class="sol">Devrediyor → 1/3 → rasyonel. İrrasyonelde <i>hem sonsuz hem devirsiz</i> olmalı.</td></tr>
+                        <tr><td class="sol">“√9 irrasyoneldir, kök işareti var.”</td><td class="sol">√9 = 3 rasyoneldir. √n, n tam kare değilse irrasyoneldir.</td></tr>
+                        <tr><td class="sol">“π = 3,14 = 22/7.”</td><td class="sol">π irrasyoneldir; 3,14 ve 22/7 yaklaşık değerlerdir.</td></tr>
+                        <tr><td class="sol">“İki irrasyonelin çarpımı irrasyoneldir.”</td><td class="sol">√2 × √2 = 2 rasyoneldir.</td></tr>
+                        <tr><td class="sol">“1 asal sayıdır.”</td><td class="sol">Asalın tam iki çarpanı olur; 1’in tek çarpanı var.</td></tr>
+                        <tr><td class="sol">“Bütün asal sayılar tektir.”</td><td class="sol">2, hem asal hem çift olan tek sayıdır.</td></tr>
+                        <tr><td class="sol">“a − b = b − a” ve “a ÷ b = b ÷ a”.</td><td class="sol">Çıkarma ve bölmede sıra önemlidir (değişme özelliği yoktur).</td></tr>
+                        <tr><td class="sol">“−2² = 4”</td><td class="sol">−2² = −(2²) = −4 ; (−2)² = 4.</td></tr>
+                        <tr><td class="sol">“−5 − 3 = −2”</td><td class="sol">−5 − 3 = −5 + (−3) = −8.</td></tr>
+                    </tbody></table></div>
+            </section>
+
+            <!-- ================= 10. SÖZLÜK ================= -->
+            <section class="card" id="sozluk">
+                <h2>📖 Mini Sözlük</h2>
+                <div class="tablo-sar"><table>
+                    <thead><tr><th>Terim</th><th>Anlamı</th></tr></thead>
+                    <tbody>
+                        <tr><th scope="row">Sayma sayısı (ℕ⁺)</th><td class="sol">1, 2, 3, … sayıları</td></tr>
+                        <tr><th scope="row">Doğal sayı (ℕ)</th><td class="sol">0, 1, 2, 3, … sayıları</td></tr>
+                        <tr><th scope="row">Tam sayı (ℤ)</th><td class="sol">…, −2, −1, 0, 1, 2, … sayıları</td></tr>
+                        <tr><th scope="row">Rasyonel sayı (ℚ)</th><td class="sol">a/b biçiminde yazılabilen sayı (a, b tam sayı, b ≠ 0)</td></tr>
+                        <tr><th scope="row">İrrasyonel sayı (ℚ′)</th><td class="sol">a/b biçiminde yazılamayan sayı; ondalık açılımı sonsuz ve devirsiz</td></tr>
+                        <tr><th scope="row">Reel (gerçel) sayı (ℝ)</th><td class="sol">Rasyonel ve irrasyonel sayıların tamamı; sayı doğrusunun noktaları</td></tr>
+                        <tr><th scope="row">Pozitif / Negatif</th><td class="sol">Sıfırdan büyük / sıfırdan küçük</td></tr>
+                        <tr><th scope="row">Karşıt sayı</th><td class="sol">Toplamları 0 olan iki sayıdan her biri: 5 ve −5</td></tr>
+                        <tr><th scope="row">Ters (çarpmaya göre)</th><td class="sol">Çarpımları 1 olan iki sayıdan her biri: 4 ve 1/4 (0’ın tersi yoktur)</td></tr>
+                        <tr><th scope="row">Mutlak değer</th><td class="sol">Sayının sayı doğrusunda 0’a uzaklığı: |−7| = 7</td></tr>
+                        <tr><th scope="row">Pay / Payda</th><td class="sol">Kesrin üstündeki / altındaki sayı (payda 0 olamaz)</td></tr>
+                        <tr><th scope="row">Denk kesir</th><td class="sol">Aynı değeri gösteren kesirler: 1/2 = 2/4</td></tr>
+                        <tr><th scope="row">Sadeleştirme</th><td class="sol">Pay ve paydayı ortak bir çarpana bölme</td></tr>
+                        <tr><th scope="row">Devirli ondalık</th><td class="sol">Basamakları belli bir düzende sürekli tekrar eden ondalık açılım: 0,(3)</td></tr>
+                        <tr><th scope="row">Çarpan (bölen)</th><td class="sol">Bir sayıyı kalansız bölen sayı</td></tr>
+                        <tr><th scope="row">Kat</th><td class="sol">Bir sayının doğal sayılarla çarpımı</td></tr>
+                        <tr><th scope="row">Asal sayı</th><td class="sol">Tam iki farklı çarpanı olan doğal sayı</td></tr>
+                        <tr><th scope="row">Bileşik sayı</th><td class="sol">İkiden çok çarpanı olan doğal sayı</td></tr>
+                        <tr><th scope="row">Aralarında asal</th><td class="sol">1’den başka ortak böleni olmayan sayılar</td></tr>
+                        <tr><th scope="row">EBOB / EKOK</th><td class="sol">En büyük ortak bölen / en küçük ortak kat</td></tr>
+                        <tr><th scope="row">Kapalılık</th><td class="sol">Kümedeki iki sayıyla işlem yapınca sonucun yine aynı kümede kalması</td></tr>
+                        <tr><th scope="row">Karşı örnek</th><td class="sol">Bir iddianın yanlış olduğunu gösteren tek bir örnek</td></tr>
+                        <tr><th scope="row">Tam kare</th><td class="sol">Bir doğal sayının karesi olan sayı: 1, 4, 9, 16, 25, …</td></tr>
+                        <tr><th scope="row">Alt küme (⊂)</th><td class="sol">Elemanları başka bir kümenin de elemanı olan küme: ℤ ⊂ ℚ</td></tr>
+                    </tbody></table></div>
+                <div class="kutu bil"><b class="baslik">📚 Kaynaklar</b>
+                    MEB 6. Sınıf Matematik 1 (çarpanlar, katlar, bölünebilme, asal sayılar, ortak bölen/kat) • MEB 7. Sınıf Matematik 1 (tam sayılar, rasyonel sayılar, devirli ondalık gösterim, mutlak değer) •
+                    8. sınıf ve lise müfredatından irrasyonel/reel sayılar (ileri okuma), genel kümeler ve kapalılık kavramı üzerine açık eğitim kaynakları.</div>
+            </section>
+        </main>
+
+        <footer>
+            <p><a href="index.html">← Ana sayfaya dön</a> | Hazırlayan: Ben 💜</p>
+        </footer>
+    </div>
+    <script src="sayilar_rehberi.js"></script>
+</body>
+
+</html>

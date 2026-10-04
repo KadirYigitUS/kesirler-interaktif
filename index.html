@@ -199,6 +199,39 @@
             border-bottom: 5px solid #e74c3c;
         }
 
+        .card-rehber .card-icon {
+            color: #8e44ad;
+        }
+
+        .card-rehber:hover {
+            border-bottom: 5px solid #8e44ad;
+        }
+
+        .rehber-ozel {
+            max-width: 900px;
+            margin: 0 auto 10px;
+        }
+
+        .rehber-ozel .card {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f1ecff 100%);
+            border: 3px solid #8e44ad;
+        }
+
+        .rehber-ozel .card-icon {
+            margin: 0;
+            font-size: 5em;
+        }
+
+        @media (max-width: 600px) {
+            .rehber-ozel .card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
         footer {
             text-align: center;
             color: rgba(255, 255, 255, 0.7);
@@ -226,6 +259,33 @@
                 👩‍🎓 Öğrenci: <strong>Uzay</strong> | 📚 Konu: Kesirler ve Rasyonel Sayılar (negatifler dahil, −50 … +50)
             </div>
         </header>
+
+        <h2 class="section-title">📘 Önce Buradan Başla: Sayı Rehberi</h2>
+        <div class="section-divider"></div>
+
+        <div class="rehber-ozel">
+            <div class="card-wrapper">
+                <span class="card-new">YENİ!</span>
+                <a href="sayilar_rehberi.html" class="card card-rehber" id="rehberKarti">
+                    <div class="card-icon">📘</div>
+                    <div>
+                        <h2>Sayıların Dünyası — Başvuru Rehberi</h2>
+                        <p>
+                            Sayma sayıları, doğal sayılar, tam sayılar (pozitif ve negatif), rasyonel ve irrasyonel sayılar,
+                            reel sayılar; tanımlar, örnekler, dört işlemin özellikleri, işaret kuralları, asal sayılar ve
+                            bölünebilme. Takıldığında buraya dön!
+                        </p>
+                        <div class="card-features">
+                            <span class="feature-tag">🗺️ Sayı Haritası</span>
+                            <span class="feature-tag">🕵️ Sayı Dedektifi</span>
+                            <span class="feature-tag">➕ İşlem Özellikleri</span>
+                            <span class="feature-tag">🧩 Asal &amp; EBOB-EKOK</span>
+                            <span class="feature-tag">🎯 Kontrol Et</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
 
         <h2 class="section-title">🎮 İnteraktif Araçlar</h2>
         <div class="section-divider"></div>
