@@ -300,6 +300,32 @@
             font-size: 1.1em;
             line-height: 1.6;
         }
+
+        .range-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 6px 0 10px;
+            color: #555;
+            font-size: .9em;
+        }
+
+        .range-btn {
+            padding: 4px 12px;
+            border: 2px solid #3498db;
+            border-radius: 14px;
+            background: white;
+            color: #3498db;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .range-btn.active,
+        .range-btn:hover {
+            background: #3498db;
+            color: white;
+        }
     </style>
 </head>
 
@@ -329,7 +355,13 @@
                 <h3 style="text-align: center; margin-bottom: 20px;">🎮 Değerleri Keşfet</h3>
 
                 <div class="slider-container">
-                    <label>📏 x değeri (bölen):</label>
+                    <label>📏 x değeri (bölen) — negatif de olabilir:</label>
+                    <div class="range-row" id="rangeRow">Aralık:
+                        <button class="range-btn active" data-r="5">±5</button>
+                        <button class="range-btn" data-r="10">±10</button>
+                        <button class="range-btn" data-r="25">±25</button>
+                        <button class="range-btn" data-r="50">±50</button>
+                    </div>
                     <input type="range" id="xSlider" min="-5" max="5" step="0.1" value="2">
                     <div class="slider-value">x = <span id="xValue">2</span></div>
                 </div>
@@ -337,6 +369,7 @@
                 <div class="result-display">
                     <div class="equation">y = 1 / <span id="xInEquation">2</span></div>
                     <div class="result-value" id="yResult">0.5</div>
+                    <div id="signNote" style="margin-top:8px;color:#555;font-weight:600"></div>
                 </div>
 
                 <div style="text-align: center; margin-top: 20px;">
@@ -402,12 +435,14 @@
         </div>
     </div>
 
+    <script src="rasyonel.js"></script>
     <script>
         const canvas = document.getElementById('graphCanvas');
         const ctx = canvas.getContext('2d');
         const xSlider = document.getElementById('xSlider');
 
         let currentX = 2;
+        let xRange = 5;
         let animationId = null;
 
         function drawGraph() {
@@ -415,135 +450,86 @@
 
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const scale = 30;
+            const xScale = (centerX - 10) / xRange;   // x ekseni seçilen aralığa göre ölçeklenir
+            const yScale = 30;                         // y ekseni ±6 gösterir
+            const F = '12px "Segoe UI", Tahoma, Arial, sans-serif';
+            const sg = v => v < 0 ? '\u2212' + Math.abs(v) : String(v);
+            const gridStep = Math.max(1, Rasyonel.niceStep(24 / xScale));
+            const labelStep = Math.max(1, Rasyonel.niceStep(40 / xScale));
 
             // Izgara
             ctx.strokeStyle = '#ecf0f1';
             ctx.lineWidth = 1;
-
-            for (let i = -10; i <= 10; i++) {
-                // Dikey çizgiler
-                ctx.beginPath();
-                ctx.moveTo(centerX + i * scale, 0);
-                ctx.lineTo(centerX + i * scale, canvas.height);
-                ctx.stroke();
-
-                // Yatay çizgiler
-                ctx.beginPath();
-                ctx.moveTo(0, centerY + i * scale);
-                ctx.lineTo(canvas.width, centerY + i * scale);
-                ctx.stroke();
+            for (let v = -Math.floor(xRange / gridStep) * gridStep; v <= xRange; v += gridStep) {
+                ctx.beginPath(); ctx.moveTo(centerX + v * xScale, 0); ctx.lineTo(centerX + v * xScale, canvas.height); ctx.stroke();
+            }
+            for (let i = -7; i <= 7; i++) {
+                ctx.beginPath(); ctx.moveTo(0, centerY + i * yScale); ctx.lineTo(canvas.width, centerY + i * yScale); ctx.stroke();
             }
 
             // Eksenler
             ctx.strokeStyle = '#2c3e50';
             ctx.lineWidth = 2;
-
-            // X ekseni
-            ctx.beginPath();
-            ctx.moveTo(0, centerY);
-            ctx.lineTo(canvas.width, centerY);
-            ctx.stroke();
-
-            // Y ekseni
-            ctx.beginPath();
-            ctx.moveTo(centerX, 0);
-            ctx.lineTo(centerX, canvas.height);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, centerY); ctx.lineTo(canvas.width, centerY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(centerX, 0); ctx.lineTo(centerX, canvas.height); ctx.stroke();
 
             // Eksen etiketleri
-            ctx.font = '12px Segoe UI';
+            ctx.font = F;
             ctx.fillStyle = '#2c3e50';
+            ctx.textAlign = 'left';
             ctx.fillText('x', canvas.width - 15, centerY - 10);
             ctx.fillText('y', centerX + 10, 15);
             ctx.fillText('0', centerX + 5, centerY + 15);
 
             // Sayı etiketleri
-            for (let i = -5; i <= 5; i++) {
-                if (i !== 0) {
-                    ctx.fillText(i.toString(), centerX + i * scale - 5, centerY + 20);
-                    ctx.fillText(i.toString(), centerX + 10, centerY - i * scale + 5);
-                }
+            ctx.textAlign = 'center';
+            for (let v = -Math.floor(xRange / labelStep) * labelStep; v <= xRange; v += labelStep) {
+                if (v !== 0) ctx.fillText(sg(v), centerX + v * xScale, centerY + 20);
+            }
+            ctx.textAlign = 'left';
+            for (let i = -6; i <= 6; i++) {
+                if (i !== 0) ctx.fillText(sg(i), centerX + 8, centerY - i * yScale + 4);
             }
 
-            // y = 1/x grafiği
-            ctx.strokeStyle = '#3498db';
-            ctx.lineWidth = 3;
-
-            // Pozitif taraf
-            ctx.beginPath();
-            let started = false;
-            for (let px = 0.01; px <= 10; px += 0.05) {
-                const py = 1 / px;
-                const screenX = centerX + px * scale;
-                const screenY = centerY - py * scale;
-
-                if (screenY > 0 && screenY < canvas.height) {
-                    if (!started) {
-                        ctx.moveTo(screenX, screenY);
-                        started = true;
-                    } else {
-                        ctx.lineTo(screenX, screenY);
+            // y = 1/x grafiği (geometrik örnekleme: 0'a yaklaşırken sık)
+            function branch(sign, color) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                let started = false;
+                for (let ax = 0.004; ax <= xRange; ax *= 1.01) {
+                    const px = sign * ax, py = 1 / px;
+                    const sx = centerX + px * xScale, sy = centerY - py * yScale;
+                    if (sy > 0 && sy < canvas.height) {
+                        if (!started) { ctx.moveTo(sx, sy); started = true; } else { ctx.lineTo(sx, sy); }
                     }
                 }
+                ctx.stroke();
             }
-            ctx.stroke();
-
-            // Negatif taraf
-            ctx.strokeStyle = '#e74c3c';
-            ctx.beginPath();
-            started = false;
-            for (let px = -10; px <= -0.01; px += 0.05) {
-                const py = 1 / px;
-                const screenX = centerX + px * scale;
-                const screenY = centerY - py * scale;
-
-                if (screenY > 0 && screenY < canvas.height) {
-                    if (!started) {
-                        ctx.moveTo(screenX, screenY);
-                        started = true;
-                    } else {
-                        ctx.lineTo(screenX, screenY);
-                    }
-                }
-            }
-            ctx.stroke();
+            branch(1, '#3498db');
+            branch(-1, '#e74c3c');
 
             // Asimptot (x = 0 çizgisi)
             ctx.strokeStyle = '#e74c3c';
             ctx.lineWidth = 2;
             ctx.setLineDash([10, 5]);
-            ctx.beginPath();
-            ctx.moveTo(centerX, 0);
-            ctx.lineTo(centerX, canvas.height);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(centerX, 0); ctx.lineTo(centerX, canvas.height); ctx.stroke();
             ctx.setLineDash([]);
 
             // Mevcut nokta
             if (Math.abs(currentX) > 0.01) {
                 const currentY = 1 / currentX;
-                const screenX = centerX + currentX * scale;
-                const screenY = centerY - currentY * scale;
+                const screenX = centerX + currentX * xScale;
+                const screenY = centerY - currentY * yScale;
 
                 if (screenY > 0 && screenY < canvas.height && screenX > 0 && screenX < canvas.width) {
-                    // Dikey ve yatay çizgiler
                     ctx.strokeStyle = 'rgba(231, 76, 60, 0.5)';
                     ctx.lineWidth = 1;
                     ctx.setLineDash([5, 3]);
-
-                    ctx.beginPath();
-                    ctx.moveTo(screenX, screenY);
-                    ctx.lineTo(screenX, centerY);
-                    ctx.stroke();
-
-                    ctx.beginPath();
-                    ctx.moveTo(screenX, screenY);
-                    ctx.lineTo(centerX, screenY);
-                    ctx.stroke();
-
+                    ctx.beginPath(); ctx.moveTo(screenX, screenY); ctx.lineTo(screenX, centerY); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(screenX, screenY); ctx.lineTo(centerX, screenY); ctx.stroke();
                     ctx.setLineDash([]);
 
-                    // Nokta
                     ctx.beginPath();
                     ctx.arc(screenX, screenY, 10, 0, Math.PI * 2);
                     ctx.fillStyle = currentX > 0 ? '#3498db' : '#e74c3c';
@@ -552,10 +538,12 @@
                     ctx.lineWidth = 2;
                     ctx.stroke();
 
-                    // Etiket
-                    ctx.font = 'bold 14px Segoe UI';
+                    ctx.font = 'bold 14px "Segoe UI", Tahoma, Arial, sans-serif';
                     ctx.fillStyle = '#2c3e50';
-                    ctx.fillText(`(${currentX.toFixed(2)}, ${currentY.toFixed(2)})`, screenX + 15, screenY - 10);
+                    const label = `(${currentX.toFixed(2).replace('-', '\u2212')}, ${currentY.toFixed(2).replace('-', '\u2212')})`;
+                    const w = ctx.measureText(label).width;
+                    ctx.textAlign = 'left';
+                    ctx.fillText(label, screenX + 15 + w > canvas.width ? screenX - 15 - w : screenX + 15, screenY - 10);
                 }
             }
         }
@@ -563,8 +551,8 @@
         function updateDisplay() {
             currentX = parseFloat(xSlider.value);
 
-            document.getElementById('xValue').textContent = currentX.toFixed(2);
-            document.getElementById('xInEquation').textContent = currentX.toFixed(2);
+            document.getElementById('xValue').textContent = currentX.toFixed(2).replace('-', '\u2212');
+            document.getElementById('xInEquation').textContent = currentX < 0 ? '(' + currentX.toFixed(2).replace('-', '\u2212') + ')' : currentX.toFixed(2);
 
             const yResult = document.getElementById('yResult');
 
@@ -573,9 +561,12 @@
                 yResult.className = 'result-value warning';
             } else {
                 const y = 1 / currentX;
-                yResult.textContent = y.toFixed(4);
+                yResult.textContent = y.toFixed(4).replace('-', '\u2212');
                 yResult.className = 'result-value';
             }
+            document.getElementById('signNote').textContent = Math.abs(currentX) < 0.01
+                ? '0\'a bölme tanımsızdır: x = 0 için y yoktur.'
+                : (currentX < 0 ? 'x negatif olduğu için 1 ÷ x de negatiftir (zıt işaretlerin bölümü negatif).' : 'x pozitif olduğu için 1 ÷ x de pozitiftir.');
 
             updatePizzaDemo();
             updateTable();
@@ -587,8 +578,12 @@
             const result = document.getElementById('pizzaResult');
 
             let peopleCount = Math.max(0, Math.round(Math.abs(currentX)));
-            if (currentX < 0) peopleCount = 0;
-
+            if (currentX < 0) {
+                people.innerHTML = '<span style="font-size: 2.2em; color: #8e44ad;">\u2796👤</span>';
+                result.textContent = 'Kişi sayısı negatif olamaz; ama 1 ÷ x sayı olarak yine hesaplanır (negatif)';
+                result.style.background = '#8e44ad';
+                return;
+            }
             if (peopleCount === 0) {
                 people.innerHTML = '<span style="font-size: 3em; color: #e74c3c;">❓</span>';
                 result.textContent = 'Kimse yok!';
@@ -615,28 +610,27 @@
 
         function updateTable() {
             const tbody = document.querySelector('#valueTable tbody');
-
+            const M = '\u2212';
             const values = [
-                { x: 10, desc: 'Normal' },
-                { x: 5, desc: 'Normal' },
-                { x: 2, desc: 'Normal' },
-                { x: 1, desc: 'Normal' },
-                { x: 0.5, desc: 'Büyüyor' },
-                { x: 0.1, desc: 'Hızla büyüyor' },
-                { x: 0.01, desc: 'Çok büyük!' },
-                { x: 0.001, desc: 'Dev gibi!' },
-                { x: 0, desc: 'İMKANSIZ!' }
+                { x: 10, desc: 'Normal' }, { x: 5, desc: 'Normal' }, { x: 2, desc: 'Normal' }, { x: 1, desc: 'Normal' },
+                { x: 0.5, desc: 'Büyüyor' }, { x: 0.1, desc: 'Hızla büyüyor' }, { x: 0.01, desc: 'Çok büyük!' },
+                { x: 0.001, desc: 'Dev gibi!' }, { x: 0, desc: 'İMKANSIZ!' },
+                { x: -0.001, desc: 'Çok küçük (negatif dev)' }, { x: -0.01, desc: 'Çok küçük (negatif)' },
+                { x: -0.1, desc: 'Hızla küçülüyor' }, { x: -0.5, desc: 'Küçülüyor (−∞ yönünde)' },
+                { x: -1, desc: 'Normal' }, { x: -2, desc: 'Normal' }, { x: -5, desc: 'Normal' }, { x: -10, desc: 'Normal' }
             ];
+            const f = v => (v < 0 ? M : '') + Math.abs(v);
 
             tbody.innerHTML = values.map(v => {
-                const isCurrent = Math.abs(v.x - Math.abs(currentX)) < 0.05;
+                const isCurrent = Math.abs(v.x - currentX) < 0.05 && v.x !== 0;
                 const isZero = v.x === 0;
-                const y = v.x === 0 ? '∞?' : (1 / v.x).toFixed(v.x < 0.1 ? 0 : 2);
+                const yv = v.x === 0 ? null : 1 / v.x;
+                const y = v.x === 0 ? '∞?' : f(+yv.toFixed(Math.abs(v.x) < 0.1 ? 0 : 2));
 
                 return `
                     <tr class="${isCurrent ? 'current' : ''} ${isZero ? 'warning' : ''}">
-                        <td>${v.x}</td>
-                        <td>1 / ${v.x}</td>
+                        <td>${f(v.x)}</td>
+                        <td>1 / ${v.x < 0 ? '(' + f(v.x) + ')' : f(v.x)}</td>
                         <td>${isZero ? 'TANIMSIZ' : y}</td>
                         <td>${v.desc}</td>
                     </tr>
@@ -647,7 +641,7 @@
         function approachZero(direction) {
             if (animationId) cancelAnimationFrame(animationId);
 
-            const startX = direction === 'positive' ? 5 : -5;
+            const startX = direction === 'positive' ? Math.min(5, xRange) : -Math.min(5, xRange);
             const targetX = direction === 'positive' ? 0.1 : -0.1;
             const duration = 3000;
             const startTime = Date.now();
@@ -689,6 +683,14 @@
         }
 
         xSlider.addEventListener('input', updateDisplay);
+        document.querySelectorAll('.range-btn').forEach(b => b.onclick = () => {
+            xRange = Number(b.dataset.r);
+            xSlider.min = -xRange; xSlider.max = xRange;
+            if (Math.abs(currentX) > xRange) xSlider.value = currentX = Math.sign(currentX) * xRange;
+            document.querySelectorAll('.range-btn').forEach(o => o.classList.toggle('active', o === b));
+            updateDisplay();
+        });
+        window.DivZeroTool = { setRange: r => document.querySelector('.range-btn[data-r="' + r + '"]').click(), getRange: () => xRange };
 
         // İlk yükleme
         updateDisplay();

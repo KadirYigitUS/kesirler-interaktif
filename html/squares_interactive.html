@@ -370,6 +370,23 @@
         .btn-5 {
             background: #f39c12;
         }
+
+        .grid-cell.negative {
+            background: repeating-linear-gradient(45deg, #e8daef, #e8daef 8px, #d2b4de 8px, #d2b4de 16px);
+            color: #8e44ad;
+            border: 2px dashed #8e44ad;
+        }
+
+        .visual-bar-fill.neg {
+            background: linear-gradient(to right, #8e44ad, #c39bd3) !important;
+        }
+
+        .neg-note {
+            text-align: center;
+            color: #8e44ad;
+            font-weight: 600;
+            margin: 8px 0;
+        }
     </style>
 </head>
 
@@ -433,10 +450,10 @@
                 </div>
 
                 <div class="control-group">
-                    <label>🎨 Seçili Kare Sayısı</label>
+                    <label>🎨 Seçili Kare Sayısı (negatif = borç kare)</label>
                     <div class="slider-container">
-                        <span>0</span>
-                        <input type="range" id="selectedSlider" min="0" max="8" value="4">
+                        <span id="minSelected">−8</span>
+                        <input type="range" id="selectedSlider" min="-8" max="8" step="1" value="4" aria-label="Seçili kare sayısı; negatif değerler borç karedir">
                         <span id="maxSelected">8</span>
                         <div class="value-badge" id="selectedValue">4</div>
                     </div>
@@ -450,7 +467,13 @@
             <button class="preset-btn btn-3" onclick="setPreset(2, 2, 3)">¾ Dörtte Üç</button>
             <button class="preset-btn btn-4" onclick="setPreset(3, 3, 6)">⅔ Üçte İki</button>
             <button class="preset-btn btn-5" onclick="setPreset(2, 5, 7)">7/10</button>
+            <button class="preset-btn btn-1" onclick="setPreset(1, 2, -1)">−½ Yarım Borç</button>
+            <button class="preset-btn btn-3" onclick="setPreset(2, 2, -3)">−¾</button>
+            <button class="preset-btn btn-4" onclick="setPreset(3, 3, -6)">−⅔</button>
+            <button class="preset-btn btn-5" onclick="flipSign()">🔄 İşareti değiştir (±)</button>
         </div>
+
+        <div class="neg-note" id="negNote" role="status"></div>
 
         <div class="info-cards">
             <div class="info-card blue">
@@ -472,7 +495,9 @@
         </div>
     </div>
 
+    <script src="rasyonel.js"></script>
     <script>
+        const R = Rasyonel;
         const grid = document.getElementById('squareGrid');
         const rowSlider = document.getElementById('rowSlider');
         const colSlider = document.getElementById('colSlider');
@@ -489,23 +514,24 @@
             cols = parseInt(colSlider.value);
             const total = rows * cols;
 
-            // Seçili sayıyı sınırla
+            // Seçili sayıyı sınırla: −toplam … +toplam
             selectedSlider.max = total;
+            selectedSlider.min = -total;
             document.getElementById('maxSelected').textContent = total;
-            if (selected > total) {
-                selected = total;
-                selectedSlider.value = selected;
-            }
+            document.getElementById('minSelected').textContent = '\u2212' + total;
+            selected = Math.max(-total, Math.min(total, selected));
+            selectedSlider.value = selected;
 
             grid.innerHTML = '';
             grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
             grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
+            const mag = Math.abs(selected);
             for (let i = 0; i < total; i++) {
                 const cell = document.createElement('div');
-                cell.className = 'grid-cell ' + (i < selected ? 'selected' : 'empty');
+                cell.className = 'grid-cell ' + (i < mag ? (selected < 0 ? 'negative' : 'selected') : 'empty');
                 cell.dataset.index = i;
-                cell.textContent = i + 1;
+                cell.textContent = (i < mag && selected < 0 ? '\u2212' : '') + (i + 1);
 
                 if (clickMode) {
                     cell.addEventListener('click', () => toggleCell(i));
@@ -519,74 +545,60 @@
 
         function toggleCell(index) {
             if (!clickMode) return;
-
-            const cells = document.querySelectorAll('.grid-cell');
-            const cell = cells[index];
-
-            if (cell.classList.contains('selected')) {
-                // Seçimi kaldır, sonraki seçilileri kaydır
-                for (let i = index; i < cells.length - 1; i++) {
-                    if (cells[i + 1].classList.contains('selected')) {
-                        cells[i].classList.add('selected');
-                        cells[i].classList.remove('empty');
-                    } else {
-                        cells[i].classList.remove('selected');
-                        cells[i].classList.add('empty');
-                    }
-                }
-                cells[cells.length - 1].classList.remove('selected');
-                cells[cells.length - 1].classList.add('empty');
-                selected--;
-            } else {
-                // Seç
-                selected = index + 1;
-                for (let i = 0; i < cells.length; i++) {
-                    if (i < selected) {
-                        cells[i].classList.add('selected');
-                        cells[i].classList.remove('empty');
-                    } else {
-                        cells[i].classList.remove('selected');
-                        cells[i].classList.add('empty');
-                    }
-                }
-            }
-
+            const sign = selected < 0 ? -1 : 1;
+            let mag = Math.abs(selected);
+            // Dolu kareye tıkla: o kareyi kaldır; boş kareye tıkla: oraya kadar doldur
+            mag = index < mag ? mag - 1 : index + 1;
+            selected = mag === 0 ? 0 : sign * mag;
             selectedSlider.value = selected;
-            updateDisplay();
+            createGrid();
+        }
+
+        function flipSign() {
+            selected = -selected;
+            selectedSlider.value = selected;
+            createGrid();
         }
 
         function updateDisplay() {
             const total = rows * cols;
-            const decimal = selected / total;
-            const percent = (decimal * 100).toFixed(1);
+            const q = R.make(selected, total);
+            const mag = Math.abs(selected);
+            const percentTxt = R.percentStr(q).replace(/^(\u2212?)(.*)%$/, '$1%$2');
+            const sgnSel = (selected < 0 ? '\u2212' : '') + mag;
 
             // Değerleri güncelle
             document.getElementById('rowValue').textContent = rows;
             document.getElementById('colValue').textContent = cols;
-            document.getElementById('selectedValue').textContent = selected;
+            document.getElementById('selectedValue').textContent = sgnSel;
 
-            document.getElementById('numDisplay').textContent = selected;
+            document.getElementById('numDisplay').textContent = sgnSel;
             document.getElementById('denDisplay').textContent = total;
-            document.getElementById('decimalDisplay').textContent = decimal.toFixed(3);
-            document.getElementById('percentDisplay').textContent = percent + '%';
+            document.getElementById('decimalDisplay').textContent = R.decimalStr(q);
+            document.getElementById('percentDisplay').textContent = percentTxt;
 
-            document.getElementById('barFill').style.width = percent + '%';
-            document.getElementById('barText').textContent = percent + '%';
+            const barPct = (mag / total * 100).toFixed(1);
+            document.getElementById('barFill').style.width = barPct + '%';
+            document.getElementById('barFill').classList.toggle('neg', selected < 0);
+            document.getElementById('barText').textContent = percentTxt;
 
             document.getElementById('totalSquares').textContent = total;
-            document.getElementById('selectedSquares').textContent = selected;
-            document.getElementById('emptySquares').textContent = total - selected;
+            document.getElementById('selectedSquares').textContent = sgnSel;
+            document.getElementById('emptySquares').textContent = total - mag;
 
             // Kesir türü
             let fractionType = '';
             if (selected === 0) {
                 fractionType = 'Sıfır (0)';
-            } else if (selected === total) {
-                fractionType = 'Tam Sayı (1)';
-            } else if (selected < total) {
-                fractionType = 'Basit Kesir';
+            } else if (mag === total) {
+                fractionType = selected < 0 ? 'Tam Sayı (\u22121)' : 'Tam Sayı (1)';
+            } else {
+                fractionType = (selected < 0 ? 'Negatif ' : '') + 'Basit Kesir';
             }
             document.getElementById('fractionType').textContent = fractionType;
+            document.getElementById('negNote').textContent = selected < 0
+                ? `${R.fmt(q)}: ${mag} kare BORÇ (mor çizgili). Negatif kesir sayı doğrusunda 0'ın solundadır; mutlak değeri |${R.fmt(q)}| = ${R.fmt(R.abs(q))}.`
+                : '';
         }
 
         function setPreset(r, c, s) {
@@ -595,6 +607,8 @@
             rows = r;
             cols = c;
             selected = s;
+            selectedSlider.max = r * c;
+            selectedSlider.min = -r * c;
             selectedSlider.value = s;
             createGrid();
         }

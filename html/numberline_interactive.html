@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📏 Sayı Doğrusu Keşfi</title>
+    <meta name="description" content="Rasyonel sayıları (negatif dahil) −50 ile +50 arasındaki sayı doğrusunda keşfet: yakınlaştır, kaydır, mutlak değeri ve karşıt sayıyı gör.">
+    <title>📏 Sayı Doğrusu Keşfi — Rasyonel Sayılar (−50 … +50)</title>
     <style>
         * {
             margin: 0;
@@ -31,28 +32,91 @@
         h1 {
             text-align: center;
             color: #11998e;
-            font-size: 2.5em;
+            font-size: 2.3em;
             margin-bottom: 10px;
         }
 
         .subtitle {
             text-align: center;
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
             font-size: 1.1em;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #11998e;
+            text-decoration: none;
+            font-weight: bold;
         }
 
         .numberline-container {
             background: #f8f9fa;
-            padding: 40px 20px;
+            padding: 20px 10px 14px;
             border-radius: 20px;
-            margin: 20px 0;
-            overflow-x: auto;
+            margin: 14px 0;
         }
 
         #numberlineCanvas {
             display: block;
             margin: 0 auto;
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            aspect-ratio: 900 / 260;
+            cursor: grab;
+            touch-action: pan-y;
+            border-radius: 12px;
+            background: white;
+        }
+
+        #numberlineCanvas:active {
+            cursor: grabbing;
+        }
+
+        #numberlineCanvas:focus-visible {
+            outline: 3px solid #667eea;
+        }
+
+        .zoom-info {
+            text-align: center;
+            margin: 10px 0 0;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        .hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 4px;
+        }
+
+        .view-presets {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 10px 0 0;
+        }
+
+        .view-btn {
+            padding: 6px 14px;
+            font-size: 0.9em;
+            border: 2px solid #3498db;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            background: white;
+            color: #2980b9;
+            transition: all .2s;
+        }
+
+        .view-btn:hover,
+        .view-btn.active {
+            background: #3498db;
+            color: white;
         }
 
         .fraction-input {
@@ -60,7 +124,7 @@
             justify-content: center;
             align-items: center;
             gap: 20px;
-            margin: 30px 0;
+            margin: 24px 0 10px;
             flex-wrap: wrap;
         }
 
@@ -69,21 +133,21 @@
             flex-direction: column;
             align-items: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px 30px;
+            padding: 16px 26px;
             border-radius: 20px;
             color: white;
         }
 
         .fraction-input-box label {
-            font-size: 0.9em;
+            font-size: 0.85em;
             margin-bottom: 5px;
             opacity: 0.9;
         }
 
         .fraction-input-box input {
-            width: 80px;
-            height: 60px;
-            font-size: 2em;
+            width: 110px;
+            height: 56px;
+            font-size: 1.8em;
             text-align: center;
             border: 3px solid white;
             border-radius: 10px;
@@ -92,15 +156,16 @@
             font-weight: bold;
         }
 
-        .fraction-input-box input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+        .fraction-input-box input.invalid {
+            border-color: #ffeaa7;
+            background: rgba(231, 76, 60, 0.55);
         }
 
         .fraction-line {
-            width: 80px;
+            width: 110px;
             height: 5px;
             background: white;
-            margin: 10px 0;
+            margin: 8px 0;
         }
 
         .equals-sign {
@@ -110,33 +175,47 @@
 
         .result-box {
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            padding: 20px 40px;
+            padding: 16px 30px;
             border-radius: 20px;
             color: white;
             text-align: center;
+            min-width: 210px;
         }
 
         .result-box .decimal {
-            font-size: 2.5em;
+            font-size: 2.1em;
             font-weight: bold;
         }
 
-        .result-box .percent {
-            font-size: 1.2em;
-            opacity: 0.9;
+        .result-box .percent,
+        .result-box .mixed {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .msg {
+            min-height: 1.6em;
+            text-align: center;
+            color: #c0392b;
+            font-weight: bold;
+            margin: 4px 0 8px;
+        }
+
+        .msg.ok {
+            color: #11998e;
         }
 
         .controls {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
-            margin: 20px 0;
+            margin: 14px 0;
             flex-wrap: wrap;
         }
 
         .control-btn {
-            padding: 15px 30px;
-            font-size: 1.1em;
+            padding: 12px 22px;
+            font-size: 1em;
             border: none;
             border-radius: 30px;
             cursor: pointer;
@@ -164,6 +243,37 @@
 
         .btn-zoom-out {
             background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+
+        .btn-pan {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+        }
+
+        .btn-focus {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .btn-flip {
+            background: linear-gradient(135deg, #16a085, #1abc9c);
+        }
+
+        .toggles {
+            display: flex;
+            gap: 22px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 6px 0 14px;
+            color: #2c3e50;
+        }
+
+        .toggles label {
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .toggles input {
+            transform: scale(1.3);
+            margin-right: 6px;
         }
 
         .marker-list {
@@ -218,11 +328,11 @@
             gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
-            margin: 20px 0;
+            margin: 14px 0;
         }
 
         .preset-btn {
-            padding: 10px 20px;
+            padding: 10px 18px;
             font-size: 1em;
             border: 2px solid #11998e;
             border-radius: 20px;
@@ -233,38 +343,54 @@
             color: #11998e;
         }
 
+        .preset-btn.neg {
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+
         .preset-btn:hover {
             background: #11998e;
+            color: white;
+        }
+
+        .preset-btn.neg:hover {
+            background: #c0392b;
             color: white;
         }
 
         .info-panel {
             background: #e8f8f5;
             border-left: 5px solid #11998e;
-            padding: 20px;
+            padding: 16px 20px;
             border-radius: 0 15px 15px 0;
             margin: 20px 0;
         }
 
         .info-panel h4 {
             color: #11998e;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+        }
+
+        .info-panel p {
+            margin: 4px 0;
+            line-height: 1.5;
         }
 
         .comparison-box {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            align-items: center;
+            gap: 14px;
             margin: 20px 0;
             flex-wrap: wrap;
         }
 
         .compare-item {
             background: #f8f9fa;
-            padding: 15px 25px;
+            padding: 12px 22px;
             border-radius: 15px;
             text-align: center;
-            min-width: 120px;
+            min-width: 100px;
         }
 
         .compare-item.highlight {
@@ -272,378 +398,462 @@
             color: white;
         }
 
+        .compare-item.lowest {
+            background: linear-gradient(135deg, #e74c3c, #ff7675);
+            color: white;
+        }
+
         .compare-item .fraction {
-            font-size: 1.5em;
+            font-size: 1.4em;
             font-weight: bold;
         }
 
         .compare-item .value {
             font-size: 0.9em;
-            opacity: 0.8;
+            opacity: 0.85;
         }
 
-        .zoom-info {
+        .distance-box {
             text-align: center;
+            background: #fff8e1;
+            border: 2px dashed #f39c12;
+            border-radius: 14px;
+            padding: 10px;
             margin: 10px 0;
-            color: #666;
+            color: #7f5200;
+            font-weight: 600;
+        }
+
+        .distance-box:empty {
+            display: none;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
+        <a class="back-link" href="index.html">← Ana sayfa</a>
         <h1>📏 Sayı Doğrusu Keşfi</h1>
-        <p class="subtitle">Kesirler sayı doğrusunda nerede yaşar? Keşfet!</p>
+        <p class="subtitle">Rasyonel sayılar (negatifler dahil) sayı doğrusunda nerede yaşar? Keşfet!</p>
 
         <div class="numberline-container">
-            <canvas id="numberlineCanvas" width="900" height="200"></canvas>
+            <canvas id="numberlineCanvas" width="900" height="260" tabindex="0" role="img"
+                aria-label="Sayı doğrusu"></canvas>
             <div class="zoom-info">
-                Görünüm: <span id="zoomRange">-50</span> ile <span id="zoomEnd">50</span> arası
-                (Yakınlaştırma: <span id="zoomLevel">1x</span>)
+                Görünüm: <b><span id="zoomRange">−2</span></b> ile <b><span id="zoomEnd">2</span></b> arası
+                (Yakınlaştırma: <span id="zoomLevel">25x</span>) · Doğru <b>−50 … +50</b> arasında gezilebilir
+            </div>
+            <div class="hint">İpucu: sürükleyerek kaydır · fare tekerleğiyle yakınlaş · tıklayarak sayı yerleştir ·
+                klavyede ← → ve + −</div>
+            <div class="view-presets" id="viewPresets">
+                <button class="view-btn" data-lo="-1" data-hi="1">−1 … 1</button>
+                <button class="view-btn" data-lo="-2" data-hi="2">−2 … 2</button>
+                <button class="view-btn" data-lo="-5" data-hi="5">−5 … 5</button>
+                <button class="view-btn" data-lo="-10" data-hi="10">−10 … 10</button>
+                <button class="view-btn" data-lo="-25" data-hi="25">−25 … 25</button>
+                <button class="view-btn" data-lo="-50" data-hi="50">−50 … 50 (tamamı)</button>
             </div>
         </div>
 
         <div class="fraction-input">
             <div class="fraction-input-box">
-                <label>PAY</label>
-                <input type="number" id="numerator" value="3" min="0" max="20" placeholder="Pay">
+                <label for="numerator">PAY (negatif olabilir)</label>
+                <input type="number" id="numerator" value="3" min="-2500" max="2500" step="1" placeholder="Pay">
                 <div class="fraction-line"></div>
-                <label>PAYDA</label>
-                <input type="number" id="denominator" value="4" min="1" max="20" placeholder="Payda">
+                <label for="denominator">PAYDA (0 olamaz)</label>
+                <input type="number" id="denominator" value="4" min="-50" max="50" step="1" placeholder="Payda">
             </div>
 
             <span class="equals-sign">=</span>
 
             <div class="result-box">
-                <div class="decimal" id="decimalResult">0.75</div>
-                <div class="percent" id="percentResult">= 75%</div>
+                <div class="decimal" id="decimalResult">0,75</div>
+                <div class="percent" id="percentResult">= %75</div>
+                <div class="mixed" id="mixedResult"></div>
             </div>
         </div>
+        <div class="msg" id="msg" role="status" aria-live="polite"></div>
 
         <div class="controls">
-            <button class="control-btn btn-mark" onclick="markFraction()">📍 İşaretle</button>
-            <button class="control-btn btn-clear" onclick="clearMarkers()">🗑️ Temizle</button>
-            <button class="control-btn btn-zoom-in" onclick="zoomIn()">🔍+ Yakınlaştır</button>
-            <button class="control-btn btn-zoom-out" onclick="zoomOut()">🔍- Uzaklaştır</button>
+            <button class="control-btn btn-mark" id="btnMark">📍 İşaretle</button>
+            <button class="control-btn btn-flip" id="btnFlip" title="Sayının karşıtını (zıt işaretlisini) al">🔄 Karşıtını al (±)</button>
+            <button class="control-btn btn-clear" id="btnClear">🗑️ Temizle</button>
+        </div>
+        <div class="controls">
+            <button class="control-btn btn-pan" id="btnLeft" aria-label="Sola kaydır">◀ Sola</button>
+            <button class="control-btn btn-zoom-in" id="btnZoomIn">🔍+ Yakınlaştır</button>
+            <button class="control-btn btn-zoom-out" id="btnZoomOut">🔍− Uzaklaştır</button>
+            <button class="control-btn btn-pan" id="btnRight" aria-label="Sağa kaydır">Sağa ▶</button>
+            <button class="control-btn btn-focus" id="btnFocus">🎯 Sayıya odaklan</button>
+        </div>
+
+        <div class="toggles">
+            <label><input type="checkbox" id="chkAbs" checked> Mutlak değeri göster (0'a uzaklık)</label>
+            <label><input type="checkbox" id="chkOpp" checked> Karşıt sayıyı göster</label>
         </div>
 
         <div class="preset-fractions">
-            <button class="preset-btn" onclick="setFraction(1, 2)">½</button>
-            <button class="preset-btn" onclick="setFraction(1, 4)">¼</button>
-            <button class="preset-btn" onclick="setFraction(3, 4)">¾</button>
-            <button class="preset-btn" onclick="setFraction(1, 3)">⅓</button>
-            <button class="preset-btn" onclick="setFraction(2, 3)">⅔</button>
-            <button class="preset-btn" onclick="setFraction(1, 5)">⅕</button>
-            <button class="preset-btn" onclick="setFraction(3, 5)">⅗</button>
-            <button class="preset-btn" onclick="setFraction(5, 4)">5/4</button>
-            <button class="preset-btn" onclick="setFraction(7, 8)">⅞</button>
+            <button class="preset-btn" data-n="1" data-d="2">½</button>
+            <button class="preset-btn neg" data-n="-1" data-d="2">−½</button>
+            <button class="preset-btn" data-n="3" data-d="4">¾</button>
+            <button class="preset-btn neg" data-n="-3" data-d="4">−¾</button>
+            <button class="preset-btn" data-n="1" data-d="3">⅓</button>
+            <button class="preset-btn neg" data-n="-2" data-d="3">−⅔</button>
+            <button class="preset-btn" data-n="5" data-d="4">5/4</button>
+            <button class="preset-btn neg" data-n="-7" data-d="3">−7/3</button>
+            <button class="preset-btn neg" data-n="-3" data-d="5">−3/5</button>
+            <button class="preset-btn" data-n="7" data-d="8">⅞</button>
+            <button class="preset-btn neg" data-n="-25" data-d="2">−25/2</button>
+            <button class="preset-btn" data-n="99" data-d="2">99/2</button>
+            <button class="preset-btn neg" data-n="-50" data-d="1">−50</button>
         </div>
+
+        <div class="distance-box" id="distanceBox"></div>
 
         <div class="marker-list">
-            <h3>📌 İşaretlenen Kesirler</h3>
-            <div class="markers" id="markerList">
-                <span style="color: #999;">Henüz kesir işaretlemedin. Yukarıdan bir kesir seç ve "İşaretle" butonuna
-                    tıkla!</span>
-            </div>
+            <h3>📌 İşaretlenen Rasyonel Sayılar</h3>
+            <div class="markers" id="markerList"></div>
         </div>
 
-        <div class="comparison-box" id="comparisonBox">
-            <!-- Dinamik olarak doldurulacak -->
-        </div>
+        <div class="comparison-box" id="comparisonBox"></div>
 
         <div class="info-panel">
             <h4>💡 Bilgi Kutusu</h4>
-            <p id="infoText">
-                3/4 kesri, sayı doğrusunda 0 ile 1 arasında, 1'e daha yakın bir yerde bulunur.
-                Bu kesir 0.75'e eşittir, yani 1'in dörtte üçü kadar!
+            <div id="infoText"></div>
+            <p style="color:#555; font-size:.92em; margin-top:8px">
+                Hatırlatma: paydası sıfırdan farklı olmak üzere <b>a/b</b> biçiminde yazılabilen sayılara
+                <b>rasyonel sayı</b> denir. −3/5 = 3/−5 = −(3/5) sayıları birbirine eşittir.
+                Mutlak değer, bir sayının başlangıç noktasına (0'a) olan uzaklığıdır.
             </p>
         </div>
     </div>
 
+    <script src="rasyonel.js"></script>
     <script>
-        const canvas = document.getElementById('numberlineCanvas');
-        const ctx = canvas.getContext('2d');
-        const numInput = document.getElementById('numerator');
-        const denInput = document.getElementById('denominator');
+        (function () {
+            var R = Rasyonel;
+            var MINUS = R.MINUS;
+            var W = 900, H = 260;
+            var canvas = document.getElementById('numberlineCanvas');
+            var ctx = canvas.getContext('2d');
+            var dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+            canvas.width = W * dpr; canvas.height = H * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        let markers = [];
-        let zoomStart = -50;
-        let zoomEnd = 50;
+            var numInput = document.getElementById('numerator');
+            var denInput = document.getElementById('denominator');
+            R.skipZero(denInput);
 
-        function drawNumberLine() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            var LIM_LO = R.MIN, LIM_HI = R.MAX; // −50 … +50
+            var view = { lo: -2, hi: 2 };
+            var markers = [];
+            var COLORS = ['#3498db', '#2ecc71', '#9b59b6', '#f39c12', '#1abc9c', '#e91e63', '#00bcd4', '#ff5722'];
 
-            const padding = 50;
-            const lineY = 100;
-            const lineStart = padding;
-            const lineEnd = canvas.width - padding;
-            const lineWidth = lineEnd - lineStart;
+            var PAD = 40, LINE_Y = 140;
+            function xOf(v) { return PAD + (v - view.lo) / (view.hi - view.lo) * (W - 2 * PAD); }
+            function vOf(x) { return view.lo + (x - PAD) / (W - 2 * PAD) * (view.hi - view.lo); }
+            function ppu() { return (W - 2 * PAD) / (view.hi - view.lo); }
+            function sgn(v) { return v < 0 ? MINUS + Math.abs(v) : String(v); }
 
-            // Ana çizgi
-            ctx.beginPath();
-            ctx.moveTo(lineStart, lineY);
-            ctx.lineTo(lineEnd, lineY);
-            ctx.strokeStyle = '#2c3e50';
-            ctx.lineWidth = 4;
-            ctx.stroke();
-
-            // Oklar
-            ctx.beginPath();
-            ctx.moveTo(lineStart, lineY);
-            ctx.lineTo(lineStart + 15, lineY - 10);
-            ctx.lineTo(lineStart + 15, lineY + 10);
-            ctx.closePath();
-            ctx.fillStyle = '#2c3e50';
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.moveTo(lineEnd, lineY);
-            ctx.lineTo(lineEnd - 15, lineY - 10);
-            ctx.lineTo(lineEnd - 15, lineY + 10);
-            ctx.closePath();
-            ctx.fill();
-
-            // Sayı işaretleri
-            const range = zoomEnd - zoomStart;
-            const majorStep = range <= 1 ? 0.25 : range <= 2 ? 0.5 : range <= 10 ? 1 : range <= 50 ? 5 : 10;
-            const minorStep = majorStep / (range <= 10 ? 4 : 5);
-
-            // Minor ticks
-            for (let val = zoomStart; val <= zoomEnd; val += minorStep) {
-                const x = lineStart + ((val - zoomStart) / range) * lineWidth;
-                ctx.beginPath();
-                ctx.moveTo(x, lineY - 5);
-                ctx.lineTo(x, lineY + 5);
-                ctx.strokeStyle = '#bdc3c7';
-                ctx.lineWidth = 1;
-                ctx.stroke();
+            /* ---------- Girdi okuma (I2, I3) ---------- */
+            function readCurrent() {
+                var n = R.readInt(numInput), d = R.readInt(denInput);
+                numInput.classList.toggle('invalid', n === null);
+                denInput.classList.toggle('invalid', d === null || d === 0);
+                if (n === null) return { err: 'Pay için bir tam sayı gir (negatif olabilir).' };
+                if (d === null) return { err: 'Payda için bir tam sayı gir.' };
+                if (d === 0) return { err: 'Payda 0 olamaz! Bir sayıyı 0 eş parçaya bölemeyiz; bu yüzden a/0 rasyonel sayı değildir.' };
+                var q = R.make(n, d);
+                var warn = null;
+                if (d < 0) warn = n + '/' + d + ' yazılışında payda negatif. İşareti paya taşıyarak ' + R.fmt(q) + ' olarak okuyoruz (−3/5 = 3/−5).';
+                if (!R.inRange(q)) return { q: q, out: true, err: R.fmt(q) + ' sayısı sayı doğrusunun gösterilebilir aralığının (−50 … +50) dışında.' };
+                return { q: q, warn: warn };
             }
 
-            // Major ticks ve etiketler
-            for (let val = zoomStart; val <= zoomEnd; val += majorStep) {
-                const x = lineStart + ((val - zoomStart) / range) * lineWidth;
+            function setMsg(text, ok) {
+                var el = document.getElementById('msg');
+                el.textContent = text || '';
+                el.className = 'msg' + (ok ? ' ok' : '');
+            }
 
-                ctx.beginPath();
-                ctx.moveTo(x, lineY - 15);
-                ctx.lineTo(x, lineY + 15);
-                ctx.strokeStyle = '#2c3e50';
-                ctx.lineWidth = 2;
-                ctx.stroke();
+            /* ---------- Görünüm (yakınlaştırma / kaydırma) ---------- */
+            function setView(lo, hi) {
+                var c = (lo + hi) / 2;
+                if (hi - lo < 0.2) { lo = c - 0.1; hi = c + 0.1; }          // en fazla ~500x
+                if (hi - lo > LIM_HI - LIM_LO) { lo = LIM_LO; hi = LIM_HI; } // tüm doğru
+                var span = hi - lo;
+                if (lo < LIM_LO) { lo = LIM_LO; hi = lo + span; }
+                if (hi > LIM_HI) { hi = LIM_HI; lo = hi - span; }
+                view.lo = lo; view.hi = hi;
+                draw();
+            }
+            function zoomBy(factor, center) {
+                var c = center === undefined ? (view.lo + view.hi) / 2 : center;
+                setView(c - (c - view.lo) * factor, c + (view.hi - c) * factor);
+            }
+            function panBy(frac) { var s = view.hi - view.lo; setView(view.lo + s * frac, view.hi + s * frac); }
+            function focusOn(v) { var s = view.hi - view.lo; setView(v - s / 2, v + s / 2); }
 
-                // Etiket
-                ctx.font = 'bold 14px Segoe UI';
-                ctx.fillStyle = '#2c3e50';
-                ctx.textAlign = 'center';
+            /* ---------- Çizim ---------- */
+            function arrowHead(x, dir, y, color) {
+                ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - dir * 14, y - 9); ctx.lineTo(x - dir * 14, y + 9);
+                ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+            }
+            function tick(x, up, down, color, w) {
+                ctx.beginPath(); ctx.moveTo(x, LINE_Y - up); ctx.lineTo(x, LINE_Y + down);
+                ctx.strokeStyle = color; ctx.lineWidth = w; ctx.stroke();
+            }
+            function text(s, x, y, font, color, align) {
+                ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align || 'center'; ctx.fillText(s, x, y);
+            }
 
-                let label;
-                if (Number.isInteger(val)) {
-                    label = val.toString();
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                var x0 = PAD, x1 = W - PAD, p = ppu();
+                var cur = readCurrentQuiet();
+
+                // Negatif / pozitif bölge zemini
+                var zx = xOf(0);
+                if (zx > x0) { ctx.fillStyle = 'rgba(231,76,60,0.07)'; ctx.fillRect(x0, 30, Math.min(zx, x1) - x0, 190); }
+                if (zx < x1) { ctx.fillStyle = 'rgba(46,204,113,0.08)'; ctx.fillRect(Math.max(zx, x0), 30, x1 - Math.max(zx, x0), 190); }
+                if (zx > x0 + 70) text('Negatif sayılar', Math.min(zx, x1) - 60, 48, 'bold 12px "Segoe UI", Tahoma, Arial, sans-serif', '#c0392b');
+                if (zx < x1 - 70) text('Pozitif sayılar', Math.max(zx, x0) + 60, 48, 'bold 12px "Segoe UI", Tahoma, Arial, sans-serif', '#27ae60');
+
+                // Ana çizgi + oklar
+                ctx.beginPath(); ctx.moveTo(x0, LINE_Y); ctx.lineTo(x1, LINE_Y);
+                ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 4; ctx.stroke();
+                arrowHead(x0, -1, LINE_Y, '#2c3e50'); arrowHead(x1, 1, LINE_Y, '#2c3e50');
+                // Doğru sınırı (−50 / 50)
+                if (view.lo <= LIM_LO + 1e-9) { tick(x0, 30, 30, '#c0392b', 5); text('−50 (sınır)', x0 + 6, LINE_Y - 34, 'bold 11px "Segoe UI", Tahoma, Arial, sans-serif', '#c0392b', 'left'); }
+                if (view.hi >= LIM_HI - 1e-9) { tick(x1, 30, 30, '#27ae60', 5); text('+50 (sınır)', x1 - 6, LINE_Y - 34, 'bold 11px "Segoe UI", Tahoma, Arial, sans-serif', '#27ae60', 'right'); }
+
+                // Tam sayı işaretleri: etiketler üst üste binmesin diye "güzel adım"
+                var intStep = Math.max(1, R.niceStep(58 / p));
+                var kStart = Math.ceil(view.lo / intStep - 1e-9), kEnd = Math.floor(view.hi / intStep + 1e-9);
+                // küçük çentikler
+                var mant = intStep / Math.pow(10, Math.floor(Math.log10(intStep)));
+                var minorStep = intStep === 1 ? 0 : intStep / (mant === 2 ? 2 : 5);
+                if (minorStep > 0 && minorStep * p >= 5) {
+                    var m0 = Math.ceil(view.lo / minorStep - 1e-9), m1 = Math.floor(view.hi / minorStep + 1e-9);
+                    for (var m = m0; m <= m1; m++) tick(xOf(m * minorStep), 5, 5, '#bdc3c7', 1);
+                }
+                // 1/payda alt bölmeleri (mevcut kesrin paydası)
+                var dd = cur.q ? Math.abs(cur.q.d) : 0;
+                if (intStep === 1 && dd > 1 && p / dd >= 7) {
+                    var s0 = Math.ceil(view.lo * dd - 1e-9), s1 = Math.floor(view.hi * dd + 1e-9);
+                    for (var s = s0; s <= s1; s++) {
+                        if (s % dd === 0) continue;
+                        var sx = xOf(s / dd);
+                        tick(sx, 9, 9, '#16a085', 1.5);
+                        if (p / dd >= 40) {
+                            var lab = R.fmt(R.make(s, dd), true);
+                            text(lab, sx, LINE_Y + 36, '12px "Segoe UI", Tahoma, Arial, sans-serif', '#16a085');
+                        }
+                    }
+                }
+                for (var k = kStart; k <= kEnd; k++) {
+                    var val = k * intStep, tx = xOf(val);
+                    tick(tx, k === 0 ? 20 : 14, k === 0 ? 20 : 14, k === 0 ? '#c0392b' : '#2c3e50', k === 0 ? 3 : 2);
+                    text(sgn(val), tx, LINE_Y + 54, (val === 0 ? 'bold 16px' : 'bold 14px') + ' "Segoe UI", Tahoma, Arial, sans-serif', val === 0 ? '#c0392b' : (val < 0 ? '#a93226' : '#1e8449'));
+                }
+
+                // Karşıt sayı
+                var showOpp = document.getElementById('chkOpp').checked;
+                var showAbs = document.getElementById('chkAbs').checked;
+                if (cur.q && !cur.out && cur.q.n !== 0) {
+                    var v = R.toNumber(cur.q), cx = xOf(v), ox = xOf(-v);
+                    var inV = v >= view.lo && v <= view.hi, inO = -v >= view.lo && -v <= view.hi;
+                    if (showAbs) {
+                        // 0'dan sayıya uzaklık parantezi
+                        var by = LINE_Y + 88, a = Math.max(Math.min(xOf(0), x1), x0), b = Math.max(Math.min(cx, x1), x0);
+                        ctx.strokeStyle = '#8e44ad'; ctx.lineWidth = 3;
+                        ctx.beginPath(); ctx.moveTo(a, by); ctx.lineTo(b, by); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(a, by - 6); ctx.lineTo(a, by + 6); ctx.moveTo(b, by - 6); ctx.lineTo(b, by + 6); ctx.stroke();
+                        var mid = (a + b) / 2;
+                        text('|' + R.fmt(cur.q, true) + '| = ' + R.fmt(R.abs(cur.q), true) + ' birim', Math.max(120, Math.min(W - 120, mid)), by + 22, 'bold 13px "Segoe UI", Tahoma, Arial, sans-serif', '#8e44ad');
+                    }
+                    if (showOpp && inO) {
+                        ctx.beginPath(); ctx.arc(ox, LINE_Y, 11, 0, 7);
+                        ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.fill();
+                        ctx.setLineDash([4, 3]); ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 3; ctx.stroke(); ctx.setLineDash([]);
+                        text(R.fmt(R.neg(cur.q), true), ox, LINE_Y - 22, 'bold 14px "Segoe UI", Tahoma, Arial, sans-serif', '#e67e22');
+                        text('karşıt', ox, LINE_Y - 8 - 28, '11px "Segoe UI", Tahoma, Arial, sans-serif', '#e67e22');
+                    }
+                    if (inV) {
+                        ctx.beginPath(); ctx.moveTo(cx, LINE_Y - 60); ctx.lineTo(cx, LINE_Y + 40);
+                        ctx.strokeStyle = 'rgba(231,76,60,0.35)'; ctx.lineWidth = 3; ctx.stroke();
+                        ctx.beginPath(); ctx.arc(cx, LINE_Y, 12, 0, 7);
+                        ctx.fillStyle = '#e74c3c'; ctx.fill(); ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3; ctx.stroke();
+                        text(R.fmt(cur.q), cx, LINE_Y - 68, 'bold 17px "Segoe UI", Tahoma, Arial, sans-serif', '#e74c3c');
+                    } else {
+                        // Görünüm dışı: kenarda ok
+                        var left = v < view.lo, ex = left ? x0 + 4 : x1 - 4;
+                        ctx.beginPath(); ctx.moveTo(ex + (left ? -2 : 2), LINE_Y - 24); ctx.lineTo(ex + (left ? 20 : -20), LINE_Y - 34); ctx.lineTo(ex + (left ? 20 : -20), LINE_Y - 14); ctx.closePath();
+                        ctx.fillStyle = '#e74c3c'; ctx.fill();
+                        text(R.fmt(cur.q) + (left ? ' ◀' : ' ▶'), left ? x0 + 70 : x1 - 70, LINE_Y - 42, 'bold 14px "Segoe UI", Tahoma, Arial, sans-serif', '#e74c3c');
+                    }
+                } else if (cur.q && !cur.out && cur.q.n === 0) {
+                    ctx.beginPath(); ctx.arc(xOf(0), LINE_Y, 12, 0, 7);
+                    ctx.fillStyle = '#e74c3c'; ctx.fill(); ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3; ctx.stroke();
+                    text('0', xOf(0), LINE_Y - 68, 'bold 17px "Segoe UI", Tahoma, Arial, sans-serif', '#e74c3c');
+                }
+
+                // İşaretlenmiş sayılar (etiketler çakışmasın diye sıra kaydırma)
+                var vis = markers.filter(function (m) { var v = R.toNumber(m.q); return v >= view.lo && v <= view.hi; })
+                    .sort(function (a, b) { return R.cmp(a.q, b.q); });
+                var lastX = -1e9, row = 0;
+                vis.forEach(function (m) {
+                    var mx = xOf(R.toNumber(m.q));
+                    row = (mx - lastX < 46) ? (row + 1) % 3 : 0; lastX = mx;
+                    ctx.beginPath(); ctx.arc(mx, LINE_Y, 8, 0, 7);
+                    ctx.fillStyle = m.color; ctx.fill(); ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 2; ctx.stroke();
+                    text(R.fmt(m.q, true), mx, LINE_Y - 22 - row * 15, 'bold 13px "Segoe UI", Tahoma, Arial, sans-serif', m.color);
+                });
+                var hidden = markers.length - vis.length;
+                if (hidden > 0) text(hidden + ' işaretli sayı bu görünümün dışında', W / 2, H - 6, '12px "Segoe UI", Tahoma, Arial, sans-serif', '#888');
+
+                // Bilgi etiketleri
+                var span = view.hi - view.lo;
+                document.getElementById('zoomRange').textContent = sgn(+view.lo.toFixed(2));
+                document.getElementById('zoomEnd').textContent = sgn(+view.hi.toFixed(2));
+                document.getElementById('zoomLevel').textContent = (100 / span).toFixed(span < 4 ? 1 : 0).replace('.', ',') + 'x';
+                document.querySelectorAll('.view-btn').forEach(function (b) {
+                    b.classList.toggle('active', Math.abs(+b.dataset.lo - view.lo) < 1e-6 && Math.abs(+b.dataset.hi - view.hi) < 1e-6);
+                });
+                canvas.setAttribute('aria-label', 'Sayı doğrusu, görünüm ' + sgn(+view.lo.toFixed(2)) + ' ile ' + sgn(+view.hi.toFixed(2)) + ' arası' + (cur.q ? '; seçili sayı ' + R.fmt(cur.q) : ''));
+            }
+
+            function readCurrentQuiet() { var c = readCurrent(); return c.err && !c.q ? {} : c; }
+
+            /* ---------- Sonuç ve bilgi paneli ---------- */
+            function updateDisplay() {
+                var c = readCurrent();
+                var dec = document.getElementById('decimalResult'), per = document.getElementById('percentResult'), mix = document.getElementById('mixedResult');
+                var info = document.getElementById('infoText');
+                if (!c.q) {
+                    dec.textContent = '—'; per.textContent = ''; mix.textContent = '';
+                    info.innerHTML = '<p>Geçerli bir rasyonel sayı yaz: pay bir tam sayı, payda sıfırdan farklı bir tam sayı olmalı.</p>';
+                    setMsg(c.err); draw(); return;
+                }
+                var q = c.q;
+                dec.textContent = R.decimalStr(q);
+                per.textContent = '= ' + R.percentStr(q).replace(/^(\u2212?)(.*)%$/, '$1%$2');
+                mix.textContent = (!R.isInt(q) && Math.abs(q.n) > q.d) ? 'Tam sayılı: ' + R.fmtMixed(q) : '';
+                info.innerHTML = R.describe(q).map(function (l) { return '<p>' + l + '</p>'; }).join('');
+                if (c.err) setMsg(c.err); else if (c.warn) setMsg(c.warn, true); else setMsg('');
+                draw();
+            }
+
+            function setFraction(n, d) { numInput.value = n; denInput.value = d; updateDisplay(); }
+
+            /* ---------- İşaretleme ---------- */
+            function markFraction() {
+                var c = readCurrent();
+                if (!c.q) { setMsg(c.err); return; }
+                if (c.out) { setMsg(c.err + ' Daha küçük bir sayı seç.'); return; }
+                var dup = markers.filter(function (m) { return R.eq(m.q, c.q); })[0];
+                if (dup) { setMsg('Bu değer zaten işaretli: ' + R.fmt(dup.q) + ' (denk kesirler sayı doğrusunda aynı noktadadır).'); return; }
+                markers.push({ q: c.q, color: COLORS[markers.length % COLORS.length] });
+                setMsg(R.fmt(c.q) + ' işaretlendi.', true);
+                renderLists(); draw();
+            }
+            function removeMarker(i) { markers.splice(i, 1); renderLists(); draw(); }
+            function clearMarkers() { markers = []; renderLists(); draw(); }
+
+            function renderLists() {
+                var list = document.getElementById('markerList');
+                if (!markers.length) {
+                    list.innerHTML = '<span style="color:#999;">Henüz sayı işaretlemedin. Yukarıdan bir rasyonel sayı seç ve "İşaretle" butonuna tıkla — negatif sayıları da dene!</span>';
                 } else {
-                    // Kesir olarak göster
-                    const frac = decimalToFraction(val);
-                    label = frac.num + '/' + frac.den;
+                    list.innerHTML = markers.map(function (m, i) {
+                        return '<span class="marker-tag" style="background:linear-gradient(135deg,' + m.color + ',' + m.color + 'dd)">' +
+                            R.fmt(m.q) + ' = ' + R.decimalStr(m.q) +
+                            '<button class="remove" data-i="' + i + '" aria-label="Kaldır">×</button></span>';
+                    }).join('');
+                    list.querySelectorAll('.remove').forEach(function (b) { b.onclick = function () { removeMarker(+b.dataset.i); }; });
                 }
-                ctx.fillText(label, x, lineY + 35);
+                // karşılaştırma
+                var box = document.getElementById('comparisonBox'), dist = document.getElementById('distanceBox');
+                if (markers.length < 2) { box.innerHTML = ''; dist.textContent = ''; return; }
+                var sorted = markers.slice().sort(function (a, b) { return R.cmp(a.q, b.q); });
+                box.innerHTML = '<h4 style="width:100%;text-align:center;color:#2c3e50">📊 Sıralama (küçükten büyüğe)</h4>' +
+                    sorted.map(function (m, i) {
+                        var cls = i === sorted.length - 1 ? 'highlight' : (i === 0 ? 'lowest' : '');
+                        return '<div class="compare-item ' + cls + '"><div class="fraction">' + R.fmt(m.q) + '</div><div class="value">' + R.decimalStr(m.q) + '</div></div>';
+                    }).join('<span style="font-size:2em;color:#2c3e50">&lt;</span>');
+                var a = markers[markers.length - 2].q, b = markers[markers.length - 1].q;
+                dist.innerHTML = '📏 Son iki işaretli sayı arasındaki uzaklık: |' + R.fmt(a) + ' ' + MINUS + ' (' + R.fmt(b) + ')| = <b>' + R.fmt(R.abs(R.sub(a, b)), true) + '</b> birim';
             }
 
-            // Mevcut kesri göster (kırmızı nokta)
-            const num = parseInt(numInput.value) || 0;
-            const den = parseInt(denInput.value) || 1;
-            const currentValue = num / den;
-
-            if (currentValue >= zoomStart && currentValue <= zoomEnd) {
-                const currentX = lineStart + ((currentValue - zoomStart) / range) * lineWidth;
-
-                // Dikey çizgi
-                ctx.beginPath();
-                ctx.moveTo(currentX, lineY - 40);
-                ctx.lineTo(currentX, lineY + 45);
-                ctx.strokeStyle = 'rgba(231, 76, 60, 0.3)';
-                ctx.lineWidth = 3;
-                ctx.stroke();
-
-                // Nokta
-                ctx.beginPath();
-                ctx.arc(currentX, lineY, 12, 0, Math.PI * 2);
-                ctx.fillStyle = '#e74c3c';
-                ctx.fill();
-                ctx.strokeStyle = '#c0392b';
-                ctx.lineWidth = 3;
-                ctx.stroke();
-
-                // Etiket
-                ctx.font = 'bold 16px Segoe UI';
-                ctx.fillStyle = '#e74c3c';
-                ctx.textAlign = 'center';
-                ctx.fillText(num + '/' + den, currentX, lineY - 50);
-            }
-
-            // İşaretlenmiş kesirleri göster
-            markers.forEach((marker, index) => {
-                if (marker.value >= zoomStart && marker.value <= zoomEnd) {
-                    const markerX = lineStart + ((marker.value - zoomStart) / range) * lineWidth;
-
-                    // Nokta
-                    ctx.beginPath();
-                    ctx.arc(markerX, lineY, 8, 0, Math.PI * 2);
-                    ctx.fillStyle = marker.color;
-                    ctx.fill();
-                    ctx.strokeStyle = '#2c3e50';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-
-                    // Etiket
-                    ctx.font = '12px Segoe UI';
-                    ctx.fillStyle = marker.color;
-                    ctx.textAlign = 'center';
-                    ctx.fillText(marker.label, markerX, lineY - 25);
-                }
+            /* ---------- Etkileşim ---------- */
+            numInput.addEventListener('input', updateDisplay);
+            denInput.addEventListener('input', updateDisplay);
+            document.getElementById('btnMark').onclick = markFraction;
+            document.getElementById('btnClear').onclick = clearMarkers;
+            document.getElementById('btnZoomIn').onclick = function () { zoomBy(0.5); };
+            document.getElementById('btnZoomOut').onclick = function () { zoomBy(2); };
+            document.getElementById('btnLeft').onclick = function () { panBy(-0.25); };
+            document.getElementById('btnRight').onclick = function () { panBy(0.25); };
+            document.getElementById('btnFocus').onclick = function () {
+                var c = readCurrent(); if (c.q && !c.out) { focusOn(R.toNumber(c.q)); } else setMsg(c.err || '');
+            };
+            document.getElementById('btnFlip').onclick = function () {
+                var n = R.readInt(numInput); if (n === null) { setMsg('Önce geçerli bir pay gir.'); return; }
+                numInput.value = -n; updateDisplay();
+            };
+            document.getElementById('chkAbs').onchange = draw;
+            document.getElementById('chkOpp').onchange = draw;
+            document.querySelectorAll('.view-btn').forEach(function (b) { b.onclick = function () { setView(+b.dataset.lo, +b.dataset.hi); }; });
+            document.querySelectorAll('.preset-btn').forEach(function (b) {
+                b.onclick = function () {
+                    setFraction(+b.dataset.n, +b.dataset.d);
+                    var c = readCurrent();
+                    if (c.q && !c.out) { var v = R.toNumber(c.q); if (v < view.lo || v > view.hi) focusOn(v); }
+                };
             });
 
-            // Zoom bilgisini güncelle
-            document.getElementById('zoomRange').textContent = zoomStart;
-            document.getElementById('zoomEnd').textContent = zoomEnd;
-            document.getElementById('zoomLevel').textContent = (2 / (zoomEnd - zoomStart)).toFixed(1) + 'x';
-        }
+            function canvasX(e) { var r = canvas.getBoundingClientRect(); return (e.clientX - r.left) * (W / r.width); }
 
-        function decimalToFraction(decimal) {
-            const precision = 1000;
-            const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
-            const num = Math.round(decimal * precision);
-            const den = precision;
-            const divisor = gcd(num, den);
-            return { num: num / divisor, den: den / divisor };
-        }
+            var drag = null;
+            canvas.addEventListener('pointerdown', function (e) {
+                canvas.setPointerCapture(e.pointerId);
+                drag = { x: canvasX(e), lo: view.lo, hi: view.hi, moved: false };
+            });
+            canvas.addEventListener('pointermove', function (e) {
+                if (!drag) return;
+                var dx = canvasX(e) - drag.x;
+                if (Math.abs(dx) > 4) drag.moved = true;
+                if (drag.moved) { var dv = dx / ppu(); setView(drag.lo - dv, drag.hi - dv); }
+            });
+            canvas.addEventListener('pointerup', function (e) {
+                if (drag && !drag.moved) {
+                    // Tıklama: en yakın 1/payda noktasına yerleştir
+                    var c = readCurrentQuiet();
+                    var dd = c.q ? Math.abs(c.q.d) : 1;
+                    var v = vOf(canvasX(e));
+                    var nn = Math.round(v * dd);
+                    if (R.inRange(R.make(nn, dd))) { numInput.value = nn; denInput.value = dd; updateDisplay(); }
+                }
+                drag = null;
+            });
+            canvas.addEventListener('pointercancel', function () { drag = null; });
+            canvas.addEventListener('wheel', function (e) {
+                e.preventDefault();
+                zoomBy(e.deltaY < 0 ? 0.8 : 1.25, vOf(canvasX(e)));
+            }, { passive: false });
+            canvas.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowLeft') { panBy(-0.1); e.preventDefault(); }
+                else if (e.key === 'ArrowRight') { panBy(0.1); e.preventDefault(); }
+                else if (e.key === '+' || e.key === '=') { zoomBy(0.5); e.preventDefault(); }
+                else if (e.key === '-') { zoomBy(2); e.preventDefault(); }
+            });
 
-        function updateDisplay() {
-            const num = parseInt(numInput.value) || 0;
-            const den = parseInt(denInput.value) || 1;
-            const decimal = num / den;
-            const percent = (decimal * 100).toFixed(1);
+            // Test/gözlem için açık arayüz
+            window.NumberLineTool = { setView: setView, getView: function () { return { lo: view.lo, hi: view.hi }; }, getMarkers: function () { return markers.map(function (m) { return R.fmt(m.q); }); }, setFraction: setFraction, mark: markFraction };
 
-            document.getElementById('decimalResult').textContent = decimal.toFixed(4);
-            document.getElementById('percentResult').textContent = '= ' + percent + '%';
-
-            // Bilgi metni
-            let info = '';
-            if (num === 0) {
-                info = 'Pay 0 olduğunda kesir değeri 0\'dır. Sayı doğrusunda başlangıç noktasındayız!';
-            } else if (num === den) {
-                info = `${num}/${den} = 1 tam sayı! Bütünün tamamını aldık.`;
-            } else if (num < den) {
-                info = `${num}/${den} kesri bir basit kesirdir (pay < payda). Değeri 0 ile 1 arasındadır.`;
-            } else {
-                info = `${num}/${den} bir bileşik kesirdir (pay > payda). Değeri 1\'den büyüktür!`;
-            }
-            document.getElementById('infoText').textContent = info;
-
-            drawNumberLine();
-        }
-
-        function setFraction(num, den) {
-            numInput.value = num;
-            denInput.value = den;
+            renderLists();
             updateDisplay();
-        }
-
-        function markFraction() {
-            const num = parseInt(numInput.value) || 0;
-            const den = parseInt(denInput.value) || 1;
-            const value = num / den;
-            const label = num + '/' + den;
-
-            // Aynı kesir zaten işaretli mi?
-            if (markers.some(m => m.label === label)) {
-                alert('Bu kesir zaten işaretli!');
-                return;
-            }
-
-            const colors = ['#3498db', '#2ecc71', '#9b59b6', '#f39c12', '#1abc9c', '#e91e63', '#00bcd4', '#ff5722'];
-            const color = colors[markers.length % colors.length];
-
-            markers.push({ num, den, value, label, color });
-            updateMarkerList();
-            updateComparison();
-            drawNumberLine();
-        }
-
-        function removeMarker(index) {
-            markers.splice(index, 1);
-            updateMarkerList();
-            updateComparison();
-            drawNumberLine();
-        }
-
-        function clearMarkers() {
-            markers = [];
-            updateMarkerList();
-            updateComparison();
-            drawNumberLine();
-        }
-
-        function updateMarkerList() {
-            const list = document.getElementById('markerList');
-
-            if (markers.length === 0) {
-                list.innerHTML = '<span style="color: #999;">Henüz kesir işaretlemedin. Yukarıdan bir kesir seç ve "İşaretle" butonuna tıkla!</span>';
-                return;
-            }
-
-            list.innerHTML = markers.map((m, i) => `
-                <span class="marker-tag" style="background: linear-gradient(135deg, ${m.color}, ${m.color}dd)">
-                    ${m.label} = ${m.value.toFixed(3)}
-                    <button class="remove" onclick="removeMarker(${i})">×</button>
-                </span>
-            `).join('');
-        }
-
-        function updateComparison() {
-            const box = document.getElementById('comparisonBox');
-
-            if (markers.length < 2) {
-                box.innerHTML = '';
-                return;
-            }
-
-            // Kesirleri sırala
-            const sorted = [...markers].sort((a, b) => a.value - b.value);
-
-            box.innerHTML = '<h4 style="width: 100%; text-align: center; color: #2c3e50;">📊 Karşılaştırma (Küçükten Büyüğe)</h4>' +
-                sorted.map((m, i) => `
-                    <div class="compare-item ${i === sorted.length - 1 ? 'highlight' : ''}">
-                        <div class="fraction">${m.label}</div>
-                        <div class="value">${m.value.toFixed(3)}</div>
-                    </div>
-                `).join('<span style="font-size: 2em; color: #2c3e50;">‹</span>');
-        }
-
-        function zoomIn() {
-            const range = zoomEnd - zoomStart;
-            if (range <= 0.5) return;
-
-            const center = (zoomStart + zoomEnd) / 2;
-            const newRange = range / 2;
-            zoomStart = Math.max(-50, center - newRange / 2);
-            zoomEnd = Math.min(50, zoomStart + newRange); zoomStart = Math.max(-50, zoomEnd - newRange);
-            drawNumberLine();
-        }
-
-        function zoomOut() {
-            const range = zoomEnd - zoomStart;
-            if (range >= 100) return;
-
-            const center = (zoomStart + zoomEnd) / 2;
-            const newRange = range * 2;
-            zoomStart = Math.max(-50, center - newRange / 2);
-            zoomEnd = Math.min(50, zoomStart + newRange); zoomStart = Math.max(-50, zoomEnd - newRange);
-            drawNumberLine();
-        }
-
-        numInput.addEventListener('input', updateDisplay);
-        denInput.addEventListener('input', updateDisplay);
-
-        // İlk yükleme
-        updateDisplay();
+        })();
     </script>
 </body>
 

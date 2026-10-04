@@ -227,26 +227,55 @@
             background: #6c5ce7;
             color: white;
         }
+    
+        input.invalid {
+            border-color: #ffeaa7 !important;
+            background: rgba(231, 76, 60, 0.55) !important;
+        }
+
+        .msg {
+            min-height: 1.5em;
+            text-align: center;
+            color: #c0392b;
+            font-weight: bold;
+            margin: 6px 0;
+        }
+
+        .bar-segment.neg {
+            background: repeating-linear-gradient(45deg, #e74c3c, #e74c3c 6px, #ff8f87 6px, #ff8f87 12px) !important;
+        }
+
+        .bar-units {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .grid-cell.both-neg {
+            background: repeating-linear-gradient(45deg, #e74c3c, #e74c3c 6px, #ff8f87 6px, #ff8f87 12px);
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h1>✖️ Kesir Çarpma - Alan Modeli</h1>
+        <p style="text-align:center;color:#666;margin-bottom:10px">Pay negatif olabilir: işaret kuralını alan modelinde ve adımlarda gör.</p>
 
         <div class="equation">
             <div class="fraction-box">
-                <input type="number" id="num1" value="2" min="1" max="6" onchange="calculate()">
+                <input type="number" id="num1" value="2" min="-12" max="12" step="1" oninput="calculate()" aria-label="Pay">
                 <div class="line"></div>
-                <input type="number" id="den1" value="3" min="1" max="6" onchange="calculate()">
+                <input type="number" id="den1" value="3" min="-12" max="12" step="1" oninput="calculate()" aria-label="Payda">
             </div>
 
             <span class="operator">×</span>
 
             <div class="fraction-box second">
-                <input type="number" id="num2" value="3" min="1" max="6" onchange="calculate()">
+                <input type="number" id="num2" value="3" min="-12" max="12" step="1" oninput="calculate()" aria-label="Pay">
                 <div class="line"></div>
-                <input type="number" id="den2" value="4" min="1" max="6" onchange="calculate()">
+                <input type="number" id="den2" value="4" min="-12" max="12" step="1" oninput="calculate()" aria-label="Payda">
             </div>
 
             <span class="operator">=</span>
@@ -265,6 +294,8 @@
                 <span class="val" id="simpleDen">2</span>
             </div>
         </div>
+
+        <div class="msg" id="msg" role="status" aria-live="polite"></div>
 
         <div class="visual-section">
             <h3>📐 Alan Modeli</h3>
@@ -313,74 +344,86 @@
             <button class="preset-btn" onclick="setValues(1,3, 1,4)">⅓ × ¼</button>
             <button class="preset-btn" onclick="setValues(3,4, 2,3)">¾ × ⅔</button>
             <button class="preset-btn" onclick="setValues(1,2, 4,5)">½ × ⅘</button>
+            <button class="preset-btn" onclick="setValues(-2,3, 3,4)">−⅔ × ¾</button>
+            <button class="preset-btn" onclick="setValues(-1,2, -1,2)">−½ × (−½)</button>
+            <button class="preset-btn" onclick="setValues(3,4, -2,3)">¾ × (−⅔)</button>
         </div>
     </div>
 
+    <script src="rasyonel.js"></script>
     <script>
-        function gcd(a, b) {
-            return b === 0 ? a : gcd(b, a % b);
+        const R = Rasyonel, MINUS = R.MINUS;
+        ['den1', 'den2'].forEach(id => R.skipZero(document.getElementById(id)));
+
+        function read(i) {
+            const ne = document.getElementById('num' + i), de = document.getElementById('den' + i);
+            const n = R.readInt(ne), d = R.readInt(de);
+            ne.classList.toggle('invalid', n === null);
+            de.classList.toggle('invalid', d === null || d === 0);
+            if (n === null) return { err: 'Pay ' + i + ' için bir tam sayı gir (negatif olabilir).' };
+            if (d === null) return { err: 'Payda ' + i + ' için bir tam sayı gir.' };
+            if (d === 0) return { err: 'Payda 0 olamaz!' };
+            return { q: R.make(n, d), n, d };
         }
+        const setSpan = (id, q) => { document.getElementById(id).textContent = (q.n < 0 ? MINUS : '') + Math.abs(q.n); };
 
         function calculate() {
-            const num1 = parseInt(document.getElementById('num1').value) || 1;
-            const den1 = parseInt(document.getElementById('den1').value) || 1;
-            const num2 = parseInt(document.getElementById('num2').value) || 1;
-            const den2 = parseInt(document.getElementById('den2').value) || 1;
-
-            // Çarpma
-            const resultNum = num1 * num2;
-            const resultDen = den1 * den2;
-
-            // Sadeleştir
-            const divisor = gcd(resultNum, resultDen);
-            const simpleNum = resultNum / divisor;
-            const simpleDen = resultDen / divisor;
-
-            // Sonuçları göster
-            document.getElementById('resultNum').textContent = resultNum;
-            document.getElementById('resultDen').textContent = resultDen;
-            document.getElementById('simpleNum').textContent = simpleNum;
-            document.getElementById('simpleDen').textContent = simpleDen;
-
-            // Etiketler
-            document.getElementById('label1').textContent = `${num1}/${den1}`;
-            document.getElementById('label2').textContent = `${num2}/${den2}`;
-
-            // Alan modeli çiz
-            const grid = document.getElementById('areaGrid');
-            grid.style.gridTemplateColumns = `repeat(${den2}, 50px)`;
-            grid.style.gridTemplateRows = `repeat(${den1}, 50px)`;
-
-            let html = '';
-            for (let row = 0; row < den1; row++) {
-                for (let col = 0; col < den2; col++) {
-                    const inFirst = row < num1;
-                    const inSecond = col < num2;
-
-                    let className = 'grid-cell ';
-                    if (inFirst && inSecond) {
-                        className += 'both';
-                    } else if (inFirst) {
-                        className += 'first-only';
-                    } else if (inSecond) {
-                        className += 'second-only';
-                    } else {
-                        className += 'empty';
-                    }
-
-                    html += `<div class="${className}"></div>`;
-                }
+            const r1 = read(1), r2 = read(2), msg = document.getElementById('msg');
+            if (r1.err || r2.err) {
+                msg.textContent = r1.err || r2.err;
+                ['resultNum', 'resultDen', 'simpleNum', 'simpleDen'].forEach(id => document.getElementById(id).textContent = '?');
+                document.getElementById('areaGrid').innerHTML = '';
+                document.getElementById('stepsList').innerHTML = '';
+                return;
             }
-            grid.innerHTML = html;
+            const a = r1.q, b = r2.q;
+            const raw = R.mul(a, b), simp = R.simplify(raw);
+            const sr = Math.sign(raw.n);
 
-            // Adımlar
-            const steps = document.getElementById('stepsList');
-            steps.innerHTML = `
-                <li>Payları çarp: ${num1} × ${num2} = <strong>${resultNum}</strong></li>
-                <li>Paydaları çarp: ${den1} × ${den2} = <strong>${resultDen}</strong></li>
-                <li>Sonuç: <strong>${resultNum}/${resultDen}</strong></li>
-                ${divisor > 1 ? `<li>Sadeleştir: ${resultNum}/${resultDen} = <strong>${simpleNum}/${simpleDen}</strong></li>` : ''}
-                <li>Alan modeli: ${resultDen} kareden ${resultNum} tanesi mor (kesişim)</li>
+            document.getElementById('resultNum').textContent = (raw.n < 0 ? MINUS : '') + Math.abs(raw.n);
+            document.getElementById('resultDen').textContent = raw.d;
+            document.getElementById('simpleNum').textContent = (simp.n < 0 ? MINUS : '') + Math.abs(simp.n);
+            document.getElementById('simpleDen').textContent = simp.d;
+
+            document.getElementById('label1').textContent = R.fmt(a, true);
+            document.getElementById('label2').textContent = R.fmt(b, true);
+
+            // Alan modeli: |pay| ≤ payda olan kesirler için (0–1 arası); işaret ayrıca kuralla bulunur
+            const grid = document.getElementById('areaGrid');
+            const fits = Math.abs(a.n) <= a.d && Math.abs(b.n) <= b.d;
+            if (fits) {
+                msg.textContent = (r1.d < 0 || r2.d < 0) ? 'Payda negatifse işareti paya taşırız: −3/5 = 3/−5.' : '';
+                grid.style.gridTemplateColumns = `repeat(${b.d}, 50px)`;
+                grid.style.gridTemplateRows = `repeat(${a.d}, 50px)`;
+                let html = '';
+                for (let row = 0; row < a.d; row++) {
+                    for (let col = 0; col < b.d; col++) {
+                        const inFirst = row < Math.abs(a.n), inSecond = col < Math.abs(b.n);
+                        let className = 'grid-cell ';
+                        if (inFirst && inSecond) className += sr < 0 ? 'both-neg' : 'both';
+                        else if (inFirst) className += 'first-only';
+                        else if (inSecond) className += 'second-only';
+                        else className += 'empty';
+                        html += `<div class="${className}"></div>`;
+                    }
+                }
+                grid.innerHTML = html;
+            } else {
+                msg.textContent = 'Alan modeli yalnızca |pay| ≤ payda olan kesirler için çizilir; adımlar yine de doğru hesaplanır.';
+                grid.innerHTML = '';
+            }
+
+            const sa = Math.sign(a.n), sb = Math.sign(b.n);
+            const rule = (sa === 0 || sb === 0) ? 'Çarpanlardan biri 0 olduğu için çarpım 0\'dır.'
+                : sa === sb ? 'Aynı işaretlerin çarpımı pozitiftir.' : 'Zıt işaretlerin çarpımı negatiftir.';
+            const rf = R.fmt(raw), sf = R.fmt(simp);
+            document.getElementById('stepsList').innerHTML = `
+                <li>İşaret kuralı: ${rule}</li>
+                <li>Payları çarp: ${a.n < 0 ? '(' + R.fmt(R.make(a.n, 1)) + ')' : a.n} × ${b.n < 0 ? '(' + R.fmt(R.make(b.n, 1)) + ')' : b.n} = <strong>${raw.n < 0 ? MINUS + Math.abs(raw.n) : raw.n}</strong></li>
+                <li>Paydaları çarp: ${a.d} × ${b.d} = <strong>${raw.d}</strong></li>
+                <li>Sonuç: <strong>${rf}</strong></li>
+                ${rf !== sf ? `<li>Sadeleştir: ${rf} = <strong>${sf}</strong></li>` : ''}
+                ${fits ? `<li>Alan modeli: ${raw.d} kareden ${Math.abs(raw.n)} tanesi kesişim (${sr < 0 ? 'negatif işaret kuralıyla kırmızı çizgili' : 'mor'})</li>` : ''}
             `;
         }
 

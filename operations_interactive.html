@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>➕ Kesir İşlemleri Keşfi</title>
+    <meta name="description" content="Rasyonel sayılarla (negatif dahil) toplama, çıkarma, çarpma, bölme ve sadeleştirme: işaretli çubuk modeli, sayı doğrusunda sıçramalar ve adım adım çözüm.">
+    <title>➕ Rasyonel Sayılarla İşlemler (negatif dahil)</title>
     <style>
         * {
             margin: 0;
@@ -28,10 +29,18 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
+        .back-link {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #f5576c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
         h1 {
             text-align: center;
             color: #f5576c;
-            font-size: 2.5em;
+            font-size: 2.3em;
             margin-bottom: 10px;
         }
 
@@ -51,8 +60,8 @@
         }
 
         .tab-btn {
-            padding: 15px 30px;
-            font-size: 1.2em;
+            padding: 14px 26px;
+            font-size: 1.15em;
             border: none;
             border-radius: 30px;
             cursor: pointer;
@@ -105,22 +114,22 @@
             justify-content: center;
             align-items: center;
             gap: 30px;
-            margin: 30px 0;
+            margin: 24px 0 8px;
             flex-wrap: wrap;
         }
 
         .fraction-box {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 25px;
+            padding: 22px;
             border-radius: 20px;
             color: white;
             text-align: center;
         }
 
         .fraction-box input {
-            width: 80px;
+            width: 100px;
             height: 50px;
-            font-size: 1.8em;
+            font-size: 1.7em;
             text-align: center;
             border: 3px solid white;
             border-radius: 10px;
@@ -129,8 +138,13 @@
             font-weight: bold;
         }
 
+        .fraction-box input.invalid {
+            border-color: #ffeaa7;
+            background: rgba(231, 76, 60, 0.55);
+        }
+
         .fraction-box .line {
-            width: 80px;
+            width: 100px;
             height: 4px;
             background: white;
             margin: 10px auto;
@@ -138,8 +152,8 @@
 
         .fraction-box label {
             display: block;
-            font-size: 0.9em;
-            opacity: 0.8;
+            font-size: 0.85em;
+            opacity: 0.85;
             margin-bottom: 5px;
         }
 
@@ -149,33 +163,51 @@
             color: #2c3e50;
         }
 
+        .msg {
+            min-height: 1.5em;
+            text-align: center;
+            color: #c0392b;
+            font-weight: bold;
+            margin: 6px 0;
+        }
+
+        .msg.ok {
+            color: #11998e;
+        }
+
         .result-section {
             background: linear-gradient(135deg, #11998e, #38ef7d);
-            padding: 30px;
+            padding: 26px;
             border-radius: 20px;
             color: white;
             text-align: center;
-            margin: 30px 0;
+            margin: 20px 0;
         }
 
         .result-section h3 {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .result-fraction {
-            font-size: 2.5em;
+            font-size: 2.4em;
             font-weight: bold;
         }
 
         .result-decimal {
-            font-size: 1.5em;
-            opacity: 0.9;
-            margin-top: 10px;
+            font-size: 1.4em;
+            opacity: 0.92;
+            margin-top: 8px;
+        }
+
+        .result-mixed {
+            font-size: 1.1em;
+            opacity: 0.92;
+            margin-top: 4px;
         }
 
         .visual-section {
             background: #f8f9fa;
-            padding: 30px;
+            padding: 24px;
             border-radius: 20px;
             margin: 20px 0;
         }
@@ -183,45 +215,72 @@
         .visual-section h3 {
             text-align: center;
             color: #2c3e50;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+        }
+
+        .visual-section canvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
         }
 
         .bars-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
             align-items: center;
         }
 
         .bar-row {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .bar-label {
-            width: 80px;
+            width: 110px;
             font-weight: bold;
             color: #2c3e50;
             text-align: right;
         }
 
+        .sbar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
         .fraction-bar {
             display: flex;
-            height: 50px;
-            width: 300px;
+            height: 46px;
+            width: 190px;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            background: #ecf0f1;
         }
 
         .bar-segment {
             height: 100%;
+            flex: 1;
+            border-right: 2px solid white;
             transition: all 0.3s;
+        }
+
+        .bar-segment:last-child {
+            border-right: none;
         }
 
         .bar-segment.filled {
             background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .bar-segment.filled2 {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
         }
 
         .bar-segment.empty {
@@ -230,6 +289,31 @@
 
         .bar-segment.result {
             background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+
+        .bar-segment.neg {
+            background: repeating-linear-gradient(45deg, #e74c3c, #e74c3c 6px, #ff8f87 6px, #ff8f87 12px);
+        }
+
+        .bar-more {
+            color: #888;
+            font-size: .9em;
+        }
+
+        .legend-note {
+            text-align: center;
+            color: #666;
+            font-size: .9em;
+            margin-top: 12px;
+        }
+
+        .legend-note .sw {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin: 0 4px 0 12px;
         }
 
         .steps-box {
@@ -242,16 +326,21 @@
 
         .steps-box h4 {
             color: #f39c12;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .steps-box ol {
             padding-left: 25px;
-            line-height: 2;
+            line-height: 1.9;
         }
 
         .steps-box li {
             color: #2c3e50;
+        }
+
+        .steps-box li.rule {
+            color: #8e44ad;
+            font-weight: 600;
         }
 
         .equivalent-grid {
@@ -282,7 +371,7 @@
         }
 
         .eq-card .fraction {
-            font-size: 1.8em;
+            font-size: 1.7em;
             font-weight: bold;
         }
 
@@ -300,7 +389,7 @@
         }
 
         .preset-btn {
-            padding: 10px 20px;
+            padding: 10px 18px;
             font-size: 1em;
             border: 2px solid #667eea;
             border-radius: 20px;
@@ -311,8 +400,18 @@
             color: #667eea;
         }
 
+        .preset-btn.neg {
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+
         .preset-btn:hover {
             background: #667eea;
+            color: white;
+        }
+
+        .preset-btn.neg:hover {
+            background: #c0392b;
             color: white;
         }
     </style>
@@ -320,599 +419,353 @@
 
 <body>
     <div class="container">
-        <h1>➕ Kesir İşlemleri Keşfi</h1>
-        <p class="subtitle">Kesirlerle toplama, çıkarma, çarpma ve bölme öğren!</p>
+        <a class="back-link" href="index.html">← Ana sayfa</a>
+        <h1>➕ Rasyonel Sayılarla İşlemler</h1>
+        <p class="subtitle">Toplama, çıkarma, çarpma ve bölme — pay ve payda <b>negatif</b> de olabilir!</p>
 
         <div class="operation-tabs">
-            <button class="tab-btn tab-add active" onclick="switchTab('add')">➕ Toplama</button>
-            <button class="tab-btn tab-sub" onclick="switchTab('sub')">➖ Çıkarma</button>
-            <button class="tab-btn tab-mul" onclick="switchTab('mul')">✖️ Çarpma</button>
-            <button class="tab-btn tab-div" onclick="switchTab('div')">➗ Bölme</button>
-            <button class="tab-btn tab-eq" onclick="switchTab('eq')">🟰 Denk Kesirler</button>
+            <button class="tab-btn tab-add active" data-tab="add">➕ Toplama</button>
+            <button class="tab-btn tab-sub" data-tab="sub">➖ Çıkarma</button>
+            <button class="tab-btn tab-mul" data-tab="mul">✖️ Çarpma</button>
+            <button class="tab-btn tab-div" data-tab="div">➗ Bölme</button>
+            <button class="tab-btn tab-eq" data-tab="eq">🟰 Denk Kesirler</button>
         </div>
 
-        <!-- Toplama / Çıkarma / Çarpma / Bölme panelleri -->
-        <div class="operation-panel active" id="panel-add">
-            <div class="fraction-inputs">
-                <div class="fraction-box">
-                    <label>Pay 1</label>
-                    <input type="number" id="add-num1" value="1" min="0" max="20" onchange="calculateAdd()">
-                    <div class="line"></div>
-                    <label>Payda 1</label>
-                    <input type="number" id="add-den1" value="4" min="1" max="20" onchange="calculateAdd()">
-                </div>
-
-                <span class="operator-symbol">+</span>
-
-                <div class="fraction-box">
-                    <label>Pay 2</label>
-                    <input type="number" id="add-num2" value="2" min="0" max="20" onchange="calculateAdd()">
-                    <div class="line"></div>
-                    <label>Payda 2</label>
-                    <input type="number" id="add-den2" value="4" min="1" max="20" onchange="calculateAdd()">
-                </div>
-            </div>
-
-            <div class="result-section" id="add-result">
-                <h3>📊 Sonuç</h3>
-                <div class="result-fraction">3/4</div>
-                <div class="result-decimal">= 0.75 = 75%</div>
-            </div>
-
-            <div class="visual-section">
-                <h3>📐 Görsel Gösterim</h3>
-                <div class="bars-container" id="add-bars">
-                    <!-- JavaScript ile doldurulacak -->
-                </div>
-            </div>
-
-            <div class="steps-box" id="add-steps">
-                <h4>📝 Çözüm Adımları</h4>
-                <ol>
-                    <li>Payda aynı: 4 = 4 ✓</li>
-                    <li>Payları topla: 1 + 2 = 3</li>
-                    <li>Sonuç: 3/4</li>
-                </ol>
-            </div>
-
-            <div class="preset-buttons">
-                <button class="preset-btn" onclick="setAdd(1,4, 2,4)">¼ + 2/4</button>
-                <button class="preset-btn" onclick="setAdd(1,2, 1,3)">½ + ⅓</button>
-                <button class="preset-btn" onclick="setAdd(2,3, 1,6)">⅔ + ⅙</button>
-                <button class="preset-btn" onclick="setAdd(3,4, 1,2)">¾ + ½</button>
-            </div>
-        </div>
-
-        <div class="operation-panel" id="panel-sub">
-            <div class="fraction-inputs">
-                <div class="fraction-box">
-                    <label>Pay 1</label>
-                    <input type="number" id="sub-num1" value="3" min="0" max="20" onchange="calculateSub()">
-                    <div class="line"></div>
-                    <label>Payda 1</label>
-                    <input type="number" id="sub-den1" value="4" min="1" max="20" onchange="calculateSub()">
-                </div>
-
-                <span class="operator-symbol">−</span>
-
-                <div class="fraction-box">
-                    <label>Pay 2</label>
-                    <input type="number" id="sub-num2" value="1" min="0" max="20" onchange="calculateSub()">
-                    <div class="line"></div>
-                    <label>Payda 2</label>
-                    <input type="number" id="sub-den2" value="4" min="1" max="20" onchange="calculateSub()">
-                </div>
-            </div>
-
-            <div class="result-section" id="sub-result" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
-                <h3>📊 Sonuç</h3>
-                <div class="result-fraction">2/4 = 1/2</div>
-                <div class="result-decimal">= 0.50 = 50%</div>
-            </div>
-
-            <div class="visual-section">
-                <h3>📐 Görsel Gösterim</h3>
-                <div class="bars-container" id="sub-bars"></div>
-            </div>
-
-            <div class="steps-box" id="sub-steps">
-                <h4>📝 Çözüm Adımları</h4>
-                <ol></ol>
-            </div>
-
-            <div class="preset-buttons">
-                <button class="preset-btn" onclick="setSub(3,4, 1,4)">¾ − ¼</button>
-                <button class="preset-btn" onclick="setSub(1,2, 1,3)">½ − ⅓</button>
-                <button class="preset-btn" onclick="setSub(5,6, 1,2)">5/6 − ½</button>
-            </div>
-        </div>
-
-        <div class="operation-panel" id="panel-mul">
-            <div class="fraction-inputs">
-                <div class="fraction-box">
-                    <label>Pay 1</label>
-                    <input type="number" id="mul-num1" value="2" min="0" max="20" onchange="calculateMul()">
-                    <div class="line"></div>
-                    <label>Payda 1</label>
-                    <input type="number" id="mul-den1" value="3" min="1" max="20" onchange="calculateMul()">
-                </div>
-
-                <span class="operator-symbol">×</span>
-
-                <div class="fraction-box">
-                    <label>Pay 2</label>
-                    <input type="number" id="mul-num2" value="3" min="0" max="20" onchange="calculateMul()">
-                    <div class="line"></div>
-                    <label>Payda 2</label>
-                    <input type="number" id="mul-den2" value="4" min="1" max="20" onchange="calculateMul()">
-                </div>
-            </div>
-
-            <div class="result-section" id="mul-result" style="background: linear-gradient(135deg, #3498db, #2980b9);">
-                <h3>📊 Sonuç</h3>
-                <div class="result-fraction">6/12 = 1/2</div>
-                <div class="result-decimal">= 0.50 = 50%</div>
-            </div>
-
-            <div class="visual-section">
-                <h3>📐 Görsel Gösterim (Alan Modeli)</h3>
-                <canvas id="mul-canvas" width="400" height="300"></canvas>
-            </div>
-
-            <div class="steps-box" id="mul-steps">
-                <h4>📝 Çözüm Adımları</h4>
-                <ol></ol>
-            </div>
-
-            <div class="preset-buttons">
-                <button class="preset-btn" onclick="setMul(1,2, 1,2)">½ × ½</button>
-                <button class="preset-btn" onclick="setMul(2,3, 3,4)">⅔ × ¾</button>
-                <button class="preset-btn" onclick="setMul(3,4, 2,5)">¾ × ⅖</button>
-            </div>
-        </div>
-
-        <div class="operation-panel" id="panel-div">
-            <div class="fraction-inputs">
-                <div class="fraction-box">
-                    <label>Pay 1</label>
-                    <input type="number" id="div-num1" value="1" min="0" max="20" onchange="calculateDiv()">
-                    <div class="line"></div>
-                    <label>Payda 1</label>
-                    <input type="number" id="div-den1" value="2" min="1" max="20" onchange="calculateDiv()">
-                </div>
-
-                <span class="operator-symbol">÷</span>
-
-                <div class="fraction-box">
-                    <label>Pay 2</label>
-                    <input type="number" id="div-num2" value="1" min="1" max="20" onchange="calculateDiv()">
-                    <div class="line"></div>
-                    <label>Payda 2</label>
-                    <input type="number" id="div-den2" value="4" min="1" max="20" onchange="calculateDiv()">
-                </div>
-            </div>
-
-            <div class="result-section" id="div-result" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
-                <h3>📊 Sonuç</h3>
-                <div class="result-fraction">4/2 = 2</div>
-                <div class="result-decimal">= 2.00 = 200%</div>
-            </div>
-
-            <div class="steps-box" id="div-steps">
-                <h4>📝 Çözüm Adımları</h4>
-                <ol></ol>
-            </div>
-
-            <div class="preset-buttons">
-                <button class="preset-btn" onclick="setDiv(1,2, 1,4)">½ ÷ ¼</button>
-                <button class="preset-btn" onclick="setDiv(3,4, 1,2)">¾ ÷ ½</button>
-                <button class="preset-btn" onclick="setDiv(2,3, 4,5)">⅔ ÷ ⅘</button>
-            </div>
-        </div>
-
-        <div class="operation-panel" id="panel-eq">
-            <div class="fraction-inputs">
-                <div class="fraction-box">
-                    <label>Pay</label>
-                    <input type="number" id="eq-num" value="2" min="1" max="20" onchange="calculateEq()">
-                    <div class="line"></div>
-                    <label>Payda</label>
-                    <input type="number" id="eq-den" value="4" min="1" max="20" onchange="calculateEq()">
-                </div>
-            </div>
-
-            <div class="result-section" id="eq-result" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
-                <h3>🔍 En Sade Hali</h3>
-                <div class="result-fraction">1/2</div>
-                <div class="result-decimal">= 0.50 = 50%</div>
-            </div>
-
-            <div class="visual-section">
-                <h3>🟰 Denk Kesirler</h3>
-                <div class="equivalent-grid" id="eq-grid">
-                    <!-- JavaScript ile doldurulacak -->
-                </div>
-            </div>
-
-            <div class="steps-box" id="eq-steps">
-                <h4>📝 Sadeleştirme</h4>
-                <ol></ol>
-            </div>
-        </div>
+        <div id="panels"></div>
     </div>
 
+    <script src="rasyonel.js"></script>
     <script>
-        let currentTab = 'add';
+        (function () {
+            var R = Rasyonel, MINUS = R.MINUS;
+            var F = '"Segoe UI", Tahoma, Arial, sans-serif';
 
-        function switchTab(tab) {
-            currentTab = tab;
+            /* ---------- Panel tanımları ---------- */
+            var OPS = {
+                add: {
+                    sym: '+', two: true, bg: 'linear-gradient(135deg,#11998e,#38ef7d)', def: [[1, 4], [2, 4]],
+                    presets: [[1, 4, 2, 4], [1, 2, 1, 3], [-1, 2, 1, 3], [-3, 4, 3, 4], [-2, 3, -1, 6], [-5, 4, 1, 2]]
+                },
+                sub: {
+                    sym: MINUS, two: true, bg: 'linear-gradient(135deg,#e74c3c,#c0392b)', def: [[3, 4], [1, 4]],
+                    presets: [[3, 4, 1, 4], [1, 4, 3, 4], [-1, 2, -1, 3], [1, 2, -1, 2], [-2, 3, 1, 6], [0, 1, 5, 6]]
+                },
+                mul: {
+                    sym: '×', two: true, bg: 'linear-gradient(135deg,#3498db,#2980b9)', def: [[2, 3], [3, 4]],
+                    presets: [[1, 2, 1, 2], [2, 3, 3, 4], [-2, 3, 3, 4], [-1, 2, -1, 2], [3, 4, -2, 5], [-5, 3, 6, 5]]
+                },
+                div: {
+                    sym: '÷', two: true, bg: 'linear-gradient(135deg,#9b59b6,#8e44ad)', def: [[1, 2], [1, 4]],
+                    presets: [[1, 2, 1, 4], [3, 4, 1, 2], [-1, 2, 1, 4], [-3, 4, -3, 4], [2, 3, -4, 5], [1, 2, 0, 3]]
+                },
+                eq: { two: false, bg: 'linear-gradient(135deg,#f39c12,#e67e22)', def: [[2, 4]], presets: [[1, 2], [-1, 2], [-2, 6], [-3, 9], [4, -8], [-6, -10]] }
+            };
 
-            // Tab butonlarını güncelle
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.tab-${tab}`).classList.add('active');
-
-            // Panelleri güncelle
-            document.querySelectorAll('.operation-panel').forEach(panel => panel.classList.remove('active'));
-            document.getElementById(`panel-${tab}`).classList.add('active');
-
-            // İlgili hesaplamayı çalıştır
-            switch (tab) {
-                case 'add': calculateAdd(); break;
-                case 'sub': calculateSub(); break;
-                case 'mul': calculateMul(); break;
-                case 'div': calculateDiv(); break;
-                case 'eq': calculateEq(); break;
+            function fmtBtn(n, d) { return R.fmt(R.make(n, d)); }
+            function box(op, i, label) {
+                return '<div class="fraction-box"><label>' + label + '</label>' +
+                    '<input type="number" id="' + op + '-num' + i + '" step="1" min="-999" max="999" aria-label="Pay ' + i + '">' +
+                    '<div class="line"></div>' +
+                    '<label>PAYDA' + (label.indexOf('PAY') === 0 && i ? ' ' + i : '') + ' (0 olamaz)</label>' +
+                    '<input type="number" id="' + op + '-den' + i + '" step="1" min="-99" max="99" aria-label="Payda ' + i + '"></div>';
             }
-        }
-
-        function gcd(a, b) {
-            return b === 0 ? a : gcd(b, a % b);
-        }
-
-        function lcm(a, b) {
-            return (a * b) / gcd(a, b);
-        }
-
-        function simplify(num, den) {
-            const d = gcd(Math.abs(num), Math.abs(den));
-            return { num: num / d, den: den / d };
-        }
-
-        function createBar(num, den, type = 'normal') {
-            const bar = document.createElement('div');
-            bar.className = 'fraction-bar';
-            bar.style.width = `${Math.min(den * 50, 400)}px`;
-
-            for (let i = 0; i < den; i++) {
-                const seg = document.createElement('div');
-                seg.className = `bar-segment ${i < num ? (type === 'result' ? 'result' : 'filled') : 'empty'}`;
-                seg.style.flex = '1';
-                seg.style.borderRight = i < den - 1 ? '2px solid white' : 'none';
-                bar.appendChild(seg);
+            function buildPanel(op) {
+                var c = OPS[op], h = '<div class="operation-panel' + (op === 'add' ? ' active' : '') + '" id="panel-' + op + '">';
+                h += '<div class="fraction-inputs">' + box(op, 1, c.two ? 'PAY 1' : 'PAY');
+                if (c.two) h += '<span class="operator-symbol">' + c.sym + '</span>' + box(op, 2, 'PAY 2');
+                h += '</div><div class="msg" id="' + op + '-msg" role="status" aria-live="polite"></div>';
+                h += '<div class="result-section" id="' + op + '-result" style="background:' + c.bg + '"><h3>' + (op === 'eq' ? '🔍 En Sade Hali' : '📊 Sonuç') +
+                    '</h3><div class="result-fraction"></div><div class="result-decimal"></div><div class="result-mixed"></div></div>';
+                h += '<div class="visual-section"><h3>' + (op === 'eq' ? '🟰 Denk Kesirler' : '📐 Görsel Gösterim') + '</h3>';
+                if (op === 'eq') h += '<div class="equivalent-grid" id="eq-grid"></div>';
+                if (op === 'add' || op === 'sub') h += '<canvas id="' + op + '-canvas" width="900" height="190" aria-label="Sayı doğrusunda sıçramalar"></canvas>';
+                if (op === 'mul') h += '<canvas id="mul-canvas" width="460" height="360" aria-label="Alan modeli"></canvas>';
+                h += '<div class="bars-container" id="' + op + '-bars"></div>';
+                h += '<div class="legend-note"><span class="sw" style="background:#3498db"></span>pozitif birim <span class="sw" style="background:repeating-linear-gradient(45deg,#e74c3c,#e74c3c 4px,#ff8f87 4px,#ff8f87 8px)"></span>negatif birim (çizgili) <span class="sw" style="background:#ecf0f1;border:1px solid #ccc"></span>boş</div></div>';
+                h += '<div class="steps-box" id="' + op + '-steps"><h4>📝 Çözüm Adımları</h4><ol></ol></div>';
+                h += '<div class="preset-buttons">' + c.presets.map(function (p) {
+                    var neg = p.some(function (x, i) { return i % 2 === 0 && x < 0; }) || (p.length === 4 && p[2] < 0);
+                    var lab = c.two ? fmtBtn(p[0], p[1]) + ' ' + c.sym + ' ' + (R.make(p[2], p[3]).n < 0 ? '(' + fmtBtn(p[2], p[3]) + ')' : fmtBtn(p[2], p[3])) : fmtBtn(p[0], p[1]);
+                    if (c.two && p[3] === 0) lab = fmtBtn(p[0], p[1]) + ' ' + c.sym + ' 0';
+                    return '<button class="preset-btn' + (neg ? ' neg' : '') + '" data-op="' + op + '" data-v="' + p.join(',') + '">' + lab + '</button>';
+                }).join('') + '</div></div>';
+                return h;
             }
+            document.getElementById('panels').innerHTML = Object.keys(OPS).map(buildPanel).join('');
 
-            return bar;
-        }
-
-        function calculateAdd() {
-            const num1 = parseInt(document.getElementById('add-num1').value) || 0;
-            const den1 = parseInt(document.getElementById('add-den1').value) || 1;
-            const num2 = parseInt(document.getElementById('add-num2').value) || 0;
-            const den2 = parseInt(document.getElementById('add-den2').value) || 1;
-
-            // Ortak payda bul
-            const commonDen = lcm(den1, den2);
-            const newNum1 = num1 * (commonDen / den1);
-            const newNum2 = num2 * (commonDen / den2);
-            const resultNum = newNum1 + newNum2;
-
-            const simplified = simplify(resultNum, commonDen);
-            const decimal = resultNum / commonDen;
-
-            document.querySelector('#add-result .result-fraction').innerHTML =
-                resultNum !== simplified.num * (commonDen / simplified.den) ?
-                    `${resultNum}/${commonDen} = ${simplified.num}/${simplified.den}` :
-                    `${simplified.num}/${simplified.den}`;
-            document.querySelector('#add-result .result-decimal').textContent =
-                `= ${decimal.toFixed(2)} = ${(decimal * 100).toFixed(0)}%`;
-
-            // Görsel çubuklar
-            const bars = document.getElementById('add-bars');
-            bars.innerHTML = '';
-
-            const row1 = document.createElement('div');
-            row1.className = 'bar-row';
-            row1.innerHTML = `<span class="bar-label">${num1}/${den1}</span>`;
-            row1.appendChild(createBar(num1, den1));
-            bars.appendChild(row1);
-
-            const row2 = document.createElement('div');
-            row2.className = 'bar-row';
-            row2.innerHTML = `<span class="bar-label">${num2}/${den2}</span>`;
-            row2.appendChild(createBar(num2, den2));
-            bars.appendChild(row2);
-
-            const rowR = document.createElement('div');
-            rowR.className = 'bar-row';
-            rowR.innerHTML = `<span class="bar-label">${simplified.num}/${simplified.den}</span>`;
-            rowR.appendChild(createBar(simplified.num, simplified.den, 'result'));
-            bars.appendChild(rowR);
-
-            // Adımlar
-            const steps = document.querySelector('#add-steps ol');
-            if (den1 === den2) {
-                steps.innerHTML = `
-                    <li>Payda aynı: ${den1} = ${den2} ✓</li>
-                    <li>Payları topla: ${num1} + ${num2} = ${resultNum}</li>
-                    <li>Sonuç: ${resultNum}/${commonDen}${resultNum !== simplified.num ? ` = ${simplified.num}/${simplified.den}` : ''}</li>
-                `;
-            } else {
-                steps.innerHTML = `
-                    <li>Ortak payda bul: EKOK(${den1}, ${den2}) = ${commonDen}</li>
-                    <li>Genişlet: ${num1}/${den1} = ${newNum1}/${commonDen}</li>
-                    <li>Genişlet: ${num2}/${den2} = ${newNum2}/${commonDen}</li>
-                    <li>Payları topla: ${newNum1} + ${newNum2} = ${resultNum}</li>
-                    <li>Sonuç: ${resultNum}/${commonDen}${resultNum !== simplified.num ? ` = ${simplified.num}/${simplified.den}` : ''}</li>
-                `;
+            /* ---------- Yardımcılar ---------- */
+            function $(id) { return document.getElementById(id); }
+            function readQ(op, i) {
+                var ne = $(op + '-num' + i), de = $(op + '-den' + i);
+                var n = R.readInt(ne), d = R.readInt(de);
+                ne.classList.toggle('invalid', n === null);
+                de.classList.toggle('invalid', d === null || d === 0);
+                if (n === null) return { err: 'Pay ' + i + ' için bir tam sayı gir (negatif olabilir).' };
+                if (d === null) return { err: 'Payda ' + i + ' için bir tam sayı gir.' };
+                if (d === 0) return { err: 'Payda 0 olamaz! (' + n + '/0 bir rasyonel sayı değildir.)' };
+                return { q: R.make(n, d), n: n, d: d };
             }
-        }
-
-        function calculateSub() {
-            const num1 = parseInt(document.getElementById('sub-num1').value) || 0;
-            const den1 = parseInt(document.getElementById('sub-den1').value) || 1;
-            const num2 = parseInt(document.getElementById('sub-num2').value) || 0;
-            const den2 = parseInt(document.getElementById('sub-den2').value) || 1;
-
-            const commonDen = lcm(den1, den2);
-            const newNum1 = num1 * (commonDen / den1);
-            const newNum2 = num2 * (commonDen / den2);
-            const resultNum = newNum1 - newNum2;
-
-            const simplified = simplify(Math.abs(resultNum), commonDen);
-            const decimal = resultNum / commonDen;
-            const sign = resultNum < 0 ? '-' : '';
-
-            document.querySelector('#sub-result .result-fraction').innerHTML =
-                `${sign}${Math.abs(resultNum)}/${commonDen}${Math.abs(resultNum) !== simplified.num ? ` = ${sign}${simplified.num}/${simplified.den}` : ''}`;
-            document.querySelector('#sub-result .result-decimal').textContent =
-                `= ${decimal.toFixed(2)} = ${(decimal * 100).toFixed(0)}%`;
-
-            // Görsel çubuklar
-            const bars = document.getElementById('sub-bars');
-            bars.innerHTML = '';
-
-            const row1 = document.createElement('div');
-            row1.className = 'bar-row';
-            row1.innerHTML = `<span class="bar-label">${num1}/${den1}</span>`;
-            row1.appendChild(createBar(num1, den1));
-            bars.appendChild(row1);
-
-            const row2 = document.createElement('div');
-            row2.className = 'bar-row';
-            row2.innerHTML = `<span class="bar-label">−${num2}/${den2}</span>`;
-            const bar2 = createBar(num2, den2);
-            bar2.style.opacity = '0.5';
-            bar2.querySelectorAll('.bar-segment.filled').forEach(s => s.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)');
-            row2.appendChild(bar2);
-            bars.appendChild(row2);
-
-            if (resultNum >= 0) {
-                const rowR = document.createElement('div');
-                rowR.className = 'bar-row';
-                rowR.innerHTML = `<span class="bar-label">${simplified.num}/${simplified.den}</span>`;
-                rowR.appendChild(createBar(simplified.num, simplified.den, 'result'));
-                bars.appendChild(rowR);
+            function setMsg(op, text, ok) { var e = $(op + '-msg'); e.textContent = text || ''; e.className = 'msg' + (ok ? ' ok' : ''); }
+            function neutral(op) {
+                $(op + '-result').querySelector('.result-fraction').textContent = '—';
+                $(op + '-result').querySelector('.result-decimal').textContent = '';
+                $(op + '-result').querySelector('.result-mixed').textContent = '';
+                $(op + '-steps').querySelector('ol').innerHTML = '';
+                $(op + '-bars').innerHTML = '';
+                var cv = $(op + '-canvas'); if (cv) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
             }
-
-            // Adımlar
-            const steps = document.querySelector('#sub-steps ol');
-            if (den1 === den2) {
-                steps.innerHTML = `
-                    <li>Payda aynı: ${den1} = ${den2} ✓</li>
-                    <li>Payları çıkar: ${num1} − ${num2} = ${resultNum}</li>
-                    <li>Sonuç: ${resultNum}/${commonDen}${Math.abs(resultNum) !== simplified.num ? ` = ${sign}${simplified.num}/${simplified.den}` : ''}</li>
-                `;
-            } else {
-                steps.innerHTML = `
-                    <li>Ortak payda bul: EKOK(${den1}, ${den2}) = ${commonDen}</li>
-                    <li>Genişlet: ${num1}/${den1} = ${newNum1}/${commonDen}</li>
-                    <li>Genişlet: ${num2}/${den2} = ${newNum2}/${commonDen}</li>
-                    <li>Payları çıkar: ${newNum1} − ${newNum2} = ${resultNum}</li>
-                    <li>Sonuç: ${resultNum}/${commonDen}${Math.abs(resultNum) !== simplified.num ? ` = ${sign}${simplified.num}/${simplified.den}` : ''}</li>
-                `;
+            function showResult(op, raw, simp) {
+                var rf = R.fmt(raw), sf = R.fmt(simp);
+                $(op + '-result').querySelector('.result-fraction').textContent = (rf !== sf ? rf + ' = ' : '') + sf;
+                $(op + '-result').querySelector('.result-decimal').textContent = '= ' + R.decimalStr(simp) + ' = ' + R.percentStr(simp).replace(/^(\u2212?)(.*)%$/, '$1%$2');
+                $(op + '-result').querySelector('.result-mixed').textContent = (R.isInt(simp) || Math.abs(simp.n) < simp.d) ? '' : 'Tam sayılı kesir: ' + R.fmtMixed(simp);
             }
-        }
+            /** Girdide payda negatifse işareti paya taşıdığımızı belirt. */
+            function normSteps(r, i) {
+                return r.d < 0 ? '<li class="rule">Payda ' + i + ' negatif: ' + r.n + '/' + r.d + ' = ' + R.fmt(r.q) + ' (işareti paya taşıdık: −3/5 = 3/−5).</li>' : '';
+            }
+            function wrapNeg(q) { return q.n < 0 ? '(' + R.fmt(q) + ')' : R.fmt(q); }
 
-        function calculateMul() {
-            const num1 = parseInt(document.getElementById('mul-num1').value) || 0;
-            const den1 = parseInt(document.getElementById('mul-den1').value) || 1;
-            const num2 = parseInt(document.getElementById('mul-num2').value) || 0;
-            const den2 = parseInt(document.getElementById('mul-den2').value) || 1;
-
-            const resultNum = num1 * num2;
-            const resultDen = den1 * den2;
-            const simplified = simplify(resultNum, resultDen);
-            const decimal = resultNum / resultDen;
-
-            document.querySelector('#mul-result .result-fraction').innerHTML =
-                `${resultNum}/${resultDen}${resultNum !== simplified.num || resultDen !== simplified.den ? ` = ${simplified.num}/${simplified.den}` : ''}`;
-            document.querySelector('#mul-result .result-decimal').textContent =
-                `= ${decimal.toFixed(2)} = ${(decimal * 100).toFixed(0)}%`;
-
-            // Alan modeli çiz
-            const canvas = document.getElementById('mul-canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const size = 250;
-            const startX = (canvas.width - size) / 2;
-            const startY = 20;
-            const cellW = size / den2;
-            const cellH = size / den1;
-
-            // Tüm kareleri çiz
-            for (let row = 0; row < den1; row++) {
-                for (let col = 0; col < den2; col++) {
-                    const x = startX + col * cellW;
-                    const y = startY + row * cellH;
-
-                    // Kesişim alanı
-                    const inFirst = row < num1;
-                    const inSecond = col < num2;
-
-                    if (inFirst && inSecond) {
-                        ctx.fillStyle = '#2ecc71'; // Kesişim (sonuç)
-                    } else if (inFirst) {
-                        ctx.fillStyle = '#3498db'; // Sadece birinci kesir
-                    } else if (inSecond) {
-                        ctx.fillStyle = '#e74c3c'; // Sadece ikinci kesir
-                    } else {
-                        ctx.fillStyle = '#ecf0f1'; // Boş
+            /** İşaretli çubuk: |pay|/payda kadar dilim; negatifse çizgili kırmızı. */
+            function sbar(q, cls) {
+                var neg = q.n < 0, an = Math.abs(q.n), d = q.d;
+                var units = Math.max(1, Math.ceil(an / d)), shown = Math.min(units, 5);
+                var w = document.createElement('div'); w.className = 'sbar';
+                for (var u = 0; u < shown; u++) {
+                    var bar = document.createElement('div'); bar.className = 'fraction-bar';
+                    for (var i = 0; i < d; i++) {
+                        var seg = document.createElement('div');
+                        var filled = (u * d + i) < an;
+                        seg.className = 'bar-segment ' + (filled ? (neg ? 'neg' : cls) : 'empty');
+                        bar.appendChild(seg);
                     }
-
-                    ctx.fillRect(x, y, cellW, cellH);
-                    ctx.strokeStyle = 'white';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(x, y, cellW, cellH);
+                    w.appendChild(bar);
                 }
+                if (units > shown) { var m = document.createElement('span'); m.className = 'bar-more'; m.textContent = '… (+' + (units - shown) + ' birim daha)'; w.appendChild(m); }
+                return w;
+            }
+            function barRow(parent, label, q, cls) {
+                var row = document.createElement('div'); row.className = 'bar-row';
+                var l = document.createElement('span'); l.className = 'bar-label'; l.textContent = label;
+                row.appendChild(l); row.appendChild(sbar(q, cls)); parent.appendChild(row);
             }
 
-            // Etiketler
-            ctx.font = 'bold 14px Segoe UI';
-            ctx.fillStyle = '#2c3e50';
-            ctx.textAlign = 'center';
-            ctx.fillText(`${num1}/${den1}`, startX - 30, startY + size / 2);
-            ctx.fillText(`${num2}/${den2}`, startX + size / 2, startY + size + 25);
+            /** Sayı doğrusunda sıçrama: 0 → a, sonra a → a ± b (etiketli oklar). */
+            function drawJumps(op, a, b, res) {
+                var cv = $(op + '-canvas'), c = cv.getContext('2d'), W = cv.width, H = cv.height;
+                c.clearRect(0, 0, W, H);
+                var pts = [0, R.toNumber(a), R.toNumber(res), R.toNumber(op === 'add' ? R.add(a, b) : R.sub(a, b))];
+                var lo = Math.min.apply(null, pts), hi = Math.max.apply(null, pts);
+                if (lo < R.MIN || hi > R.MAX) {
+                    c.font = 'bold 15px ' + F; c.fillStyle = '#888'; c.textAlign = 'center';
+                    c.fillText('Değerler −50 … +50 dışında olduğu için sayı doğrusunda gösterilemiyor.', W / 2, H / 2); return;
+                }
+                lo = Math.floor(Math.min(lo, 0) - 1); hi = Math.ceil(Math.max(hi, 0) + 1);
+                lo = Math.max(lo, R.MIN); hi = Math.min(hi, R.MAX);
+                var P = 40, Y = 120, ppu = (W - 2 * P) / (hi - lo);
+                function X(v) { return P + (v - lo) * ppu; }
+                c.strokeStyle = '#2c3e50'; c.lineWidth = 3; c.beginPath(); c.moveTo(P - 10, Y); c.lineTo(W - P + 10, Y); c.stroke();
+                var step = Math.max(1, R.niceStep(46 / ppu));
+                c.textAlign = 'center';
+                for (var k = Math.ceil(lo / step); k <= Math.floor(hi / step); k++) {
+                    var v = k * step, x = X(v);
+                    c.strokeStyle = v === 0 ? '#c0392b' : '#2c3e50'; c.lineWidth = v === 0 ? 3 : 2;
+                    c.beginPath(); c.moveTo(x, Y - 8); c.lineTo(x, Y + 8); c.stroke();
+                    c.font = (v === 0 ? 'bold 14px ' : '13px ') + F; c.fillStyle = v === 0 ? '#c0392b' : '#2c3e50';
+                    c.fillText(v < 0 ? MINUS + Math.abs(v) : String(v), x, Y + 28);
+                }
+                function arrow(from, to, h, color, label) {
+                    if (from === to) return;
+                    var x0 = X(from), x1 = X(to), mid = (x0 + x1) / 2;
+                    c.strokeStyle = color; c.lineWidth = 4; c.beginPath(); c.moveTo(x0, Y - 4);
+                    c.quadraticCurveTo(mid, Y - 4 - h * 1.6, x1, Y - 4); c.stroke();
+                    var dir = x1 > x0 ? 1 : -1;
+                    c.fillStyle = color; c.beginPath(); c.moveTo(x1, Y - 4); c.lineTo(x1 - dir * 12, Y - 16); c.lineTo(x1 - dir * 14, Y - 2); c.closePath(); c.fill();
+                    c.font = 'bold 14px ' + F; c.textAlign = 'center'; c.fillText(label, mid, Y - 8 - h * 0.8 - 6);
+                }
+                var A = R.toNumber(a), RES = R.toNumber(res);
+                arrow(0, A, 52, '#3498db', R.fmt(a, true) + ' kadar git');
+                var bl = op === 'add' ? '+ ' + wrapNeg(R.simplify(b)) : MINUS + ' ' + wrapNeg(R.simplify(b)) + '  (karşıtını ekle: + ' + wrapNeg(R.neg(R.simplify(b))) + ')';
+                arrow(A, RES, 30, op === 'add' ? '#11998e' : '#e74c3c', bl);
+                [[0, '#c0392b', '0'], [A, '#3498db', R.fmt(a, true)], [RES, '#2c3e50', R.fmt(res, true)]].forEach(function (p, i) {
+                    c.beginPath(); c.arc(X(p[0]), Y, i === 2 ? 9 : 6, 0, 7); c.fillStyle = i === 2 ? '#27ae60' : p[1]; c.fill();
+                });
+                c.font = 'bold 15px ' + F; c.fillStyle = '#27ae60'; c.textAlign = 'center';
+                c.fillText('= ' + R.fmt(res, true), X(RES), Y + 50);
+            }
 
-            // Lejant
-            ctx.font = '12px Segoe UI';
-            ctx.fillStyle = '#2ecc71';
-            ctx.fillRect(startX, startY + size + 40, 15, 15);
-            ctx.fillStyle = '#2c3e50';
-            ctx.textAlign = 'left';
-            ctx.fillText(`= ${simplified.num}/${simplified.den} (Kesişim)`, startX + 20, startY + size + 52);
+            /* ---------- İşlemler ---------- */
+            function calcAddSub(op) {
+                var r1 = readQ(op, 1), r2 = readQ(op, 2);
+                var err = r1.err || r2.err;
+                if (err) { setMsg(op, err); neutral(op); return; }
+                setMsg(op, '');
+                var a = r1.q, b = r2.q, isAdd = op === 'add';
+                var bb = isAdd ? b : R.neg(b);          // çıkarma = karşıtını toplama
+                var L = R.lcm(a.d, bb.d);
+                var n1 = a.n * (L / a.d), n2 = bb.n * (L / bb.d), rn = n1 + n2;
+                var raw = R.make(rn, L), simp = R.simplify(raw);
+                showResult(op, raw, simp);
+                // görsel
+                var bars = $(op + '-bars'); bars.innerHTML = '';
+                barRow(bars, R.fmt(a, true), a, 'filled');
+                barRow(bars, (isAdd ? '+ ' : MINUS + ' ') + wrapNeg(R.simplify(b)), b, 'filled2');
+                var sep = document.createElement('div'); sep.style.cssText = 'width:100%;border-top:3px dashed #bdc3c7;margin:2px 0';
+                bars.appendChild(sep);
+                barRow(bars, '= ' + R.fmt(simp), simp, 'result');
+                drawJumps(op, a, b, simp);
+                // adımlar
+                var s = '';
+                s += normSteps(r1, 1) + normSteps(r2, 2);
+                if (!isAdd) s += '<li class="rule">Çıkarma, karşıtını toplamaktır: ' + R.fmt(a) + ' ' + MINUS + ' ' + wrapNeg(b) + ' = ' + R.fmt(a) + ' + ' + wrapNeg(bb) + '</li>';
+                if (a.d === bb.d) s += '<li>Paydalar aynı: ' + a.d + ' = ' + bb.d + ' ✓</li>';
+                else s += '<li>Ortak payda: EKOK(' + a.d + ', ' + bb.d + ') = ' + L + '</li>' +
+                    '<li>Genişlet: ' + R.fmt(a) + ' = ' + R.fmt(R.make(n1, L)) + '</li>' +
+                    '<li>Genişlet: ' + R.fmt(bb) + ' = ' + R.fmt(R.make(n2, L)) + '</li>';
+                var sgn1 = Math.sign(n1), sgn2 = Math.sign(n2);
+                if (sgn1 !== 0 && sgn2 !== 0 && sgn1 !== sgn2)
+                    s += '<li class="rule">Zıt işaretli sayılar: mutlak değerleri çıkar (' + Math.max(Math.abs(n1), Math.abs(n2)) + ' ' + MINUS + ' ' + Math.min(Math.abs(n1), Math.abs(n2)) + '), sonucun işareti mutlak değeri büyük olanın işareti olur.</li>';
+                else if (sgn1 !== 0 && sgn1 === sgn2)
+                    s += '<li class="rule">Aynı işaretli sayılar: mutlak değerleri topla, ortak işareti (' + (sgn1 < 0 ? MINUS : '+') + ') yaz.</li>';
+                s += '<li>Payları topla (işaretiyle): ' + R.fmt(R.make(n1, 1)) + ' + ' + wrapNeg(R.make(n2, 1)) + ' = <b>' + R.fmt(R.make(rn, 1)) + '</b></li>';
+                var rf = R.fmt(raw), sf = R.fmt(simp);
+                s += '<li>Sonuç: <b>' + rf + '</b>' + (rf !== sf ? ' = <b>' + sf + '</b> (sadeleştirildi, EBOB = ' + R.gcd(raw.n, raw.d) + ')' : '') + '</li>';
+                $(op + '-steps').querySelector('ol').innerHTML = s;
+            }
 
-            // Adımlar
-            document.querySelector('#mul-steps ol').innerHTML = `
-                <li>Payları çarp: ${num1} × ${num2} = ${resultNum}</li>
-                <li>Paydaları çarp: ${den1} × ${den2} = ${resultDen}</li>
-                <li>Sonuç: ${resultNum}/${resultDen}${resultNum !== simplified.num || resultDen !== simplified.den ? ` = ${simplified.num}/${simplified.den}` : ''}</li>
-            `;
-        }
+            function calcMul() {
+                var op = 'mul', r1 = readQ(op, 1), r2 = readQ(op, 2), err = r1.err || r2.err;
+                if (err) { setMsg(op, err); neutral(op); return; }
+                setMsg(op, '');
+                var a = r1.q, b = r2.q, raw = R.mul(a, b), simp = R.simplify(raw);
+                showResult(op, raw, simp);
+                var bars = $(op + '-bars'); bars.innerHTML = '';
+                barRow(bars, R.fmt(a, true), a, 'filled');
+                barRow(bars, '× ' + wrapNeg(R.simplify(b)), b, 'filled2');
+                var sep = document.createElement('div'); sep.style.cssText = 'width:100%;border-top:3px dashed #bdc3c7;margin:2px 0';
+                bars.appendChild(sep);
+                barRow(bars, '= ' + R.fmt(simp), simp, 'result');
+                // alan modeli (|pay| ≤ payda ise)
+                var cv = $('mul-canvas'), c = cv.getContext('2d'); c.clearRect(0, 0, cv.width, cv.height);
+                var sa = Math.sign(a.n), sb = Math.sign(b.n), sr = Math.sign(raw.n);
+                if (Math.abs(a.n) <= a.d && Math.abs(b.n) <= b.d) {
+                    var size = 260, sx = 100, sy = 20, cw = size / b.d, ch = size / a.d;
+                    var resCol = sr < 0 ? '#e74c3c' : '#2ecc71';
+                    for (var row = 0; row < a.d; row++) for (var col = 0; col < b.d; col++) {
+                        var inA = row < Math.abs(a.n), inB = col < Math.abs(b.n);
+                        c.fillStyle = inA && inB ? resCol : inA ? '#74b9ff' : inB ? '#fd79a8' : '#ecf0f1';
+                        c.fillRect(sx + col * cw, sy + row * ch, cw, ch);
+                        c.strokeStyle = 'white'; c.lineWidth = 2; c.strokeRect(sx + col * cw, sy + row * ch, cw, ch);
+                        if (inA && inB && sr < 0 && cw > 14 && ch > 14) { c.strokeStyle = 'rgba(255,255,255,.6)'; c.lineWidth = 2; c.beginPath(); c.moveTo(sx + col * cw + 3, sy + row * ch + ch / 2); c.lineTo(sx + (col + 1) * cw - 3, sy + row * ch + ch / 2); c.stroke(); }
+                    }
+                    c.font = 'bold 15px ' + F; c.fillStyle = '#2c3e50'; c.textAlign = 'center';
+                    c.fillText(R.fmt(a, true), sx - 40, sy + size / 2 + 5);
+                    c.fillText(R.fmt(b, true), sx + size / 2, sy + size + 24);
+                    c.textAlign = 'left'; c.fillStyle = resCol; c.fillRect(sx, sy + size + 40, 16, 16);
+                    c.fillStyle = '#2c3e50'; c.font = '13px ' + F;
+                    c.fillText('Kesişim: ' + R.fmt(raw) + ' = ' + R.fmt(simp) + (sr < 0 ? '  (negatif: işaret kuralı)' : ''), sx + 22, sy + size + 53);
+                    c.fillText('Alan modeli, |işaretler| kullanılarak çizilir; işaret ayrıca işaret kuralıyla bulunur.', sx, sy + size + 78);
+                } else {
+                    c.font = 'bold 14px ' + F; c.fillStyle = '#888'; c.textAlign = 'center';
+                    c.fillText('Alan modeli, |pay| ≤ payda olan kesirler için çizilir.', cv.width / 2, cv.height / 2 - 8);
+                    c.fillText('Bu girdide çubuk modelini kullan.', cv.width / 2, cv.height / 2 + 14);
+                }
+                var s = normSteps(r1, 1) + normSteps(r2, 2);
+                s += '<li class="rule">İşaret kuralı: ' + (sa === 0 || sb === 0 ? 'çarpanlardan biri 0 ise çarpım 0\'dır.' :
+                    (sa === sb ? 'aynı işaretlerin çarpımı pozitiftir (' + (sa < 0 ? '(−) × (−) = (+)' : '(+) × (+) = (+)') + ').' : 'zıt işaretlerin çarpımı negatiftir ((−) × (+) = (−)).')) + '</li>';
+                s += '<li>Payları çarp: ' + wrapNeg(R.make(a.n, 1)) + ' × ' + wrapNeg(R.make(b.n, 1)) + ' = <b>' + raw.n + '</b></li>';
+                s += '<li>Paydaları çarp: ' + a.d + ' × ' + b.d + ' = <b>' + raw.d + '</b></li>';
+                var rf = R.fmt(raw), sf = R.fmt(simp);
+                s += '<li>Sonuç: <b>' + rf + '</b>' + (rf !== sf ? ' = <b>' + sf + '</b> (sadeleştirildi)' : '') + '</li>';
+                $(op + '-steps').querySelector('ol').innerHTML = s;
+            }
 
-        function calculateDiv() {
-            const num1 = parseInt(document.getElementById('div-num1').value) || 0;
-            const den1 = parseInt(document.getElementById('div-den1').value) || 1;
-            const num2 = parseInt(document.getElementById('div-num2').value) || 1;
-            const den2 = parseInt(document.getElementById('div-den2').value) || 1;
+            function calcDiv() {
+                var op = 'div', r1 = readQ(op, 1), r2 = readQ(op, 2), err = r1.err || r2.err;
+                if (err) { setMsg(op, err); neutral(op); return; }
+                var a = r1.q, b = r2.q;
+                if (b.n === 0) {
+                    setMsg(op, '0\'a bölme tanımsızdır! Bölen (2. kesir) 0 olamaz: ' + R.fmt(a, true) + ' ÷ 0 işleminin sonucu yoktur.');
+                    neutral(op);
+                    $(op + '-steps').querySelector('ol').innerHTML = '<li class="rule">Neden? ' + R.fmt(a, true) + ' ÷ 0 = x olsaydı x · 0 = ' + R.fmt(a, true) + ' olmalıydı; ama hiçbir sayı 0 ile çarpılınca sıfırdan farklı bir sayı vermez.</li>';
+                    return;
+                }
+                setMsg(op, '');
+                var raw = R.div(a, b), simp = R.simplify(raw), inv = R.make(b.d, b.n);
+                showResult(op, raw, simp);
+                var bars = $(op + '-bars'); bars.innerHTML = '';
+                barRow(bars, R.fmt(a, true), a, 'filled');
+                barRow(bars, '÷ ' + wrapNeg(R.simplify(b)), b, 'filled2');
+                var sep = document.createElement('div'); sep.style.cssText = 'width:100%;border-top:3px dashed #bdc3c7;margin:2px 0';
+                bars.appendChild(sep);
+                barRow(bars, '= ' + R.fmt(simp), simp, 'result');
+                var sa = Math.sign(a.n), sb = Math.sign(b.n);
+                var s = normSteps(r1, 1) + normSteps(r2, 2);
+                s += '<li>Bölenin çarpmaya göre tersini al: ' + R.fmt(b) + ' → ' + R.fmt(inv) + ' (işareti değişmez)</li>';
+                s += '<li>Bölmeyi çarpmaya çevir: ' + R.fmt(a) + ' × ' + wrapNeg(inv) + '</li>';
+                s += '<li class="rule">İşaret kuralı: ' + (sa === 0 ? 'bölünen 0 ise sonuç 0\'dır.' : sa === sb ? 'aynı işaretlerin bölümü pozitiftir.' : 'zıt işaretlerin bölümü negatiftir.') + '</li>';
+                s += '<li>Payları çarp: ' + wrapNeg(R.make(a.n, 1)) + ' × ' + wrapNeg(R.make(inv.n, 1)) + ' = <b>' + raw.n + '</b></li>';
+                s += '<li>Paydaları çarp: ' + a.d + ' × ' + inv.d + ' = <b>' + raw.d + '</b></li>';
+                var rf = R.fmt(raw), sf = R.fmt(simp);
+                s += '<li>Sonuç: <b>' + rf + '</b>' + (rf !== sf ? ' = <b>' + sf + '</b> (sadeleştirildi)' : '') + '</li>';
+                $(op + '-steps').querySelector('ol').innerHTML = s;
+            }
 
-            // Bölenin tersini al ve çarp
-            const resultNum = num1 * den2;
-            const resultDen = den1 * num2;
-            const simplified = simplify(resultNum, resultDen);
-            const decimal = resultNum / resultDen;
+            function calcEq() {
+                var op = 'eq', r1 = readQ(op, 1);
+                if (r1.err) { setMsg(op, r1.err); neutral(op); $('eq-grid').innerHTML = ''; return; }
+                setMsg(op, r1.d < 0 ? r1.n + '/' + r1.d + ' yazılışında payda negatif; ' + R.fmt(r1.q) + ' olarak okunur (işaret paya taşınır).' : '', true);
+                var q = r1.q, simp = R.simplify(q), g = R.gcd(q.n, q.d);
+                showResult(op, simp, simp);
+                var grid = $('eq-grid'); grid.innerHTML = '';
+                for (var m = 1; m <= 6; m++) {
+                    var e = R.make(simp.n * m, simp.d * m), same = e.n === q.n && e.d === q.d;
+                    var card = document.createElement('div'); card.className = 'eq-card' + (same ? ' highlight' : '');
+                    card.innerHTML = '<div class="fraction">' + R.fmt(e) + '</div><div class="decimal">× ' + m + '</div>';
+                    (function (e) { card.onclick = function () { $('eq-num1').value = e.n; $('eq-den1').value = e.d; calcEq(); }; })(e);
+                    grid.appendChild(card);
+                }
+                // işaret yazılışı: −a/b = a/−b
+                var alt = document.createElement('div'); alt.className = 'eq-card';
+                alt.innerHTML = '<div class="fraction">' + simp.n + '/' + (-simp.d) + '</div><div class="decimal">işaret paydada = ' + R.fmt(simp) + '</div>';
+                if (simp.n !== 0) grid.appendChild(alt);
+                var bars = $('eq-bars'); bars.innerHTML = '';
+                [1, 2, 3].forEach(function (m) { var e = R.make(simp.n * m, simp.d * m); barRow(bars, R.fmt(e), e, 'filled'); });
+                var s = normSteps(r1, '');
+                s = s.replace('Payda  negatif', 'Payda negatif');
+                if (g > 1) s += '<li>EBOB(' + Math.abs(q.n) + ', ' + q.d + ') = ' + g + '</li><li>Pay ve paydayı ' + g + '\'e böl: ' + R.fmt(q) + ' = ' + R.fmt(simp) + '</li><li class="rule">Sadeleştirirken işaret değişmez: negatif sayı negatif kalır.</li>';
+                else s += '<li>Bu kesir zaten en sade halde: EBOB(' + Math.abs(q.n) + ', ' + q.d + ') = 1</li>';
+                $('eq-steps').querySelector('ol').innerHTML = s;
+            }
 
-            document.querySelector('#div-result .result-fraction').innerHTML =
-                `${resultNum}/${resultDen}${resultNum !== simplified.num || resultDen !== simplified.den ? ` = ${simplified.num}/${simplified.den}` : ''}`;
-            document.querySelector('#div-result .result-decimal').textContent =
-                `= ${decimal.toFixed(2)} = ${(decimal * 100).toFixed(0)}%`;
+            var CALC = { add: function () { calcAddSub('add'); }, sub: function () { calcAddSub('sub'); }, mul: calcMul, div: calcDiv, eq: calcEq };
 
-            // Adımlar
-            document.querySelector('#div-steps ol').innerHTML = `
-                <li>Bölenin tersini al: ${num2}/${den2} → ${den2}/${num2}</li>
-                <li>Çarpmaya dönüştür: ${num1}/${den1} × ${den2}/${num2}</li>
-                <li>Payları çarp: ${num1} × ${den2} = ${resultNum}</li>
-                <li>Paydaları çarp: ${den1} × ${num2} = ${resultDen}</li>
-                <li>Sonuç: ${resultNum}/${resultDen}${resultNum !== simplified.num || resultDen !== simplified.den ? ` = ${simplified.num}/${simplified.den}` : ''}</li>
-            `;
-        }
-
-        function calculateEq() {
-            const num = parseInt(document.getElementById('eq-num').value) || 1;
-            const den = parseInt(document.getElementById('eq-den').value) || 1;
-
-            const simplified = simplify(num, den);
-            const decimal = num / den;
-
-            document.querySelector('#eq-result .result-fraction').textContent =
-                `${simplified.num}/${simplified.den}`;
-            document.querySelector('#eq-result .result-decimal').textContent =
-                `= ${decimal.toFixed(2)} = ${(decimal * 100).toFixed(0)}%`;
-
-            // Denk kesirleri göster
-            const grid = document.getElementById('eq-grid');
-            grid.innerHTML = '';
-
-            for (let mult = 1; mult <= 6; mult++) {
-                const eqNum = simplified.num * mult;
-                const eqDen = simplified.den * mult;
-
-                const card = document.createElement('div');
-                card.className = 'eq-card' + (eqNum === num && eqDen === den ? ' highlight' : '');
-                card.innerHTML = `
-                    <div class="fraction">${eqNum}/${eqDen}</div>
-                    <div class="decimal">×${mult}</div>
-                `;
-                card.onclick = () => {
-                    document.getElementById('eq-num').value = eqNum;
-                    document.getElementById('eq-den').value = eqDen;
-                    calculateEq();
+            /* ---------- Bağlantılar ---------- */
+            Object.keys(OPS).forEach(function (op) {
+                var c = OPS[op], idx = c.two ? [1, 2] : [1];
+                idx.forEach(function (i) {
+                    $(op + '-num' + i).value = c.def[i - 1][0]; $(op + '-den' + i).value = c.def[i - 1][1];
+                    $(op + '-num' + i).addEventListener('input', CALC[op]);
+                    $(op + '-den' + i).addEventListener('input', CALC[op]);
+                    R.skipZero($(op + '-den' + i));
+                });
+            });
+            document.querySelectorAll('.preset-btn').forEach(function (b) {
+                b.onclick = function () {
+                    var op = b.dataset.op, v = b.dataset.v.split(',').map(Number), c = OPS[op];
+                    (c.two ? [1, 2] : [1]).forEach(function (i) { $(op + '-num' + i).value = v[(i - 1) * 2]; $(op + '-den' + i).value = v[(i - 1) * 2 + 1]; });
+                    CALC[op]();
                 };
-                grid.appendChild(card);
+            });
+            function switchTab(tab) {
+                document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === tab); });
+                document.querySelectorAll('.operation-panel').forEach(function (p) { p.classList.toggle('active', p.id === 'panel-' + tab); });
+                CALC[tab]();
             }
-
-            // Adımlar
-            const d = gcd(num, den);
-            document.querySelector('#eq-steps ol').innerHTML = d > 1 ? `
-                <li>EBOB(${num}, ${den}) = ${d}</li>
-                <li>Pay'ı böl: ${num} ÷ ${d} = ${simplified.num}</li>
-                <li>Payda'yı böl: ${den} ÷ ${d} = ${simplified.den}</li>
-                <li>En sade hali: ${simplified.num}/${simplified.den}</li>
-            ` : `
-                <li>Bu kesir zaten en sade hali!</li>
-                <li>EBOB(${num}, ${den}) = 1</li>
-            `;
-        }
-
-        // Preset fonksiyonları
-        function setAdd(n1, d1, n2, d2) {
-            document.getElementById('add-num1').value = n1;
-            document.getElementById('add-den1').value = d1;
-            document.getElementById('add-num2').value = n2;
-            document.getElementById('add-den2').value = d2;
-            calculateAdd();
-        }
-
-        function setSub(n1, d1, n2, d2) {
-            document.getElementById('sub-num1').value = n1;
-            document.getElementById('sub-den1').value = d1;
-            document.getElementById('sub-num2').value = n2;
-            document.getElementById('sub-den2').value = d2;
-            calculateSub();
-        }
-
-        function setMul(n1, d1, n2, d2) {
-            document.getElementById('mul-num1').value = n1;
-            document.getElementById('mul-den1').value = d1;
-            document.getElementById('mul-num2').value = n2;
-            document.getElementById('mul-den2').value = d2;
-            calculateMul();
-        }
-
-        function setDiv(n1, d1, n2, d2) {
-            document.getElementById('div-num1').value = n1;
-            document.getElementById('div-den1').value = d1;
-            document.getElementById('div-num2').value = n2;
-            document.getElementById('div-den2').value = d2;
-            calculateDiv();
-        }
-
-        // İlk yükleme
-        calculateAdd();
-        calculateSub();
-        calculateMul();
-        calculateDiv();
-        calculateEq();
+            document.querySelectorAll('.tab-btn').forEach(function (b) { b.onclick = function () { switchTab(b.dataset.tab); }; });
+            window.OperationsTool = { switchTab: switchTab };
+            Object.keys(CALC).forEach(function (k) { CALC[k](); });
+        })();
     </script>
 </body>
 

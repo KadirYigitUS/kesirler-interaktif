@@ -217,8 +217,8 @@
 
         <div class="controls">
             <div class="slider-group">
-                <label>PAY (Üstteki Sayı)</label>
-                <input type="range" id="numSlider" min="0" max="12" value="3">
+                <label>PAY (Üstteki Sayı — negatif olabilir)</label>
+                <input type="range" id="numSlider" min="-50" max="50" step="1" value="3" aria-label="Pay (negatif olabilir)">
                 <div class="slider-value" id="numValue">3</div>
             </div>
 
@@ -253,6 +253,7 @@
         </div>
 
         <div class="presets">
+            <button class="preset-btn" onclick="toggleFullLine(this)">↔ Tüm doğru (−50 … +50)</button>
             <button class="preset-btn" onclick="setFraction(1,2)">½</button>
             <button class="preset-btn" onclick="setFraction(1,4)">¼</button>
             <button class="preset-btn" onclick="setFraction(3,4)">¾</button>
@@ -260,6 +261,11 @@
             <button class="preset-btn" onclick="setFraction(2,3)">⅔</button>
             <button class="preset-btn" onclick="setFraction(5,8)">⅝</button>
             <button class="preset-btn" onclick="setFraction(7,4)">7/4</button>
+            <button class="preset-btn" onclick="setFraction(-1,2)">−½</button>
+            <button class="preset-btn" onclick="setFraction(-3,4)">−¾</button>
+            <button class="preset-btn" onclick="setFraction(-7,3)">−7/3</button>
+            <button class="preset-btn" onclick="setFraction(-50,1)">−50</button>
+            <button class="preset-btn" onclick="setFraction(50,1)">50</button>
         </div>
 
         <div class="info-box">
@@ -270,151 +276,14 @@
         </div>
     </div>
 
+    <script src="rasyonel.js"></script>
+    <script src="sayi_dogrusu_slider.js"></script>
     <script>
-        const canvas = document.getElementById('numberlineCanvas');
-        const ctx = canvas.getContext('2d');
-        const numSlider = document.getElementById('numSlider');
-        const denSlider = document.getElementById('denSlider');
-
-        function drawNumberLine() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const num = parseInt(numSlider.value);
-            const den = parseInt(denSlider.value);
-            const value = num / den;
-
-            const padding = 50;
-            const lineY = 75;
-            const lineStart = padding;
-            const lineEnd = canvas.width - padding;
-            const lineWidth = lineEnd - lineStart;
-
-            // Maksimum değer hesapla
-            const maxVal = Math.max(2, Math.ceil(value) + 1);
-            const unitWidth = lineWidth / maxVal;
-
-            // Ana çizgi
-            ctx.beginPath();
-            ctx.moveTo(lineStart, lineY);
-            ctx.lineTo(lineEnd, lineY);
-            ctx.strokeStyle = '#2c3e50';
-            ctx.lineWidth = 4;
-            ctx.stroke();
-
-            // Oklar
-            ctx.beginPath();
-            ctx.moveTo(lineEnd, lineY);
-            ctx.lineTo(lineEnd - 15, lineY - 10);
-            ctx.lineTo(lineEnd - 15, lineY + 10);
-            ctx.closePath();
-            ctx.fillStyle = '#2c3e50';
-            ctx.fill();
-
-            // Tam sayı işaretleri
-            for (let i = 0; i <= maxVal; i++) {
-                const x = lineStart + i * unitWidth;
-
-                ctx.beginPath();
-                ctx.moveTo(x, lineY - 20);
-                ctx.lineTo(x, lineY + 20);
-                ctx.strokeStyle = '#2c3e50';
-                ctx.lineWidth = 3;
-                ctx.stroke();
-
-                ctx.font = 'bold 20px Segoe UI';
-                ctx.fillStyle = '#2c3e50';
-                ctx.textAlign = 'center';
-                ctx.fillText(i.toString(), x, lineY + 45);
-            }
-
-            // Payda bölümleri (küçük çizgiler)
-            ctx.strokeStyle = '#bdc3c7';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < maxVal * den; i++) {
-                if (i % den !== 0) {
-                    const x = lineStart + (i / den) * unitWidth;
-                    ctx.beginPath();
-                    ctx.moveTo(x, lineY - 8);
-                    ctx.lineTo(x, lineY + 8);
-                    ctx.stroke();
-                }
-            }
-
-            // Kesir noktası
-            const pointX = lineStart + value * unitWidth;
-
-            // Dikey çizgi
-            ctx.beginPath();
-            ctx.moveTo(pointX, lineY - 40);
-            ctx.lineTo(pointX, lineY + 25);
-            ctx.strokeStyle = 'rgba(231, 76, 60, 0.4)';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // Nokta
-            ctx.beginPath();
-            ctx.arc(pointX, lineY, 15, 0, Math.PI * 2);
-            ctx.fillStyle = '#e74c3c';
-            ctx.fill();
-            ctx.strokeStyle = '#c0392b';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // Etiket
-            ctx.font = 'bold 18px Segoe UI';
-            ctx.fillStyle = '#e74c3c';
-            ctx.textAlign = 'center';
-            ctx.fillText(`${num}/${den}`, pointX, lineY - 50);
-        }
-
-        function updateDisplay() {
-            const num = parseInt(numSlider.value);
-            const den = parseInt(denSlider.value);
-            const value = num / den;
-
-            document.getElementById('numValue').textContent = num;
-            document.getElementById('denValue').textContent = den;
-            document.getElementById('bigNum').textContent = num;
-            document.getElementById('bigDen').textContent = den;
-            document.getElementById('decimal').textContent = value.toFixed(3);
-            document.getElementById('percent').textContent = (value * 100).toFixed(1) + '%';
-
-            // Konum bilgisi
-            let position = '';
-            if (value === 0) position = 'Tam 0';
-            else if (value < 1) position = '0 ile 1 arası';
-            else if (value === 1) position = 'Tam 1';
-            else if (value < 2) position = '1 ile 2 arası';
-            else position = Math.floor(value) + ' ile ' + (Math.floor(value) + 1) + ' arası';
-            document.getElementById('position').textContent = position;
-
-            // Bilgi metni
-            let info = '';
-            if (num === 0) {
-                info = `<strong>0/${den}</strong> = 0. Pay sıfır olduğunda kesir değeri sıfırdır.`;
-            } else if (num === den) {
-                info = `<strong>${num}/${den}</strong> = 1. Pay ve payda eşit olduğunda kesir 1'e eşittir (tam bir bütün).`;
-            } else if (num < den) {
-                info = `<strong>${num}/${den}</strong> bir <em>basit kesir</em>dir (pay < payda). Değeri 0 ile 1 arasındadır.`;
-            } else {
-                info = `<strong>${num}/${den}</strong> bir <em>bileşik kesir</em>dir (pay > payda). Değeri 1'den büyüktür.`;
-            }
-            document.getElementById('infoText').innerHTML = info;
-
-            drawNumberLine();
-        }
-
-        function setFraction(num, den) {
-            numSlider.value = num;
-            denSlider.value = den;
-            updateDisplay();
-        }
-
-        numSlider.addEventListener('input', updateDisplay);
-        denSlider.addEventListener('input', updateDisplay);
-
-        // İlk yükleme
-        updateDisplay();
+        SliderNumberLine.init({
+            canvas: 'numberlineCanvas', numSlider: 'numSlider', denSlider: 'denSlider',
+            numVal: 'numValue', denVal: 'denValue', bigNum: 'bigNum', bigDen: 'bigDen',
+            decimal: 'decimal', percent: 'percent', position: 'position', infoText: 'infoText'
+        });
     </script>
 </body>
 

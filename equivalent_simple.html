@@ -240,19 +240,44 @@
             background: #f39c12;
             color: white;
         }
+    
+        input.invalid {
+            border-color: #ffeaa7 !important;
+            background: rgba(231, 76, 60, 0.55) !important;
+        }
+
+        .msg {
+            min-height: 1.5em;
+            text-align: center;
+            color: #c0392b;
+            font-weight: bold;
+            margin: 6px 0;
+        }
+
+        .bar-segment.neg {
+            background: repeating-linear-gradient(45deg, #e74c3c, #e74c3c 6px, #ff8f87 6px, #ff8f87 12px) !important;
+        }
+
+        .bar-units {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h1>🟰 Denk Kesirler</h1>
-        <p class="subtitle">Aynı değeri gösteren farklı kesirler!</p>
+        <p class="subtitle">Aynı değeri gösteren farklı kesirler! (Negatif de olabilir: −2/4 = −1/2)</p>
+        <div class="msg" id="msg" role="status" aria-live="polite"></div>
 
         <div class="main-fraction">
             <div class="fraction-input">
-                <input type="number" id="num" value="2" min="1" max="20" onchange="calculate()">
+                <input type="number" id="num" value="2" min="-99" max="99" step="1" oninput="calculate()" aria-label="Pay">
                 <div class="line"></div>
-                <input type="number" id="den" value="4" min="1" max="20" onchange="calculate()">
+                <input type="number" id="den" value="4" min="-99" max="99" step="1" oninput="calculate()" aria-label="Payda">
             </div>
 
             <span class="equals">=</span>
@@ -290,81 +315,79 @@
             <button class="preset-btn" onclick="setFraction(4,8)">4/8</button>
             <button class="preset-btn" onclick="setFraction(6,10)">6/10</button>
             <button class="preset-btn" onclick="setFraction(8,12)">8/12</button>
+            <button class="preset-btn" onclick="setFraction(-1,2)">−1/2</button>
+            <button class="preset-btn" onclick="setFraction(-2,6)">−2/6</button>
+            <button class="preset-btn" onclick="setFraction(4,-8)">4/−8</button>
+            <button class="preset-btn" onclick="setFraction(-6,-10)">−6/−10</button>
         </div>
     </div>
 
+    <script src="rasyonel.js"></script>
     <script>
-        function gcd(a, b) {
-            return b === 0 ? a : gcd(b, a % b);
-        }
+        const R = Rasyonel, MINUS = R.MINUS;
+        R.skipZero(document.getElementById('den'));
 
         function calculate() {
-            const num = parseInt(document.getElementById('num').value) || 1;
-            const den = parseInt(document.getElementById('den').value) || 1;
+            const ne = document.getElementById('num'), de = document.getElementById('den');
+            const n = R.readInt(ne), d = R.readInt(de), msg = document.getElementById('msg');
+            ne.classList.toggle('invalid', n === null);
+            de.classList.toggle('invalid', d === null || d === 0);
+            if (n === null || d === null || d === 0) {
+                msg.textContent = d === 0 ? 'Payda 0 olamaz!' : 'Pay ve payda tam sayı olmalı (pay negatif olabilir).';
+                ['simpleNum', 'simpleDen'].forEach(id => document.getElementById(id).textContent = '?');
+                document.getElementById('eqGrid').innerHTML = '';
+                document.getElementById('visualComparison').innerHTML = '';
+                return;
+            }
+            msg.textContent = d < 0 ? `${n}/${d} yazılışında payda negatif: işareti paya taşıyıp ${R.fmt(R.make(n, d))} olarak okuruz (−3/5 = 3/−5).` : '';
+            const q = R.make(n, d);
+            const simp = R.simplify(q), divisor = R.gcd(q.n, q.d) || 1;
 
-            // En sade hali
-            const divisor = gcd(num, den);
-            const simpleNum = num / divisor;
-            const simpleDen = den / divisor;
-
-            document.getElementById('simpleNum').textContent = simpleNum;
-            document.getElementById('simpleDen').textContent = simpleDen;
+            document.getElementById('simpleNum').textContent = (simp.n < 0 ? MINUS : '') + Math.abs(simp.n);
+            document.getElementById('simpleDen').textContent = simp.d;
 
             // Denk kesirler
-            const eqGrid = document.getElementById('eqGrid');
             let html = '';
-
             for (let mult = 1; mult <= 8; mult++) {
-                const eqNum = simpleNum * mult;
-                const eqDen = simpleDen * mult;
-
-                const isOriginal = eqNum === num && eqDen === den;
-                const isSimplest = mult === 1;
-
+                const e = R.make(simp.n * mult, simp.d * mult);
+                const isOriginal = e.n === q.n && e.d === q.d;
                 let className = 'eq-card';
                 if (isOriginal) className += ' original';
-                else if (isSimplest) className += ' simplest';
-
+                else if (mult === 1) className += ' simplest';
                 html += `
-                    <div class="${className}" onclick="setFraction(${eqNum}, ${eqDen})">
-                        <div class="fraction">${eqNum}/${eqDen}</div>
+                    <div class="${className}" onclick="setFraction(${e.n}, ${e.d})">
+                        <div class="fraction">${R.fmt(e)}</div>
                         <div class="multiplier">×${mult}</div>
-                    </div>
-                `;
+                    </div>`;
             }
-            eqGrid.innerHTML = html;
+            document.getElementById('eqGrid').innerHTML = html;
 
-            // Görsel karşılaştırma
-            const visual = document.getElementById('visualComparison');
+            // Görsel karşılaştırma (negatifse çizgili kırmızı)
             let visHtml = '';
-
             for (let mult = 1; mult <= 4; mult++) {
-                const eqNum = simpleNum * mult;
-                const eqDen = simpleDen * mult;
-                const percentage = (eqNum / eqDen) * 100;
-
+                const e = R.make(simp.n * mult, simp.d * mult);
+                const neg = e.n < 0, an = Math.abs(e.n);
                 let segments = '';
-                for (let i = 0; i < eqDen; i++) {
-                    const isFilled = i < eqNum;
-                    segments += `<div class="segment" style="width: ${100 / eqDen}%; background: ${isFilled ? 'linear-gradient(135deg, #f39c12, #fdcb6e)' : '#ecf0f1'};"></div>`;
+                for (let i = 0; i < e.d; i++) {
+                    const isFilled = i < an;
+                    const bg = isFilled ? (neg ? 'repeating-linear-gradient(45deg,#e74c3c,#e74c3c 6px,#ff8f87 6px,#ff8f87 12px)' : 'linear-gradient(135deg, #f39c12, #fdcb6e)') : '#ecf0f1';
+                    segments += `<div class="segment" style="width: ${100 / e.d}%; background: ${bg};"></div>`;
                 }
-
                 visHtml += `
                     <div class="comparison-row">
-                        <span class="comparison-label">${eqNum}/${eqDen}</span>
+                        <span class="comparison-label">${R.fmt(e)}</span>
                         <div class="comparison-bar">${segments}</div>
-                    </div>
-                `;
+                    </div>`;
             }
-            visual.innerHTML = visHtml;
+            document.getElementById('visualComparison').innerHTML = visHtml;
 
-            // Bilgi metni
             const info = document.getElementById('infoText');
+            const neg = q.n < 0 ? ' İşaret sadeleştirirken değişmez: negatif sayı negatif kalır.' : '';
             if (divisor === 1) {
-                info.innerHTML = `<strong>${num}/${den}</strong> zaten en sade halidir! EBOB(${num}, ${den}) = 1`;
+                info.innerHTML = `<strong>${R.fmt(q)}</strong> zaten en sade halidir! EBOB(${Math.abs(q.n)}, ${q.d}) = 1.${neg}`;
             } else {
-                info.innerHTML = `<strong>${num}/${den}</strong> kesrinin en sade hali <strong>${simpleNum}/${simpleDen}</strong>'dir. 
-                Pay ve paydayı ${divisor}'e böldük (EBOB = ${divisor}).`;
+                info.innerHTML = `<strong>${R.fmt(q)}</strong> kesrinin en sade hali <strong>${R.fmt(simp)}</strong>'dir.
+                Pay ve paydayı ${divisor}'e böldük (EBOB = ${divisor}).${neg}`;
             }
         }
 

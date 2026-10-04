@@ -221,6 +221,17 @@
             color: white;
             font-weight: bold;
         }
+    
+        .neg-note {
+            text-align: center;
+            color: #8e44ad;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+
+        .progress-fill.neg {
+            background: linear-gradient(to right, #8e44ad, #c39bd3);
+        }
     </style>
 </head>
 
@@ -251,11 +262,11 @@
 
         <div class="controls">
             <div class="control-group">
-                <label>🔢 Pay (Kaç dilim aldın?)</label>
+                <label>🔢 Pay (Kaç dilim aldın? Negatif = borç)</label>
                 <div class="slider-container">
-                    <span>0</span>
-                    <input type="range" id="numerator" min="0" max="12" value="3">
-                    <span>12</span>
+                    <span id="numMin">−8</span>
+                    <input type="range" id="numerator" min="-8" max="8" step="1" value="3" aria-label="Pay: negatif değerler borç dilimidir">
+                    <span id="numMax">8</span>
                     <div class="value-display" id="numValue">3</div>
                 </div>
             </div>
@@ -277,6 +288,9 @@
             <button class="preset-btn btn-third" onclick="setFraction(1, 3)">⅓ Üçte Bir</button>
             <button class="preset-btn btn-quarter" onclick="setFraction(3, 4)">¾ Dörtte Üç</button>
             <button class="preset-btn btn-eighth" onclick="setFraction(5, 8)">⅝ Sekizde Beş</button>
+            <button class="preset-btn btn-third" onclick="setFraction(-1, 2)">−½ Yarım Borç</button>
+            <button class="preset-btn btn-quarter" onclick="setFraction(-3, 4)">−¾ Dörtte Üç Borç</button>
+            <button class="preset-btn btn-eighth" onclick="setFraction(-3, 8)">−⅜</button>
         </div>
 
         <div class="info-box" id="infoBox">
@@ -289,7 +303,9 @@
         </div>
     </div>
 
+    <script src="rasyonel.js"></script>
     <script>
+        const R = Rasyonel;
         const canvas = document.getElementById('pizzaCanvas');
         const ctx = canvas.getContext('2d');
         const numSlider = document.getElementById('numerator');
@@ -327,8 +343,28 @@
                 const startAngle = i * sliceAngle - Math.PI / 2;
                 const endAngle = (i + 1) * sliceAngle - Math.PI / 2;
 
-                // Seçili dilimler
-                if (i < numerator) {
+                // BORÇ dilimleri (negatif pay): kesikli, mor, eksi işaretli
+                if (numerator < 0 && i < Math.abs(numerator)) {
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.arc(centerX, centerY, radius - 10, startAngle, endAngle);
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(232,218,239,0.95)';
+                    ctx.fill();
+                    ctx.save();
+                    ctx.setLineDash([8, 6]);
+                    ctx.strokeStyle = '#8e44ad';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    ctx.restore();
+                    const mA = (startAngle + endAngle) / 2;
+                    ctx.fillStyle = '#8e44ad';
+                    ctx.font = 'bold 34px "Segoe UI", Arial, sans-serif';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText('\u2212', centerX + Math.cos(mA) * radius * 0.6, centerY + Math.sin(mA) * radius * 0.6);
+                    ctx.textBaseline = 'alphabetic';
+                } else if (numerator > 0 && i < numerator) {
+                    // Seçili dilimler
                     ctx.beginPath();
                     ctx.moveTo(centerX, centerY);
                     ctx.arc(centerX, centerY, radius - 10, startAngle, endAngle);
@@ -386,32 +422,38 @@
             let num = parseInt(numSlider.value);
             const den = parseInt(denSlider.value);
 
-            // Pay, paydayı geçemez
-            if (num > den) {
-                num = den;
-                numSlider.value = den;
-            }
+            // |Pay|, paydayı geçemez (bir pizza modeli: −1 ile +1 arası)
+            num = Math.max(-den, Math.min(den, num));
+            numSlider.value = num;
             numSlider.max = den;
+            numSlider.min = -den;
+            document.getElementById('numMin').textContent = '\u2212' + den;
+            document.getElementById('numMax').textContent = den;
+            const an = Math.abs(num), q = R.make(num, den);
 
             // Değerleri güncelle
-            document.getElementById('numValue').textContent = num;
+            const sgnN = (num < 0 ? '\u2212' : '') + an;
+            document.getElementById('numValue').textContent = sgnN;
             document.getElementById('denValue').textContent = den;
-            document.getElementById('numDisplay').textContent = num;
+            document.getElementById('numDisplay').textContent = sgnN;
             document.getElementById('denDisplay').textContent = den;
 
-            const decimal = num / den;
-            const percent = (decimal * 100).toFixed(1);
+            const percentTxt = R.percentStr(q).replace(/^(\u2212?)(.*)%$/, '$1%$2');
+            document.getElementById('decimalValue').textContent = R.decimalStr(q);
+            document.getElementById('percentValue').textContent = percentTxt;
 
-            document.getElementById('decimalValue').textContent = decimal.toFixed(4);
-            document.getElementById('percentValue').textContent = percent + '%';
-
-            // Progress bar
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressText').textContent = percent + '%';
+            // Progress bar (uzunluk = mutlak değer; negatifse mor)
+            const barPct = (an / den * 100).toFixed(1);
+            document.getElementById('progressFill').style.width = barPct + '%';
+            document.getElementById('progressFill').classList.toggle('neg', num < 0);
+            document.getElementById('progressText').textContent = percentTxt;
 
             // Info text
             let infoText = '';
-            if (num === 0) {
+            if (num < 0) {
+                infoText = `${R.fmt(q)} demek: Pizza ${den} eşit dilime bölünmüş ve ${an} dilim BORÇ (kesikli mor dilimler). ` +
+                    `Negatif sayılar sayı doğrusunda 0'ın solundadır; |${R.fmt(q)}| = ${R.fmt(R.abs(q))} (0'a uzaklık).`;
+            } else if (num === 0) {
                 infoText = `Hiç pizza almadın! 😢 Pizza ${den} dilime bölünmüş ama sen 0 dilim aldın.`;
             } else if (num === den) {
                 infoText = `Tüm pizzayı yedin! 🎉 ${den}/${den} = 1 tam pizza!`;
@@ -425,7 +467,7 @@
             // Emoji satırı
             let emojis = '';
             for (let i = 0; i < den; i++) {
-                emojis += i < num ? '🍕' : '⬜';
+                emojis += num < 0 ? (i < an ? '➖' : '⬜') : (i < num ? '🍕' : '⬜');
             }
             document.getElementById('emojiRow').textContent = emojis;
 
@@ -435,6 +477,7 @@
         function setFraction(num, den) {
             denSlider.value = den;
             numSlider.max = den;
+            numSlider.min = -den;
             numSlider.value = num;
             updateDisplay();
         }

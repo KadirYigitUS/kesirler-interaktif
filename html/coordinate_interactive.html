@@ -318,17 +318,78 @@
             background: #d6eaf8;
             color: #3498db;
         }
+
+        .extent-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 10px 0 0;
+            align-items: center;
+            font-size: .9em;
+            color: #555;
+        }
+
+        .extent-btn {
+            padding: 5px 12px;
+            border: 2px solid #667eea;
+            border-radius: 14px;
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .extent-btn.active,
+        .extent-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        #coordMsg {
+            min-height: 1.4em;
+            font-weight: bold;
+            color: #c0392b;
+            font-size: .9em;
+            margin: 6px 0;
+        }
+
+        #coordMsg.ok {
+            color: #27ae60;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        #coordCanvas {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
+        <a class="back-link" href="index.html">← Ana sayfa</a>
         <h1>📐 Koordinat Düzleminde Kesirler</h1>
         <p class="subtitle">Kesirli noktaları düzleme yerleştir ve keşfet!</p>
 
         <div class="main-content">
             <div class="canvas-section">
-                <canvas id="coordCanvas" width="500" height="500"></canvas>
+                <canvas id="coordCanvas" width="500" height="500" role="img" aria-label="Koordinat düzlemi"></canvas>
+                <div class="extent-row" id="extentRow">Görünüm:
+                    <button class="extent-btn active" data-e="auto">Otomatik</button>
+                    <button class="extent-btn" data-e="2">±2</button>
+                    <button class="extent-btn" data-e="5">±5</button>
+                    <button class="extent-btn" data-e="10">±10</button>
+                    <button class="extent-btn" data-e="25">±25</button>
+                    <button class="extent-btn" data-e="50">±50 (tamamı)</button>
+                </div>
 
                 <div class="controls-row">
                     <button class="control-btn btn-clear" onclick="clearAllPoints()">🗑️ Temizle</button>
@@ -352,9 +413,9 @@
                     <div class="coord-input">
                         <label>X:</label>
                         <div class="fraction-input">
-                            <input type="number" id="x-num" value="1" min="-20" max="20">
+                            <input type="number" id="x-num" value="1" min="-2500" max="2500" step="1" aria-label="X payı">
                             <span class="slash">/</span>
-                            <input type="number" id="x-den" value="2" min="1" max="20">
+                            <input type="number" id="x-den" value="2" min="-50" max="50" step="1" aria-label="X paydası">
                         </div>
                         <span class="decimal-display" id="x-decimal">= 0.5</span>
                     </div>
@@ -362,13 +423,14 @@
                     <div class="coord-input">
                         <label>Y:</label>
                         <div class="fraction-input">
-                            <input type="number" id="y-num" value="3" min="-20" max="20">
+                            <input type="number" id="y-num" value="3" min="-2500" max="2500" step="1" aria-label="Y payı">
                             <span class="slash">/</span>
-                            <input type="number" id="y-den" value="4" min="1" max="20">
+                            <input type="number" id="y-den" value="4" min="-50" max="50" step="1" aria-label="Y paydası">
                         </div>
                         <span class="decimal-display" id="y-decimal">= 0.75</span>
                     </div>
 
+                    <div id="coordMsg" role="status" aria-live="polite"></div>
                     <button class="add-point-btn" onclick="addPoint()">➕ Noktayı Ekle</button>
                 </div>
 
@@ -381,6 +443,8 @@
                         <button class="preset-btn" onclick="setAndAdd(2,3, -1,3)">(⅔, −⅓)</button>
                         <button class="preset-btn" onclick="setAndAdd(-3,4, -1,2)">(−¾, −½)</button>
                         <button class="preset-btn" onclick="setAndAdd(5,4, 1,1)">(5/4, 1)</button>
+                        <button class="preset-btn" onclick="setAndAdd(-7,2, -9,4)">(−7/2, −9/4)</button>
+                        <button class="preset-btn" onclick="setAndAdd(-45,1, 99,4)">(−45, 99/4)</button>
                     </div>
                 </div>
 
@@ -402,141 +466,146 @@
         </div>
     </div>
 
+    <script src="rasyonel.js"></script>
     <script>
+        const R = Rasyonel, MINUS = R.MINUS;
         const canvas = document.getElementById('coordCanvas');
+        const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+        const W = 500;
+        canvas.width = W * dpr; canvas.height = W * dpr;
         const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const FONT = '"Segoe UI", Tahoma, Arial, sans-serif';
 
         let points = [];
         let pointCounter = 0;
         let showGrid = true;
         let clickMode = false;
+        let extentSetting = 'auto';      // 'auto' veya 2/5/10/25/50
 
         const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e91e63', '#00bcd4'];
         const names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+        ['x-den', 'y-den'].forEach(id => R.skipZero(document.getElementById(id)));
+
+        const sg = v => v < 0 ? MINUS + Math.abs(v) : String(v);
+
+        function getExtent() {
+            if (extentSetting !== 'auto') return extentSetting;
+            let m = 0;
+            points.forEach(p => { m = Math.max(m, Math.abs(p.x), Math.abs(p.y)); });
+            return [5, 10, 20, 25, 50].find(e => e >= m) || 50;   // her zaman [−50, 50] içinde
+        }
 
         function drawCoordinatePlane() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            let maxVal = 10;
-            points.forEach(p => {
-                maxVal = Math.max(maxVal, Math.abs(p.x), Math.abs(p.y));
-            });
-            maxVal = Math.min(50, Math.ceil(maxVal / 5) * 5);
-            const scale = (centerX - 30) / maxVal;
-            const tickStep = maxVal > 20 ? 10 : (maxVal > 10 ? 5 : 1);
+            ctx.clearRect(0, 0, W, W);
+            const c = W / 2, ext = getExtent(), scale = (c - 30) / ext;
+            const X = v => c + v * scale, Y = v => c - v * scale;
+            const step = Math.max(1, R.niceStep(34 / scale));
 
+            // bölgeler (hafif renk)
+            ctx.fillStyle = 'rgba(46,204,113,.06)'; ctx.fillRect(c, 0, c, c);
+            ctx.fillStyle = 'rgba(231,76,60,.06)'; ctx.fillRect(0, 0, c, c);
+            ctx.fillStyle = 'rgba(243,156,18,.06)'; ctx.fillRect(0, c, c, c);
+            ctx.fillStyle = 'rgba(52,152,219,.06)'; ctx.fillRect(c, c, c, c);
+
+            const k0 = -Math.floor(ext / step), k1 = Math.floor(ext / step);
             if (showGrid) {
-                ctx.strokeStyle = '#e0e0e0';
-                ctx.lineWidth = 1;
-                for (let i = -maxVal; i <= maxVal; i += tickStep) {
-                    ctx.beginPath();
-                    ctx.moveTo(centerX + i * scale, 0);
-                    ctx.lineTo(centerX + i * scale, canvas.height);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(0, centerY + i * scale);
-                    ctx.lineTo(canvas.width, centerY + i * scale);
-                    ctx.stroke();
+                ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1;
+                for (let k = k0; k <= k1; k++) {
+                    const v = k * step;
+                    ctx.beginPath(); ctx.moveTo(X(v), 0); ctx.lineTo(X(v), W); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(0, Y(v)); ctx.lineTo(W, Y(v)); ctx.stroke();
+                }
+                if (scale >= 40) {          // yarım birim çizgileri
+                    ctx.strokeStyle = '#f1f1f1';
+                    for (let h = -ext; h < ext; h += 0.5) {
+                        if (Number.isInteger(h)) continue;
+                        ctx.beginPath(); ctx.moveTo(X(h), 0); ctx.lineTo(X(h), W); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(0, Y(h)); ctx.lineTo(W, Y(h)); ctx.stroke();
+                    }
                 }
             }
-
-            ctx.strokeStyle = '#2c3e50';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(0, centerY);
-            ctx.lineTo(canvas.width, centerY);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(centerX, 0);
-            ctx.lineTo(centerX, canvas.height);
-            ctx.stroke();
-
+            ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, c); ctx.lineTo(W, c); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(c, 0); ctx.lineTo(c, W); ctx.stroke();
             ctx.fillStyle = '#2c3e50';
-            ctx.font = '12px Segoe UI';
-            ctx.textAlign = 'center';
-            for (let i = -maxVal; i <= maxVal; i += tickStep) {
-                if (i !== 0) {
-                    ctx.fillText(i.toString(), centerX + i * scale, centerY + 20);
-                    ctx.beginPath();
-                    ctx.moveTo(centerX + i * scale, centerY - 5);
-                    ctx.lineTo(centerX + i * scale, centerY + 5);
-                    ctx.stroke();
-                    
-                    ctx.textAlign = 'right';
-                    ctx.fillText((-i).toString(), centerX - 10, centerY + i * scale + 5);
-                    ctx.textAlign = 'center';
-                    ctx.beginPath();
-                    ctx.moveTo(centerX - 5, centerY + i * scale);
-                    ctx.lineTo(centerX + 5, centerY + i * scale);
-                    ctx.stroke();
-                }
+            ctx.beginPath(); ctx.moveTo(W - 2, c); ctx.lineTo(W - 14, c - 6); ctx.lineTo(W - 14, c + 6); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(c, 2); ctx.lineTo(c - 6, 14); ctx.lineTo(c + 6, 14); ctx.fill();
+            ctx.font = 'bold 14px ' + FONT; ctx.textAlign = 'left'; ctx.fillText('x', W - 14, c - 12); ctx.fillText('y', c + 10, 14);
+
+            ctx.font = '12px ' + FONT;
+            for (let k = k0; k <= k1; k++) {
+                const v = k * step; if (v === 0) continue;
+                ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.moveTo(X(v), c - 5); ctx.lineTo(X(v), c + 5); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(c - 5, Y(v)); ctx.lineTo(c + 5, Y(v)); ctx.stroke();
+                ctx.fillStyle = v < 0 ? '#a93226' : '#1e8449';
+                ctx.textAlign = 'center'; ctx.fillText(sg(v), X(v), c + 20);
+                ctx.textAlign = 'right'; ctx.fillText(sg(v), c - 9, Y(v) + 4);
             }
-            ctx.fillText('0', centerX - 12, centerY + 18);
+            ctx.fillStyle = '#2c3e50'; ctx.textAlign = 'right'; ctx.fillText('0', c - 8, c + 16);
+            ctx.fillStyle = '#666'; ctx.font = '11px ' + FONT; ctx.textAlign = 'left';
+            ctx.fillText('görünüm: ±' + ext, 8, W - 8);
 
-            points.forEach((point, index) => {
-                const screenX = centerX + point.x * scale;
-                const screenY = centerY - point.y * scale;
-
-                ctx.strokeStyle = point.color + '40';
-                ctx.lineWidth = 1;
-                ctx.setLineDash([5, 3]);
-                ctx.beginPath();
-                ctx.moveTo(screenX, screenY);
-                ctx.lineTo(screenX, centerY);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(screenX, screenY);
-                ctx.lineTo(centerX, screenY);
-                ctx.stroke();
+            let hidden = 0;
+            points.forEach(point => {
+                if (Math.abs(point.x) > ext + 1e-9 || Math.abs(point.y) > ext + 1e-9) { hidden++; return; }
+                const sx = X(point.x), sy = Y(point.y);
+                ctx.strokeStyle = point.color + '66'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 3]);
+                ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx, c); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(c, sy); ctx.stroke();
                 ctx.setLineDash([]);
-
-                ctx.beginPath();
-                ctx.arc(screenX, screenY, 10, 0, Math.PI * 2);
-                ctx.fillStyle = point.color;
-                ctx.fill();
-                ctx.strokeStyle = '#2c3e50';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                ctx.font = 'bold 14px Segoe UI';
-                ctx.fillStyle = '#2c3e50';
+                ctx.beginPath(); ctx.arc(sx, sy, 9, 0, Math.PI * 2);
+                ctx.fillStyle = point.color; ctx.fill();
+                ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.font = 'bold 13px ' + FONT; ctx.fillStyle = '#2c3e50';
+                const label = `${point.name}(${point.xLabel}, ${point.yLabel})`;
+                const w = ctx.measureText(label).width;
+                const lx = sx + 14 + w > W - 4 ? sx - 14 - w : sx + 14;
                 ctx.textAlign = 'left';
-                ctx.fillText(`${point.name}(${point.xLabel}, ${point.yLabel})`, screenX + 15, screenY - 10);
+                ctx.fillText(label, lx, sy < 24 ? sy + 22 : sy - 10);
             });
+            if (hidden) { ctx.fillStyle = '#c0392b'; ctx.font = '12px ' + FONT; ctx.textAlign = 'right'; ctx.fillText(hidden + ' nokta bu görünümün dışında', W - 8, W - 8); }
+            document.querySelectorAll('.extent-btn').forEach(b => b.classList.toggle('active', String(b.dataset.e) === String(extentSetting)));
+        }
+
+        function setMsg(t, ok) { const e = document.getElementById('coordMsg'); e.textContent = t || ''; e.className = ok ? 'ok' : ''; }
+
+        function readAxis(a) {
+            const ne = document.getElementById(a + '-num'), de = document.getElementById(a + '-den');
+            const n = R.readInt(ne), d = R.readInt(de);
+            ne.classList.toggle('invalid', n === null); de.classList.toggle('invalid', d === null || d === 0);
+            const A = a.toUpperCase();
+            if (n === null) return { err: A + ' için pay bir tam sayı olmalı (negatif olabilir).' };
+            if (d === null) return { err: A + ' için payda bir tam sayı olmalı.' };
+            if (d === 0) return { err: A + ' paydası 0 olamaz!' };
+            const q = R.make(n, d);
+            if (!R.inRange(q)) return { err: A + ' = ' + R.fmt(q) + ' değeri −50 … +50 aralığının dışında.' };
+            return { q, n, d };
         }
 
         function updateDecimals() {
-            const xNum = parseInt(document.getElementById('x-num').value) || 0;
-            const xDen = parseInt(document.getElementById('x-den').value) || 1;
-            const yNum = parseInt(document.getElementById('y-num').value) || 0;
-            const yDen = parseInt(document.getElementById('y-den').value) || 1;
-
-            document.getElementById('x-decimal').textContent = `= ${(xNum / xDen).toFixed(2)}`;
-            document.getElementById('y-decimal').textContent = `= ${(yNum / yDen).toFixed(2)}`;
+            const rx = readAxis('x'), ry = readAxis('y');
+            document.getElementById('x-decimal').textContent = rx.q ? '= ' + R.decimalStr(rx.q) : '—';
+            document.getElementById('y-decimal').textContent = ry.q ? '= ' + R.decimalStr(ry.q) : '—';
+            const err = rx.err || ry.err;
+            if (err) setMsg(err); else {
+                const bad = [['x', rx], ['y', ry]].filter(p => p[1].d < 0).map(p => p[0].toUpperCase());
+                setMsg(bad.length ? bad.join(' ve ') + ' için payda negatif: işaret paya taşınır (−3/5 = 3/−5).' : '', true);
+            }
         }
 
         function addPoint() {
-            const xNum = parseInt(document.getElementById('x-num').value) || 0;
-            const xDen = parseInt(document.getElementById('x-den').value) || 1;
-            const yNum = parseInt(document.getElementById('y-num').value) || 0;
-            const yDen = parseInt(document.getElementById('y-den').value) || 1;
-
-            const x = xNum / xDen;
-            const y = yNum / yDen;
-
+            const rx = readAxis('x'), ry = readAxis('y');
+            if (rx.err || ry.err) { setMsg(rx.err || ry.err); return; }
             const color = colors[pointCounter % colors.length];
             const name = names[pointCounter % names.length];
-
-            const xLabel = xDen === 1 ? xNum.toString() : `${xNum}/${xDen}`;
-            const yLabel = yDen === 1 ? yNum.toString() : `${yNum}/${yDen}`;
-
-            points.push({ x, y, xLabel, yLabel, color, name });
+            const p = { x: R.toNumber(rx.q), y: R.toNumber(ry.q), xq: rx.q, yq: ry.q, xLabel: R.fmt(rx.q, true), yLabel: R.fmt(ry.q, true), color, name };
+            points.push(p);
             pointCounter++;
-
+            setMsg(name + ' noktası eklendi.', true);
             updatePointsList();
-            updateInfo(x, y, name);
+            updateInfo(p);
             drawCoordinatePlane();
         }
 
@@ -549,55 +618,37 @@
             addPoint();
         }
 
-        function deletePoint(index) {
-            points.splice(index, 1);
-            updatePointsList();
-            drawCoordinatePlane();
-        }
-
-        function clearAllPoints() {
-            points = [];
-            pointCounter = 0;
-            updatePointsList();
-            drawCoordinatePlane();
-        }
+        function deletePoint(index) { points.splice(index, 1); updatePointsList(); drawCoordinatePlane(); }
+        function clearAllPoints() { points = []; pointCounter = 0; updatePointsList(); drawCoordinatePlane(); }
 
         function updatePointsList() {
             const list = document.getElementById('pointsList');
-
-            if (points.length === 0) {
-                list.innerHTML = '<p style="color: #999; text-align: center;">Henüz nokta eklenmedi</p>';
-                return;
-            }
-
+            if (points.length === 0) { list.innerHTML = '<p style="color: #999; text-align: center;">Henüz nokta eklenmedi</p>'; return; }
             list.innerHTML = points.map((p, i) => `
                 <div class="point-item">
                     <span class="point-name" style="color: ${p.color}">${p.name}</span>
                     <span class="point-coords">(${p.xLabel}, ${p.yLabel})</span>
-                    <button class="delete-btn" onclick="deletePoint(${i})">×</button>
-                </div>
-            `).join('');
+                    <button class="delete-btn" onclick="deletePoint(${i})" aria-label="Noktayı sil">×</button>
+                </div>`).join('');
         }
 
-        function updateInfo(x, y, name) {
-            let quadrant = '';
+        function updateInfo(p) {
+            const x = p.x, y = p.y;
+            let quadrant;
             if (x > 0 && y > 0) quadrant = 'I. bölge (sağ üst)';
             else if (x < 0 && y > 0) quadrant = 'II. bölge (sol üst)';
             else if (x < 0 && y < 0) quadrant = 'III. bölge (sol alt)';
             else if (x > 0 && y < 0) quadrant = 'IV. bölge (sağ alt)';
             else if (x === 0 && y !== 0) quadrant = 'Y ekseni üzerinde';
             else if (y === 0 && x !== 0) quadrant = 'X ekseni üzerinde';
-            else quadrant = 'Orijinde';
-
-            document.getElementById('infoText').textContent =
-                `${name} noktası ${quadrant} konumunda. X = ${x.toFixed(2)}, Y = ${y.toFixed(2)}`;
+            else quadrant = 'orijinde';
+            document.getElementById('infoText').innerHTML =
+                `${p.name}(${p.xLabel}, ${p.yLabel}) noktası ${quadrant}. ` +
+                `X = ${R.decimalStr(p.xq)}, Y = ${R.decimalStr(p.yq)}. ` +
+                `Y eksenine uzaklığı |x| = ${R.fmt(R.abs(p.xq), true)}, X eksenine uzaklığı |y| = ${R.fmt(R.abs(p.yq), true)} birimdir (mutlak değer = uzaklık).`;
         }
 
-        function toggleGrid() {
-            showGrid = !showGrid;
-            drawCoordinatePlane();
-        }
-
+        function toggleGrid() { showGrid = !showGrid; drawCoordinatePlane(); }
         function toggleClickMode() {
             clickMode = !clickMode;
             document.getElementById('clickModeText').textContent = clickMode ? 'Açık' : 'Kapalı';
@@ -606,52 +657,21 @@
 
         canvas.addEventListener('click', function (e) {
             if (!clickMode) return;
-
             const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            let maxVal = 10;
-            points.forEach(p => { maxVal = Math.max(maxVal, Math.abs(p.x), Math.abs(p.y)); });
-            maxVal = Math.min(50, Math.ceil(maxVal / 5) * 5);
-            const scale = (centerX - 30) / maxVal;
-
-            // En yakın yarım birime yuvarla
-            let x = (mouseX - centerX) / scale;
-            let y = (centerY - mouseY) / scale;
-
-            x = Math.round(x * 2) / 2;
-            y = Math.round(y * 2) / 2;
-
-            // Kesir olarak ayarla
-            if (x % 1 === 0) {
-                document.getElementById('x-num').value = x;
-                document.getElementById('x-den').value = 1;
-            } else {
-                document.getElementById('x-num').value = x * 2;
-                document.getElementById('x-den').value = 2;
-            }
-
-            if (y % 1 === 0) {
-                document.getElementById('y-num').value = y;
-                document.getElementById('y-den').value = 1;
-            } else {
-                document.getElementById('y-num').value = y * 2;
-                document.getElementById('y-den').value = 2;
-            }
-
-            updateDecimals();
-            addPoint();
+            const mouseX = (e.clientX - rect.left) * (W / rect.width);
+            const mouseY = (e.clientY - rect.top) * (W / rect.width);
+            const c = W / 2, ext = getExtent(), scale = (c - 30) / ext;
+            // yakınlığa göre kesir çözünürlüğü: ±2 → çeyrek, ±5 → yarım, diğer → tam sayı
+            const den = ext <= 2 ? 4 : ext <= 5 ? 2 : 1;
+            const nx = Math.round((mouseX - c) / scale * den), ny = Math.round((c - mouseY) / scale * den);
+            if (!R.inRange(R.make(nx, den)) || !R.inRange(R.make(ny, den))) return;
+            setAndAdd(nx, den, ny, den);
         });
 
-        // Input event listeners
-        ['x-num', 'x-den', 'y-num', 'y-den'].forEach(id => {
-            document.getElementById(id).addEventListener('input', updateDecimals);
-        });
+        ['x-num', 'x-den', 'y-num', 'y-den'].forEach(id => document.getElementById(id).addEventListener('input', updateDecimals));
+        document.querySelectorAll('.extent-btn').forEach(b => b.onclick = () => { extentSetting = b.dataset.e === 'auto' ? 'auto' : Number(b.dataset.e); drawCoordinatePlane(); });
+        window.CoordTool = { getExtent, getPoints: () => points.map(p => [p.xLabel, p.yLabel]) };
 
-        // İlk yükleme
         updateDecimals();
         drawCoordinatePlane();
     </script>
