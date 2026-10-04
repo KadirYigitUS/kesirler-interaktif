@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,46 +12,46 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background: linear-gradient(135deg, #ff6b6b 0%, #c0392b 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 800px;
             margin: 0 auto;
             background: white;
             border-radius: 30px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
-        
+
         h1 {
             text-align: center;
             color: #c0392b;
             font-size: 2.5em;
             margin-bottom: 10px;
         }
-        
+
         .subtitle {
             text-align: center;
             color: #666;
             margin-bottom: 30px;
         }
-        
+
         .controls {
             display: flex;
             justify-content: center;
             gap: 40px;
             margin-bottom: 30px;
         }
-        
+
         .slider-group {
             text-align: center;
         }
-        
+
         .slider-group label {
             display: block;
             font-size: 1.2em;
@@ -58,31 +59,31 @@
             margin-bottom: 10px;
             font-weight: bold;
         }
-        
+
         .slider-group input[type="range"] {
             width: 200px;
             height: 15px;
             cursor: pointer;
         }
-        
+
         .slider-group .value {
             font-size: 2em;
             font-weight: bold;
             color: #c0392b;
             margin-top: 10px;
         }
-        
+
         .pizza-container {
             display: flex;
             justify-content: center;
             margin: 30px 0;
         }
-        
+
         canvas {
             border-radius: 50%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        
+
         .fraction-display {
             text-align: center;
             background: linear-gradient(135deg, #c0392b, #e74c3c);
@@ -91,12 +92,12 @@
             border-radius: 20px;
             margin-top: 20px;
         }
-        
+
         .fraction-display .main {
             font-size: 3.5em;
             font-weight: bold;
         }
-        
+
         .fraction-display .details {
             display: flex;
             justify-content: center;
@@ -104,7 +105,7 @@
             margin-top: 15px;
             font-size: 1.2em;
         }
-        
+
         .presets {
             display: flex;
             justify-content: center;
@@ -112,7 +113,7 @@
             flex-wrap: wrap;
             margin-top: 25px;
         }
-        
+
         .preset-btn {
             padding: 12px 24px;
             font-size: 1.1em;
@@ -124,13 +125,13 @@
             font-weight: bold;
             transition: all 0.3s;
         }
-        
+
         .preset-btn:hover {
             background: #c0392b;
             color: white;
             transform: scale(1.05);
         }
-        
+
         .info-box {
             background: #fff5f5;
             border-left: 5px solid #c0392b;
@@ -138,36 +139,37 @@
             border-radius: 0 15px 15px 0;
             margin-top: 25px;
         }
-        
+
         .info-box h4 {
             color: #c0392b;
             margin-bottom: 10px;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>🍕 Pizza Kesiri</h1>
         <p class="subtitle">Pizzayı kesirlerle paylaş!</p>
-        
+
         <div class="controls">
             <div class="slider-group">
                 <label>🍴 Alınan Dilim (Pay)</label>
                 <input type="range" id="numSlider" min="0" max="12" value="3">
                 <div class="value" id="numVal">3</div>
             </div>
-            
+
             <div class="slider-group">
                 <label>🔪 Toplam Dilim (Payda)</label>
                 <input type="range" id="denSlider" min="1" max="12" value="8">
                 <div class="value" id="denVal">8</div>
             </div>
         </div>
-        
+
         <div class="pizza-container">
             <canvas id="pizzaCanvas" width="400" height="400"></canvas>
         </div>
-        
+
         <div class="fraction-display">
             <div class="main" id="fractionText">3/8</div>
             <div class="details">
@@ -175,12 +177,12 @@
                 <span>🔢 <span id="decimalText">0.375</span></span>
             </div>
         </div>
-        
+
         <div class="info-box" id="infoBox">
             <h4>💡 Bilgi</h4>
             <p id="infoText">Pizza 8 eşit dilime bölündü. 3 dilim alındı.</p>
         </div>
-        
+
         <div class="presets">
             <button class="preset-btn" onclick="setFraction(1,2)">Yarısı ½</button>
             <button class="preset-btn" onclick="setFraction(1,4)">Çeyreği ¼</button>
@@ -190,53 +192,53 @@
             <button class="preset-btn" onclick="setFraction(2,3)">⅔</button>
         </div>
     </div>
-    
+
     <script>
         const canvas = document.getElementById('pizzaCanvas');
         const ctx = canvas.getContext('2d');
         const numSlider = document.getElementById('numSlider');
         const denSlider = document.getElementById('denSlider');
-        
+
         function drawPizza() {
             const num = parseInt(numSlider.value);
             const den = parseInt(denSlider.value);
-            
+
             // Pay, paydadan büyük olamaz (pizza kontrolü)
             if (num > den) {
                 numSlider.value = den;
                 return drawPizza();
             }
-            
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const radius = 180;
-            
+
             // Pizza tabanı (hamur)
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius + 10, 0, Math.PI * 2);
             ctx.fillStyle = '#d4a574';
             ctx.fill();
-            
+
             // Dilimler çiz
             const sliceAngle = (Math.PI * 2) / den;
-            
+
             for (let i = 0; i < den; i++) {
                 const startAngle = i * sliceAngle - Math.PI / 2;
                 const endAngle = startAngle + sliceAngle;
-                
+
                 ctx.beginPath();
                 ctx.moveTo(centerX, centerY);
                 ctx.arc(centerX, centerY, radius, startAngle, endAngle);
                 ctx.closePath();
-                
+
                 // Alınan dilimler kırmızı, alınmayanlar gri
                 if (i < num) {
                     // Peynirli pizza
                     ctx.fillStyle = '#f39c12';
                     ctx.fill();
-                    
+
                     // Sos
                     ctx.beginPath();
                     ctx.moveTo(centerX, centerY);
@@ -244,7 +246,7 @@
                     ctx.closePath();
                     ctx.fillStyle = '#e74c3c';
                     ctx.fill();
-                    
+
                     // Peynir
                     ctx.beginPath();
                     ctx.moveTo(centerX, centerY);
@@ -252,7 +254,7 @@
                     ctx.closePath();
                     ctx.fillStyle = '#ffeaa7';
                     ctx.fill();
-                    
+
                     // Pepperoni
                     const midAngle = startAngle + sliceAngle / 2;
                     const pepX = centerX + Math.cos(midAngle) * radius * 0.5;
@@ -266,28 +268,28 @@
                     ctx.fillStyle = '#bdc3c7';
                     ctx.fill();
                 }
-                
+
                 // Dilim sınırları
                 ctx.strokeStyle = '#2c3e50';
                 ctx.lineWidth = 2;
                 ctx.stroke();
             }
-            
+
             // Merkez daire (pizza soslu kısım)
             ctx.beginPath();
             ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
             ctx.fillStyle = '#e74c3c';
             ctx.fill();
-            
+
             // Değerleri güncelle
             document.getElementById('numVal').textContent = num;
             document.getElementById('denVal').textContent = den;
             document.getElementById('fractionText').textContent = `${num}/${den}`;
-            
+
             const decimal = num / den;
             document.getElementById('decimalText').textContent = decimal.toFixed(3);
             document.getElementById('percentText').textContent = (decimal * 100).toFixed(1) + '%';
-            
+
             // Bilgi metni
             const infoText = document.getElementById('infoText');
             if (num === 0) {
@@ -300,25 +302,26 @@
                 infoText.textContent = `Pizza ${den} eşit dilime bölündü. ${num} dilim alındı.`;
             }
         }
-        
+
         function setFraction(num, den) {
             denSlider.value = den;
             numSlider.max = den;
             numSlider.value = num;
             drawPizza();
         }
-        
+
         numSlider.addEventListener('input', drawPizza);
-        denSlider.addEventListener('input', function() {
+        denSlider.addEventListener('input', function () {
             numSlider.max = this.value;
             if (parseInt(numSlider.value) > parseInt(this.value)) {
                 numSlider.value = this.value;
             }
             drawPizza();
         });
-        
+
         // İlk çizim
         drawPizza();
     </script>
 </body>
+
 </html>

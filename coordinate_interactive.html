@@ -416,138 +416,82 @@
 
         function drawCoordinatePlane() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const scale = 50; // 1 birim = 50 piksel
+            
+            let maxVal = 10;
+            points.forEach(p => {
+                maxVal = Math.max(maxVal, Math.abs(p.x), Math.abs(p.y));
+            });
+            maxVal = Math.min(50, Math.ceil(maxVal / 5) * 5);
+            const scale = (centerX - 30) / maxVal;
+            const tickStep = maxVal > 20 ? 10 : (maxVal > 10 ? 5 : 1);
 
-            // Izgara
             if (showGrid) {
-                ctx.strokeStyle = '#ecf0f1';
+                ctx.strokeStyle = '#e0e0e0';
                 ctx.lineWidth = 1;
-
-                for (let i = -10; i <= 10; i++) {
-                    // Dikey çizgiler
+                for (let i = -maxVal; i <= maxVal; i += tickStep) {
                     ctx.beginPath();
                     ctx.moveTo(centerX + i * scale, 0);
                     ctx.lineTo(centerX + i * scale, canvas.height);
                     ctx.stroke();
-
-                    // Yatay çizgiler
                     ctx.beginPath();
                     ctx.moveTo(0, centerY + i * scale);
                     ctx.lineTo(canvas.width, centerY + i * scale);
                     ctx.stroke();
                 }
-
-                // Yarım birim çizgileri
-                ctx.strokeStyle = '#f5f5f5';
-                for (let i = -20; i <= 20; i++) {
-                    if (i % 2 !== 0) {
-                        ctx.beginPath();
-                        ctx.moveTo(centerX + i * scale / 2, 0);
-                        ctx.lineTo(centerX + i * scale / 2, canvas.height);
-                        ctx.stroke();
-
-                        ctx.beginPath();
-                        ctx.moveTo(0, centerY + i * scale / 2);
-                        ctx.lineTo(canvas.width, centerY + i * scale / 2);
-                        ctx.stroke();
-                    }
-                }
             }
 
-            // Eksenler
             ctx.strokeStyle = '#2c3e50';
-            ctx.lineWidth = 3;
-
-            // X ekseni
+            ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(0, centerY);
             ctx.lineTo(canvas.width, centerY);
             ctx.stroke();
-
-            // Y ekseni
             ctx.beginPath();
             ctx.moveTo(centerX, 0);
             ctx.lineTo(centerX, canvas.height);
             ctx.stroke();
 
-            // Oklar
-            ctx.beginPath();
-            ctx.moveTo(canvas.width - 10, centerY - 10);
-            ctx.lineTo(canvas.width, centerY);
-            ctx.lineTo(canvas.width - 10, centerY + 10);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(centerX - 10, 10);
-            ctx.lineTo(centerX, 0);
-            ctx.lineTo(centerX + 10, 10);
-            ctx.stroke();
-
-            // Eksen etiketleri
-            ctx.font = 'bold 18px Segoe UI';
             ctx.fillStyle = '#2c3e50';
-            ctx.fillText('X', canvas.width - 20, centerY - 20);
-            ctx.fillText('Y', centerX + 15, 20);
-
-            // Sayı etiketleri
             ctx.font = '12px Segoe UI';
             ctx.textAlign = 'center';
-
-            for (let i = -4; i <= 4; i++) {
+            for (let i = -maxVal; i <= maxVal; i += tickStep) {
                 if (i !== 0) {
-                    // X ekseni
                     ctx.fillText(i.toString(), centerX + i * scale, centerY + 20);
-
-                    // X ekseni tick
                     ctx.beginPath();
                     ctx.moveTo(centerX + i * scale, centerY - 5);
                     ctx.lineTo(centerX + i * scale, centerY + 5);
-                    ctx.strokeStyle = '#2c3e50';
-                    ctx.lineWidth = 2;
                     ctx.stroke();
-
-                    // Y ekseni
+                    
                     ctx.textAlign = 'right';
                     ctx.fillText((-i).toString(), centerX - 10, centerY + i * scale + 5);
                     ctx.textAlign = 'center';
-
-                    // Y ekseni tick
                     ctx.beginPath();
                     ctx.moveTo(centerX - 5, centerY + i * scale);
                     ctx.lineTo(centerX + 5, centerY + i * scale);
                     ctx.stroke();
                 }
             }
-
-            // Orijin
             ctx.fillText('0', centerX - 12, centerY + 18);
 
-            // Noktaları çiz
             points.forEach((point, index) => {
                 const screenX = centerX + point.x * scale;
                 const screenY = centerY - point.y * scale;
 
-                // Eksen çizgileri
                 ctx.strokeStyle = point.color + '40';
                 ctx.lineWidth = 1;
                 ctx.setLineDash([5, 3]);
-
                 ctx.beginPath();
                 ctx.moveTo(screenX, screenY);
                 ctx.lineTo(screenX, centerY);
                 ctx.stroke();
-
                 ctx.beginPath();
                 ctx.moveTo(screenX, screenY);
                 ctx.lineTo(centerX, screenY);
                 ctx.stroke();
-
                 ctx.setLineDash([]);
 
-                // Nokta
                 ctx.beginPath();
                 ctx.arc(screenX, screenY, 10, 0, Math.PI * 2);
                 ctx.fillStyle = point.color;
@@ -556,7 +500,6 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Etiket
                 ctx.font = 'bold 14px Segoe UI';
                 ctx.fillStyle = '#2c3e50';
                 ctx.textAlign = 'left';
@@ -670,7 +613,10 @@
 
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const scale = 50;
+            let maxVal = 10;
+            points.forEach(p => { maxVal = Math.max(maxVal, Math.abs(p.x), Math.abs(p.y)); });
+            maxVal = Math.min(50, Math.ceil(maxVal / 5) * 5);
+            const scale = (centerX - 30) / maxVal;
 
             // En yakın yarım birime yuvarla
             let x = (mouseX - centerX) / scale;

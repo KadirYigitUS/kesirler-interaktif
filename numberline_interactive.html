@@ -298,7 +298,7 @@
         <div class="numberline-container">
             <canvas id="numberlineCanvas" width="900" height="200"></canvas>
             <div class="zoom-info">
-                Görünüm: <span id="zoomRange">0</span> ile <span id="zoomEnd">2</span> arası
+                Görünüm: <span id="zoomRange">-50</span> ile <span id="zoomEnd">50</span> arası
                 (Yakınlaştırma: <span id="zoomLevel">1x</span>)
             </div>
         </div>
@@ -367,8 +367,8 @@
         const denInput = document.getElementById('denominator');
 
         let markers = [];
-        let zoomStart = 0;
-        let zoomEnd = 2;
+        let zoomStart = -50;
+        let zoomEnd = 50;
 
         function drawNumberLine() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -405,8 +405,8 @@
 
             // Sayı işaretleri
             const range = zoomEnd - zoomStart;
-            const majorStep = range <= 1 ? 0.25 : range <= 2 ? 0.5 : 1;
-            const minorStep = majorStep / 4;
+            const majorStep = range <= 1 ? 0.25 : range <= 2 ? 0.5 : range <= 10 ? 1 : range <= 50 ? 5 : 10;
+            const minorStep = majorStep / (range <= 10 ? 4 : 5);
 
             // Minor ticks
             for (let val = zoomStart; val <= zoomEnd; val += minorStep) {
@@ -623,19 +623,19 @@
 
             const center = (zoomStart + zoomEnd) / 2;
             const newRange = range / 2;
-            zoomStart = Math.max(0, center - newRange / 2);
-            zoomEnd = zoomStart + newRange;
+            zoomStart = Math.max(-50, center - newRange / 2);
+            zoomEnd = Math.min(50, zoomStart + newRange); zoomStart = Math.max(-50, zoomEnd - newRange);
             drawNumberLine();
         }
 
         function zoomOut() {
             const range = zoomEnd - zoomStart;
-            if (range >= 10) return;
+            if (range >= 100) return;
 
             const center = (zoomStart + zoomEnd) / 2;
             const newRange = range * 2;
-            zoomStart = Math.max(0, center - newRange / 2);
-            zoomEnd = zoomStart + newRange;
+            zoomStart = Math.max(-50, center - newRange / 2);
+            zoomEnd = Math.min(50, zoomStart + newRange); zoomStart = Math.max(-50, zoomEnd - newRange);
             drawNumberLine();
         }
 
