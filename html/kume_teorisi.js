@@ -1,22 +1,25 @@
 /**
  * kume_teorisi.js — Uzay 7. Sınıf Küme Teorisi ve Sayı Kümeleri İnteraktif Mantık Motoru
+ * Zenginleştirilmiş Soru Bankası (8 Soru: Boş küme vs {0}, Alt küme, Kesişim, Birleşim, Zincir)
  */
 
 (function () {
     'use strict';
 
+    var MINUS = '\u2212';
+
     // 1. Sayı Sürükle Bırak / Eşleştirme Veritabanı
     var NUM_CARDS = [
         { id: 'c1', label: '7', target: 'N_PLUS', hint: 'Pozitif tam sayma sayısı' },
         { id: 'c2', label: '0', target: 'N', hint: 'Saymaya dahil değildir ama doğal sayıdır' },
-        { id: 'c3', label: '\u221215', target: 'Z', hint: 'Negatif tam sayı' },
-        { id: 'c4', label: '\u22123/4', target: 'Q', hint: 'Negatif rasyonel kesir' },
+        { id: 'c3', label: MINUS + '15', target: 'Z', hint: 'Negatif tam sayı' },
+        { id: 'c4', label: MINUS + '3/4', target: 'Q', hint: 'Negatif rasyonel kesir' },
         { id: 'c5', label: '0,25', target: 'Q', hint: 'Ondalık gösterimli rasyonel sayı' },
         { id: 'c6', label: '√2', target: 'R', hint: 'Virgülden sonrası devretmez (8. Sınıf Ön İzleme)', isPreview: true },
         { id: 'c7', label: 'π', target: 'R', hint: 'Çember oranı irrasyonel sayı (8. Sınıf Ön İzleme)', isPreview: true }
     ];
 
-    // 2. 3 Kademeli Küme Sınavı Soruları
+    // 2. 3 Kademeli Zenginleştirilmiş Soru Bankası (8 Soru)
     var KUME_QUESTIONS = [
         {
             id: 'q1',
@@ -48,6 +51,20 @@
         },
         {
             id: 'q3',
+            level: 1,
+            targetSet: 'N',
+            question: '<b>Boş Küme Kavramı:</b> Elemanı olmayan kümeye <b>boş küme</b> denir ve $\\emptyset$ veya $\\{\\}$ sembolüyle gösterilir.<br>Buna göre aşağıdakilerden hangisi bir <b>boş kümedir</b>?',
+            options: [
+                'A) Haftanın "Z" harfi ile başlayan günleri',
+                'B) $\\{0\\}$',
+                'C) $\\{\\emptyset\\}$',
+                'D) Sıfırdan küçük doğal sayılar hariç sayılar'
+            ],
+            correct: 0,
+            explanation: 'Haftada "Z" harfiyle başlayan gün yoktur; dolayısıyla bu kümenin hiç elemanı yoktur ve boş kümedir! <br>⚠️ Dikkat: $\\{0\\}$ kümesinin bir elemanı vardır (o da 0 sayısıdır). $\\{\\emptyset\\}$ kümesi de içinde boş küme sembolü barındıran 1 elemanlı bir kümedir.'
+        },
+        {
+            id: 'q4',
             level: 2,
             targetSet: 'N_PLUS',
             question: '$A = \\{12\\text{ sayısının doğal sayı bölenleri}\\}$ ve $B = \\{18\\text{ sayısının doğal sayı bölenleri}\\}$ olduğuna göre, $A \\cap B$ (kesişim kümesi) aşağıdakilerden hangisidir?',
@@ -61,10 +78,24 @@
             explanation: '$A = \\{1, 2, 3, 4, 6, 12\\}$ ve $B = \\{1, 2, 3, 6, 9, 18\\}$. İkisinde de ortak olan elemanlar kesişimi oluşturur: $A \\cap B = \\{1, 2, 3, 6\\}$. Bu aynı zamanda 6. sınıfta öğrendiğin <b>ortak bölenler</b> kümesidir (En büyüğü EBOB = 6)!'
         },
         {
-            id: 'q4',
+            id: 'q5',
+            level: 2,
+            targetSet: 'N',
+            question: '$K = \\{a, b\\}$ ve $L = \\{a, b, c, d\\}$ kümeleri veriliyor. $K$ kümesinin her elemanı $L$ kümesinde de yer aldığına göre bu durum matematiksel olarak nasıl yazılır?',
+            options: [
+                'A) $K \\subset L$ ($K$ alt kümesidir $L$)',
+                'B) $L \\subset K$',
+                'C) $K \\in L$',
+                'D) $K \\cap L = \\emptyset$'
+            ],
+            correct: 0,
+            explanation: 'Bir kümenin bütün elemanları başka bir kümenin de elemanı ise o küme diğerinin <b>alt kümesidir</b> ve $\\subset$ sembolü ile gösterilir: $K \\subset L$.'
+        },
+        {
+            id: 'q6',
             level: 2,
             targetSet: 'Z',
-            question: 'Sayı kümeleri arasındaki kapsama ilişkisi düşünüldüğünde, $-8$ sayısı aşağıdaki kümelerden hangisinin <b>elemanı değildir</b>?',
+            question: 'Sayı kümeleri arasındaki kapsama ilişkisi düşünüldüğünde, ' + MINUS + '8 sayısı aşağıdaki kümelerden hangisinin <b>elemanı değildir</b>?',
             options: [
                 'A) $\\mathbb{Z}$ (Tam Sayılar)',
                 'B) $\\mathbb{Q}$ (Rasyonel Sayılar)',
@@ -72,10 +103,10 @@
                 'D) $\\mathbb{R}$ (Gerçek Sayılar)'
             ],
             correct: 2,
-            explanation: '$-8$ negatif bir sayıdır. Doğal sayılar ($\\mathbb{N}$) $0, 1, 2, 3...$ şeklinde devam eder ve negatif sayı içermez. Bu yüzden $-8 \\notin \\mathbb{N}$\'dir.'
+            explanation: MINUS + '8 negatif bir sayıdır. Doğal sayılar ($\\mathbb{N}$) $0, 1, 2, 3...$ şeklinde devam eder ve negatif sayı içermez. Bu yüzden ' + MINUS + '8 $\\notin \\mathbb{N}$\'dir.'
         },
         {
-            id: 'q5',
+            id: 'q7',
             level: 3,
             targetSet: 'Q',
             question: '<b>Beceri Temelli / Kavram Yanılgısı Sorusu:</b><br>Boş küme ile ilgili aşağıda verilen iddialardan hangisi <b>kesinlikle doğrudur</b>?',
@@ -87,6 +118,20 @@
             ],
             correct: 1,
             explanation: 'Boş kümenin elemanı yoktur, yani $s(\\emptyset) = 0$\'dır! <br>⚠️ Tuzaklar: $\\{\\emptyset\\}$ kümesinin içinde boş küme sembolü olduğu için 1 elemanlıdır. $\\{0\\}$ kümesinin içinde "0" elemanı vardır ($s=1$), boş küme değildir. Boş küme her kümenin alt kümesidir.'
+        },
+        {
+            id: 'q8',
+            level: 3,
+            targetSet: 'Q',
+            question: '<b>Sayı Kümeleri Zinciri:</b><br>$\\mathbb{N}^+ \\subset \\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}$ zincirinde yer alan bir $x$ sayısı için $x \\in \\mathbb{Q}$ fakat $x \\notin \\mathbb{Z}$ olduğu biliniyor. Buna göre $x$ sayısı aşağıdakilerden hangisi olabilir?',
+            options: [
+                'A) ' + MINUS + '5',
+                'B) 0',
+                'C) ' + MINUS + '3/4',
+                'D) 8/2'
+            ],
+            correct: 2,
+            explanation: MINUS + '5 ve 0 birer tam sayıdır ($x \\in \\mathbb{Z}$). $8/2 = 4$ de bir tam sayıdır. Fakat ' + MINUS + '3/4 kesirli bir rasyonel sayıdır ve tam sayı değildir ($x \\in \\mathbb{Q}$, $x \\notin \\mathbb{Z}$). Doğru yanıt C şıkkıdır.'
         }
     ];
 
@@ -100,8 +145,12 @@
     }
 
     function updateVennDemo() {
-        var numA = parseInt(document.getElementById('venn-num-a').value, 10) || 12;
-        var numB = parseInt(document.getElementById('venn-num-b').value, 10) || 18;
+        var inpA = document.getElementById('venn-num-a');
+        var inpB = document.getElementById('venn-num-b');
+        if (!inpA || !inpB) return;
+
+        var numA = parseInt(inpA.value, 10) || 12;
+        var numB = parseInt(inpB.value, 10) || 18;
 
         var divA = getDivisors(numA);
         var divB = getDivisors(numB);
@@ -201,7 +250,6 @@
 
     // Sayfa Yüklendiğinde Başlat
     document.addEventListener('DOMContentLoaded', function () {
-        // Venn demosu bağla
         var inpA = document.getElementById('venn-num-a');
         var inpB = document.getElementById('venn-num-b');
         if (inpA && inpB) {
@@ -210,10 +258,8 @@
             updateVennDemo();
         }
 
-        // Kart oyununu başlat
         initGame();
 
-        // Quiz Motorunu Başlat
         if (typeof DersCekirdek !== 'undefined') {
             DersCekirdek.createQuizEngine('kume-quiz-container', KUME_QUESTIONS);
         }
