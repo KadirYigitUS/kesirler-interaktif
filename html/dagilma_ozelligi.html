@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Dağılma Özelliği Keşif Atölyesi — 7. Sınıf İnteraktif Ders</title>
+    <link rel="stylesheet" href="referans_baglanti.js">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #fdfbf7;
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid #e67e22;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: #d35400;
+            font-size: 2.2em;
+            margin-bottom: 8px;
+        }
+
+        .badge-7 {
+            background: #27ae60;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .module {
+            margin-bottom: 40px;
+            padding: 24px;
+            background: #fdfcfb;
+            border-radius: 12px;
+            border: 1px solid #fae5d3;
+        }
+
+        .module h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Bilgi Kutusu & Dikkat Kutusu Stilleri */
+        .bilgi-kutusu {
+            background: #fef9e7;
+            border-left: 5px solid #f39c12;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .bilgi-baslik {
+            font-size: 1.1em;
+            color: #d68910;
+            margin-bottom: 8px;
+        }
+
+        .dikkat-kutusu {
+            background: #fdf2e9;
+            border-left: 5px solid #e74c3c;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .dikkat-baslik {
+            font-size: 1.1em;
+            color: #c0392b;
+            margin-bottom: 8px;
+        }
+
+        .bilgi-kaynak {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* Alan Modeli Görseli */
+        .area-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid #ebd4c0;
+            border-radius: 12px;
+        }
+
+        .sliders-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .slider-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .big-rect {
+            display: flex;
+            height: 120px;
+            border: 3px solid #2c3e50;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .rect-part1 {
+            background: #f8c471;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #784212;
+            font-weight: bold;
+            border-right: 2px dashed #b9770e;
+        }
+
+        .rect-part2 {
+            background: #85c1e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1b4f72;
+            font-weight: bold;
+        }
+
+        .math-box {
+            background: #fdfefe;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+            font-size: 1.1em;
+        }
+
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        /* Quiz Stilleri */
+        .quiz-card {
+            background: white;
+            border: 1px solid #dcdfe6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .quiz-step {
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+
+        .quiz-level {
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .set-badge {
+            background: #fef5e7;
+            color: #d35400;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .quiz-question {
+            font-size: 1.15em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #fcfbf9;
+            border: 1px solid #ebd4c0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            background: #faebd7;
+        }
+
+        .quiz-option input {
+            margin-right: 12px;
+        }
+
+        .correct-choice {
+            background: #d4edda !important;
+            border-color: #28a745 !important;
+            font-weight: bold;
+        }
+
+        .wrong-choice {
+            background: #f8d7da !important;
+            border-color: #dc3545 !important;
+        }
+
+        .quiz-feedback {
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .quiz-feedback.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .quiz-feedback.danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .explanation-box {
+            margin-top: 8px;
+            font-size: 0.95em;
+            color: #2c3e50;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: #e67e22;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d35400;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .quiz-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .quiz-result-card {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .quiz-score-badge {
+            font-size: 2.5em;
+            color: #27ae60;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .back-nav {
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #e67e22;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="back-nav">
+            <a href="index.html" class="back-link">⬅️ Öğrenme Merkezi Ana Sayfasına Dön</a>
+        </div>
+
+        <header>
+            <span class="badge-7">MEB Maarif Modeli — 7. Sınıf Matematik</span>
+            <h1>✨ Dağılma Özelliği Keşif Atölyesi</h1>
+            <p>Çarpmanın toplama ve çıkarma üzerine dağılması, alan modeli, işaret kuralları, rasyonel sayılar ve büyük MEB tuzakları</p>
+        </header>
+
+        <!-- Modül 1: Alan Modeli ile Giriş -->
+        <section class="module">
+            <h2>🧱 1. Alan Modeli: Dağılmayı Gözünle Gör!</h2>
+            <p>
+                Bir dikdörtgenin alanını hesaplarken ya önce tabanı toplayıp çarparız ya da iki parçanın alanını ayrı ayrı bulup toplarız.
+                Sonuç <b>daima aynıdır</b>! Aşağıdaki kaydırıcıları oynatarak parçaların nasıl değiştiğini incele:
+            </p>
+
+            <div class="area-container">
+                <div class="sliders-row">
+                    <div class="slider-box">
+                        <label><b>Yükseklik (a):</b> <span id="val-a">3</span></label>
+                        <input type="range" id="slider-a" min="1" max="10" value="3">
+                    </div>
+                    <div class="slider-box">
+                        <label><b>1. Taban (b):</b> <span id="val-b">4</span></label>
+                        <input type="range" id="slider-b" min="1" max="10" value="4">
+                    </div>
+                    <div class="slider-box">
+                        <label><b>2. Taban (c):</b> <span id="val-c">2</span></label>
+                        <input type="range" id="slider-c" min="1" max="10" value="2">
+                    </div>
+                </div>
+
+                <div class="big-rect">
+                    <div id="rect-part1" class="rect-part1"></div>
+                    <div id="rect-part2" class="rect-part2"></div>
+                </div>
+
+                <div id="area-math-calc" class="math-box"></div>
+            </div>
+        </section>
+
+        <!-- Modül 2: MEB Bilgi Kutusu: Rasyonel Sayılarda Dağılma -->
+        <section class="module">
+            <h2>📘 2. Rasyonel Sayılarda Dağılma Özelliği</h2>
+
+            <div class="bilgi-kutusu">
+                <div class="bilgi-baslik">💡 BİLGİ KUTUSU: Dağılma Özelliği</div>
+                <div class="bilgi-govde">
+                    Rasyonel sayılarda bir rasyonel sayının, iki rasyonel sayının toplamı veya farkı ile çarpımı; 
+                    bu rasyonel sayının parantez içindeki sayıların her biriyle ayrı ayrı çarpımlarının toplamı veya farkına eşittir.
+                    Buna <b>rasyonel sayılarda çarpma işleminin toplama ve çıkarma işlemleri üzerine dağılma özelliği</b> denir.
+                    <br><br>
+                    $$\frac{4}{5} \cdot \left[\frac{5}{6} + (-2)\right] = \frac{4}{5} \cdot \frac{5}{6} + \frac{4}{5} \cdot (-2)$$
+                    $$\left(-\frac{2}{3}\right) \cdot \left(\frac{1}{2} - \frac{3}{4}\right) = \left(-\frac{2}{3}\right) \cdot \frac{1}{2} - \left(-\frac{2}{3}\right) \cdot \frac{3}{4}$$
+                </div>
+                <div class="bilgi-kaynak">📚 Kaynak: MEB 7. Sınıf Matematik Ders Kitabı 1. Dönem, Sayfa 48–49</div>
+            </div>
+
+            <p>
+                <b>İpucu:</b> Dağılma uygularken rasyonel sayılardaki <b>işaret kurallarını</b> unutma:
+                $(-) \cdot (-) = (+)$ ve $(+) \cdot (-) = (-)$!
+            </p>
+        </section>
+
+        <!-- Modül 3: Cebirsel İfadelerde Dağılma & MEB Dikkat Kutusu -->
+        <section class="module">
+            <h2>🧩 3. Cebirsel İfadelerde Dağılma ve "Eksi" Tuzağı</h2>
+
+            <div class="bilgi-kutusu">
+                <div class="bilgi-baslik">💡 BİLGİ KUTUSU: Cebirde Dağılma</div>
+                <div class="bilgi-govde">
+                    Tam sayılarda çarpma işleminin toplama ve çıkarma işlemleri üzerine dağılma özelliği cebirsel ifadelerde de geçerlidir.
+                    Parantez içine dağıtılan terim parantez içindeki her bir terimle ayrı ayrı çarpılır.
+                    <br><br>
+                    $$a \cdot (b + c) = a \cdot b + a \cdot c \quad \text{veya} \quad a \cdot (b - c) = a \cdot b - a \cdot c$$
+                </div>
+                <div class="bilgi-kaynak">📚 Kaynak: MEB 7. Sınıf Matematik Ders Kitabı 2. Dönem, Sayfa 104</div>
+            </div>
+
+            <div class="dikkat-kutusu">
+                <div class="dikkat-baslik">⚠️ DİKKAT ! Eksi Parantez Tuzağı</div>
+                <div class="dikkat-govde">
+                    Cebirsel ifadelerde çıkarma işlemi yapılırken parantez önündeki “−” işareti, ifadenin <b>−1 ile çarpılması</b> anlamına gelir ve −1 katsayısı parantez içindeki terimlere dağıtılır!
+                    <br><br>
+                    $$2x - (x - 1) = 2x - 1 \cdot (x - 1)$$
+                    $$= 2x - 1 \cdot x - 1 \cdot (-1)$$
+                    $$= 2x - x + 1 = x + 1$$
+                </div>
+                <div class="bilgi-kaynak">📚 Kaynak: MEB 7. Sınıf Matematik Ders Kitabı 2. Dönem, Sayfa 104</div>
+            </div>
+        </section>
+
+        <!-- Modül 4: Neler Dağılmaz? (Büyük Kavram Yanılgıları) -->
+        <section class="module">
+            <h2>🚨 4. Neler Dağılmaz? (Kavram Yanılgısı Kırıcı)</h2>
+
+            <div class="dikkat-kutusu">
+                <div class="dikkat-baslik">⚠️ TUZAK 1: Bölme SOLDAN Asla Dağılmaz!</div>
+                <div class="dikkat-govde">
+                    $$12 \div (2 + 4) = 12 \div 6 = 2$$
+                    Eğer dağıtmaya kalkarsan: $12 \div 2 + 12 \div 4 = 6 + 3 = 9$ çıkar ($2 \neq 9$).
+                    <b>Bölme soldan parantez üzerine dağıtılamaz!</b><br>
+                    <i>(Yalnızca pay kesir olarak sağdan ayrılabilir: $(12 + 6)/3 = 12/3 + 6/3 = 4 + 2 = 6$).</i>
+                </div>
+            </div>
+
+            <div class="dikkat-kutusu">
+                <div class="dikkat-baslik">⚠️ TUZAK 2: Toplama Çarpma Üzerine Dağılmaz!</div>
+                <div class="dikkat-govde">
+                    $$2 + (3 \cdot 4) = 2 + 12 = 14$$
+                    Dağıtırsan: $(2 + 3) \cdot (2 + 4) = 5 \cdot 6 = 30$ çıkar ($14 \neq 30$).<br>
+                    <b>Büyüleyici Karşılaştırma:</b> Sayılarda bu işlem dağılmaz, ama <b>Kümelerde</b> birleşim ve kesişim birbirleri üzerine dağılır:
+                    $A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$!
+                </div>
+            </div>
+        </section>
+
+        <!-- Modül 5: Zihinden Kolay Hesaplama -->
+        <section class="module">
+            <h2>⚡ 5. Süper Güç: Dağılma ile Zihinden Çarpma</h2>
+            <p>
+                $99$ veya $101$ gibi sayılarla çarpmak dağılma özelliği ile çocuk oyuncağıdır:
+            </p>
+            <div style="margin: 15px 0;">
+                <label><b>99 ile çarpılacak sayıyı seç:</b> 
+                    <input type="number" id="mental-mult" value="7" min="1" max="50" style="padding:6px; width:70px;">
+                </label>
+            </div>
+            <div id="mental-out" class="math-box"></div>
+        </section>
+
+        <!-- Modül 6: 3 Kademeli Dağılma Sınavı -->
+        <section class="module">
+            <h2>🎯 6. Kademeli Alıştırma ve Sınav</h2>
+            <p>
+                Dağılma özelliğini ve MEB tuzaklarını ne kadar kavradığını test et!
+            </p>
+            <div id="dagilma-quiz-container"></div>
+        </section>
+    </div>
+
+    <!-- Script Bağlantıları -->
+    <script src="rasyonel.js"></script>
+    <script src="sembolik_reel.js"></script>
+    <script src="ders_cekirdek.js"></script>
+    <script src="dagilma_ozelligi.js"></script>
+    <script src="referans_baglanti.js"></script>
+</body>
+
+</html>

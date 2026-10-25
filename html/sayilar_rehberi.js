@@ -124,12 +124,12 @@
 
     /* ---------- Sınıflandırma ---------- */
     var SETLIST = [
-        { k: 'np', ad: 'Sayma sayıları', sim: 'ℕ⁺' },
-        { k: 'n', ad: 'Doğal sayılar', sim: 'ℕ' },
-        { k: 'z', ad: 'Tam sayılar', sim: 'ℤ' },
-        { k: 'q', ad: 'Rasyonel sayılar', sim: 'ℚ' },
-        { k: 'i', ad: 'İrrasyonel sayılar', sim: 'ℚ′' },
-        { k: 'r', ad: 'Reel (gerçel) sayılar', sim: 'ℝ' }
+        { k: 'np', ad: 'Sayma sayıları', sim: 'ℕ⁺', enrichment: false },
+        { k: 'n', ad: 'Doğal sayılar', sim: 'ℕ', enrichment: false },
+        { k: 'z', ad: 'Tam sayılar', sim: 'ℤ', enrichment: false },
+        { k: 'q', ad: 'Rasyonel sayılar', sim: 'ℚ', enrichment: false },
+        { k: 'i', ad: 'İrrasyonel sayılar (8. Sınıf Ön İzleme)', sim: 'ℚ′', enrichment: true },
+        { k: 'r', ad: 'Reel (gerçel) sayılar (8. Sınıf Ön İzleme)', sim: 'ℝ', enrichment: true }
     ];
     /** Üyelik: {np,n,z,q,i,r: {yes, why}} */
     function classify(p) {

@@ -10,11 +10,12 @@ for (p in pkgs) if (!requireNamespace(p, quietly = TRUE)) install.packages(p, re
 library(ggplot2)
 library(svglite)
 
-# Sayı doğrusu verileri: 0'dan 2'ye kadar önemli kesirler
+# Sayı doğrusu verileri: −50'den +50'ye kadar önemli tam sayılar ve rasyonel sayılar
 ana_sayilar <- seq(-50, 50, by = 10)
+ana_etiket <- ifelse(ana_sayilar < 0, paste0("\u2212", abs(ana_sayilar)), as.character(ana_sayilar))
 marks <- data.frame(
   x = c(ana_sayilar, -25.5, 25.5, -45.2, 33.3),
-  label = c(as.character(ana_sayilar), "-51/2", "51/2", "-226/5", "333/10"),
+  label = c(ana_etiket, "\u221251/2", "51/2", "\u2212226/5", "333/10"),
   tip = c(rep("tam", length(ana_sayilar)), "kesir", "kesir", "kesir", "kesir")
 )
 
@@ -49,8 +50,8 @@ p <- ggplot() +
     plot.margin = margin(20, 20, 20, 20)
   ) +
   labs(
-    title = "Sayı Doğrusunda Kesirler",
-    subtitle = "0 ile 2 arasındaki kesir ve tam sayıların konumları"
+    title = "Sayı Doğrusunda Kesirler ve Tam Sayılar",
+    subtitle = "\u221250 ile +50 arasındaki kesir ve tam sayıların konumları"
   ) +
   xlim(-51, 51) +
   ylim(-0.2, 0.5)

@@ -2,7 +2,7 @@
  * rasyonel.js — Kesirler İnteraktif için ortak rasyonel sayı çekirdeği
  *
  * Tasarım ilkeleri (7. Sınıf Matematik Ders Kitabı, 1. Tema: Sayılar ve Nicelikler):
- *  I1  Normal biçim: payda > 0, işaret payda taşınır  (-3/5 = 3/-5 = -(3/5)).
+ *  I1  Normal biçim: payda > 0, işaret pay kısmında (bölünende) taşınır  (-3/5 = 3/-5 = -(3/5)).
  *  I2  Payda 0 ASLA kabul edilmez (sessizce 1'e çevrilmez).
  *  I3  Boş / geçersiz girdi "0" sayılmaz; null döner ve arayüz uyarı verir.
  *  I4  Sayı doğrusu tanım aralığı: [-50, +50].
@@ -25,12 +25,16 @@
         while (b) { var t = a % b; a = b; b = t; }
         return a;
     }
-    function lcm(a, b) { return Math.abs(a * b) / gcd(a, b); }
+    function lcm(a, b) {
+        if (a === 0 || b === 0) return 0;
+        return Math.abs(a / gcd(a, b)) * Math.abs(b);
+    }
 
     /** Rasyonel sayı oluştur: {n, d}, d>0. Payda 0 ise RangeError. */
     function make(n, d) {
         if (d === undefined) d = 1;
         if (!Number.isInteger(n) || !Number.isInteger(d)) throw new TypeError('Pay ve payda tam sayı olmalı');
+        if (!Number.isSafeInteger(n) || !Number.isSafeInteger(d)) throw new RangeError('Tam sayı güvenli sınır (2^53) dışında');
         if (d === 0) throw new RangeError('Payda 0 olamaz');
         if (d < 0) { n = -n; d = -d; }
         if (n === 0) n = 0; // -0 temizle
@@ -84,13 +88,14 @@
 
     /** Tam bölme ile ondalık açılım; devreden kısım parantezle: 1/3 -> "0,(3)", -7/6 -> "−1,1(6)". */
     function decimalStr(q, maxDigits) {
-        maxDigits = maxDigits || 12;
+        var explicitCap = maxDigits !== undefined;
+        var cap = explicitCap ? maxDigits : Math.min(Math.max(12, q.d + 2), 64);
         var s = q.n < 0 ? MINUS : '';
         var n = Math.abs(q.n), d = q.d;
         var whole = Math.floor(n / d), rem = n % d;
         if (rem === 0) return s + whole;
         var digits = [], seen = {}, rep = -1;
-        while (rem !== 0 && digits.length < maxDigits) {
+        while (rem !== 0 && digits.length < cap) {
             if (seen[rem] !== undefined) { rep = seen[rem]; break; }
             seen[rem] = digits.length;
             rem *= 10;
