@@ -529,6 +529,7 @@
     </div>
 
     <script src="rasyonel.js"></script>
+    <script src="ders_cekirdek.js"></script>
     <script>
         (function () {
             var R = Rasyonel;
@@ -553,7 +554,10 @@
             function xOf(v) { return PAD + (v - view.lo) / (view.hi - view.lo) * (W - 2 * PAD); }
             function vOf(x) { return view.lo + (x - PAD) / (W - 2 * PAD) * (view.hi - view.lo); }
             function ppu() { return (W - 2 * PAD) / (view.hi - view.lo); }
-            function sgn(v) { return v < 0 ? MINUS + Math.abs(v) : String(v); }
+            function sgn(v) {
+                if (typeof DersCekirdek !== 'undefined' && DersCekirdek.fmtTR) return DersCekirdek.fmtTR(v);
+                return (v < 0 ? MINUS + Math.abs(v) : String(v)).replace('.', ',');
+            }
 
             /* ---------- Girdi okuma (I2, I3) ---------- */
             function readCurrent() {
@@ -565,7 +569,7 @@
                 if (d === 0) return { err: 'Payda 0 olamaz! Bir sayıyı 0 eş parçaya bölemeyiz; bu yüzden a/0 rasyonel sayı değildir.' };
                 var q = R.make(n, d);
                 var warn = null;
-                if (d < 0) warn = n + '/' + d + ' yazılışında payda negatif. İşareti paya taşıyarak ' + R.fmt(q) + ' olarak okuyoruz (−3/5 = 3/−5).';
+                if (d < 0) warn = sgn(n) + '/' + sgn(d) + ' yazılışında payda negatif. İşareti paya taşıyarak ' + R.fmt(q) + ' olarak okuyoruz (−3/5 = 3/−5).';
                 if (!R.inRange(q)) return { q: q, out: true, err: R.fmt(q) + ' sayısı sayı doğrusunun gösterilebilir aralığının (−50 … +50) dışında.' };
                 return { q: q, warn: warn };
             }

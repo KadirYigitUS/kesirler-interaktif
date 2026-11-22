@@ -326,11 +326,31 @@
             background: #3498db;
             color: white;
         }
+
+        .back-nav {
+            margin-bottom: 16px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #4a69bd;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
+        <div class="back-nav">
+            <a href="index.html" class="back-link">⬅️ Öğrenme Merkezi Ana Sayfasına Dön</a>
+        </div>
         <h1>🚫 Sıfıra Bölme Keşfi</h1>
         <p class="subtitle">Neden hiçbir sayı sıfıra bölünemez? Kaydırıcıyı hareket ettirerek keşfet!</p>
 
@@ -368,7 +388,7 @@
 
                 <div class="result-display">
                     <div class="equation">y = 1 / <span id="xInEquation">2</span></div>
-                    <div class="result-value" id="yResult">0.5</div>
+                    <div class="result-value" id="yResult">0,5</div>
                     <div id="signNote" style="margin-top:8px;color:#555;font-weight:600"></div>
                 </div>
 
@@ -379,7 +399,7 @@
                     </button>
                     <button onclick="approachZero('negative')"
                         style="padding: 15px 25px; font-size: 1em; border: none; border-radius: 30px; cursor: pointer; background: #9b59b6; color: white; margin: 5px;">
-                        ➜ 0'a yaklaş (-)
+                        ➜ 0'a yaklaş (−)
                     </button>
                 </div>
             </div>
@@ -408,12 +428,12 @@
                 <p>1 ÷ 1 = <strong>1</strong><br>Bir pizzayı 1 kişiye bölersek, herkes 1 tam pizza alır.</p>
             </div>
             <div class="info-card">
-                <h4>🔢 x = 0.1 olunca</h4>
-                <p>1 ÷ 0.1 = <strong>10</strong><br>Sonuç büyüyor!</p>
+                <h4>🔢 x = 0,1 olunca</h4>
+                <p>1 ÷ 0,1 = <strong>10</strong><br>Sonuç büyüyor!</p>
             </div>
             <div class="info-card">
-                <h4>🔢 x = 0.001 olunca</h4>
-                <p>1 ÷ 0.001 = <strong>1000</strong><br>Çok büyük oldu!</p>
+                <h4>🔢 x = 0,001 olunca</h4>
+                <p>1 ÷ 0,001 = <strong>1000</strong><br>Çok büyük oldu!</p>
             </div>
             <div class="info-card danger">
                 <h4>🚫 x = 0 olunca</h4>
@@ -429,14 +449,18 @@
                 Kimse yoksa pizza kime gidecek? Bu sorunun cevabı yok!
                 İşte bu yüzden sıfıra bölmek <strong>tanımsız</strong>dır.
                 <br><br>
-                Ayrıca, x sıfıra yaklaştıkça y sonsuza gider ama asla oraya ulaşamaz -
+                Ayrıca, x sıfıra yaklaştıkça y sonsuza gider ama asla oraya ulaşamaz —
                 çünkü sonsuza gitmek için sonsuz zaman gerekir!
             </p>
         </div>
     </div>
 
     <script src="rasyonel.js"></script>
+    <script src="ders_cekirdek.js"></script>
     <script>
+        const fmtTR = (x, d) => (typeof DersCekirdek !== 'undefined' && DersCekirdek.fmtTR)
+            ? DersCekirdek.fmtTR(x, d)
+            : (d !== undefined ? Number(x).toFixed(d) : String(x)).replace(/\./g, ',').replace(/-/g, '\u2212');
         const canvas = document.getElementById('graphCanvas');
         const ctx = canvas.getContext('2d');
         const xSlider = document.getElementById('xSlider');
@@ -453,7 +477,7 @@
             const xScale = (centerX - 10) / xRange;   // x ekseni seçilen aralığa göre ölçeklenir
             const yScale = 30;                         // y ekseni ±6 gösterir
             const F = '12px "Segoe UI", Tahoma, Arial, sans-serif';
-            const sg = v => v < 0 ? '\u2212' + Math.abs(v) : String(v);
+            const sg = v => fmtTR(v);
             const gridStep = Math.max(1, Rasyonel.niceStep(24 / xScale));
             const labelStep = Math.max(1, Rasyonel.niceStep(40 / xScale));
 
@@ -540,7 +564,7 @@
 
                     ctx.font = 'bold 14px "Segoe UI", Tahoma, Arial, sans-serif';
                     ctx.fillStyle = '#2c3e50';
-                    const label = `(${currentX.toFixed(2).replace('-', '\u2212')}, ${currentY.toFixed(2).replace('-', '\u2212')})`;
+                    const label = `(${fmtTR(currentX, 2)}, ${fmtTR(currentY, 2)})`;
                     const w = ctx.measureText(label).width;
                     ctx.textAlign = 'left';
                     ctx.fillText(label, screenX + 15 + w > canvas.width ? screenX - 15 - w : screenX + 15, screenY - 10);
@@ -551,8 +575,9 @@
         function updateDisplay() {
             currentX = parseFloat(xSlider.value);
 
-            document.getElementById('xValue').textContent = currentX.toFixed(2).replace('-', '\u2212');
-            document.getElementById('xInEquation').textContent = currentX < 0 ? '(' + currentX.toFixed(2).replace('-', '\u2212') + ')' : currentX.toFixed(2);
+            const xDisp = fmtTR(currentX, 2);
+            document.getElementById('xValue').textContent = xDisp;
+            document.getElementById('xInEquation').textContent = xDisp.charAt(0) === '\u2212' ? '(' + xDisp + ')' : xDisp;
 
             const yResult = document.getElementById('yResult');
 
@@ -561,7 +586,7 @@
                 yResult.className = 'result-value warning';
             } else {
                 const y = 1 / currentX;
-                yResult.textContent = y.toFixed(4).replace('-', '\u2212');
+                yResult.textContent = fmtTR(y, 4);
                 yResult.className = 'result-value';
             }
             document.getElementById('signNote').textContent = Math.abs(currentX) < 0.01
@@ -610,7 +635,6 @@
 
         function updateTable() {
             const tbody = document.querySelector('#valueTable tbody');
-            const M = '\u2212';
             const values = [
                 { x: 10, desc: 'Normal' }, { x: 5, desc: 'Normal' }, { x: 2, desc: 'Normal' }, { x: 1, desc: 'Normal' },
                 { x: 0.5, desc: 'Büyüyor' }, { x: 0.1, desc: 'Hızla büyüyor' }, { x: 0.01, desc: 'Çok büyük!' },
@@ -619,18 +643,18 @@
                 { x: -0.1, desc: 'Hızla küçülüyor' }, { x: -0.5, desc: 'Küçülüyor (−∞ yönünde)' },
                 { x: -1, desc: 'Normal' }, { x: -2, desc: 'Normal' }, { x: -5, desc: 'Normal' }, { x: -10, desc: 'Normal' }
             ];
-            const f = v => (v < 0 ? M : '') + Math.abs(v);
 
             tbody.innerHTML = values.map(v => {
                 const isCurrent = Math.abs(v.x - currentX) < 0.05 && v.x !== 0;
                 const isZero = v.x === 0;
                 const yv = v.x === 0 ? null : 1 / v.x;
-                const y = v.x === 0 ? '∞?' : f(+yv.toFixed(Math.abs(v.x) < 0.1 ? 0 : 2));
+                const y = v.x === 0 ? '∞?' : fmtTR(+yv.toFixed(Math.abs(v.x) < 0.1 ? 0 : 2));
+                const xStr = fmtTR(v.x);
 
                 return `
                     <tr class="${isCurrent ? 'current' : ''} ${isZero ? 'warning' : ''}">
-                        <td>${f(v.x)}</td>
-                        <td>1 / ${v.x < 0 ? '(' + f(v.x) + ')' : f(v.x)}</td>
+                        <td>${xStr}</td>
+                        <td>1 / ${v.x < 0 ? '(' + xStr + ')' : xStr}</td>
                         <td>${isZero ? 'TANIMSIZ' : y}</td>
                         <td>${v.desc}</td>
                     </tr>
@@ -656,12 +680,13 @@
                 currentX = startX + (targetX - startX) * eased;
                 xSlider.value = currentX;
 
-                document.getElementById('xValue').textContent = currentX.toFixed(3);
-                document.getElementById('xInEquation').textContent = currentX.toFixed(3);
+                const xAnim = fmtTR(currentX, 3);
+                document.getElementById('xValue').textContent = xAnim;
+                document.getElementById('xInEquation').textContent = xAnim.charAt(0) === '\u2212' ? '(' + xAnim + ')' : xAnim;
 
                 const y = 1 / currentX;
                 const yResult = document.getElementById('yResult');
-                yResult.textContent = y.toFixed(2);
+                yResult.textContent = fmtTR(y, 2);
 
                 if (Math.abs(y) > 100) {
                     yResult.className = 'result-value warning';

@@ -95,7 +95,7 @@
             id: 'q6',
             level: 2,
             targetSet: 'Z',
-            question: 'Sayı kümeleri arasındaki kapsama ilişkisi düşünüldüğünde, ' + MINUS + '8 sayısı aşağıdaki kümelerden hangisinin <b>elemanı değildir</b>?',
+            question: 'Sayı kümeleri arasındaki kapsama ilişkisi düşünüldüğünde, $' + MINUS + '8$ sayısı aşağıdaki kümelerden hangisinin <b>elemanı değildir</b>?',
             options: [
                 'A) $\\mathbb{Z}$ (Tam Sayılar)',
                 'B) $\\mathbb{Q}$ (Rasyonel Sayılar)',
@@ -103,7 +103,7 @@
                 'D) $\\mathbb{R}$ (Gerçek Sayılar)'
             ],
             correct: 2,
-            explanation: MINUS + '8 negatif bir sayıdır. Doğal sayılar ($\\mathbb{N}$) $0, 1, 2, 3...$ şeklinde devam eder ve negatif sayı içermez. Bu yüzden ' + MINUS + '8 $\\notin \\mathbb{N}$\'dir.'
+            explanation: '$' + MINUS + '8$ negatif bir sayıdır. Doğal sayılar ($\\mathbb{N}$) $0, 1, 2, 3...$ şeklinde devam eder ve negatif sayı içermez. Bu yüzden $' + MINUS + '8 \\notin \\mathbb{N}$\'dir.'
         },
         {
             id: 'q7',
@@ -125,13 +125,13 @@
             targetSet: 'Q',
             question: '<b>Sayı Kümeleri Zinciri:</b><br>$\\mathbb{N}^+ \\subset \\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}$ zincirinde yer alan bir $x$ sayısı için $x \\in \\mathbb{Q}$ fakat $x \\notin \\mathbb{Z}$ olduğu biliniyor. Buna göre $x$ sayısı aşağıdakilerden hangisi olabilir?',
             options: [
-                'A) ' + MINUS + '5',
-                'B) 0',
-                'C) ' + MINUS + '3/4',
-                'D) 8/2'
+                'A) $' + MINUS + '5$',
+                'B) $0$',
+                'C) $' + MINUS + '3/4$',
+                'D) $8/2$'
             ],
             correct: 2,
-            explanation: MINUS + '5 ve 0 birer tam sayıdır ($x \\in \\mathbb{Z}$). $8/2 = 4$ de bir tam sayıdır. Fakat ' + MINUS + '3/4 kesirli bir rasyonel sayıdır ve tam sayı değildir ($x \\in \\mathbb{Q}$, $x \\notin \\mathbb{Z}$). Doğru yanıt C şıkkıdır.'
+            explanation: '$' + MINUS + '5$ ve $0$ birer tam sayıdır ($x \\in \\mathbb{Z}$). $8/2 = 4$ de bir tam sayıdır. Fakat $' + MINUS + '3/4$ kesirli bir rasyonel sayıdır ve tam sayı değildir ($x \\in \\mathbb{Q}$, $x \\notin \\mathbb{Z}$). Doğru yanıt C şıkkıdır.'
         }
     ];
 
@@ -215,8 +215,10 @@
             if (card.target === targetZone) {
                 placedCards[card.id] = true;
                 if (msgEl) {
+                    var s = (typeof DersCekirdek !== 'undefined' && DersCekirdek.SETS) ? DersCekirdek.SETS[targetZone] : null;
+                    var zoneLabel = s ? (s.symbol + ' (' + s.name + ')') : targetZone;
                     msgEl.className = 'game-feedback success';
-                    msgEl.innerHTML = '✅ <b>Doğru!</b> ' + card.label + ' en dar olarak ' + targetZone + ' kümesine aittir. (' + card.hint + ')';
+                    msgEl.innerHTML = '✅ <b>Doğru!</b> ' + card.label + ' en dar olarak ' + zoneLabel + ' kümesine aittir. (' + card.hint + ')';
                 }
                 var slotEl = document.getElementById('slot-' + targetZone);
                 if (slotEl) {

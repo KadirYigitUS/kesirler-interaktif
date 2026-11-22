@@ -520,9 +520,10 @@
                 $(op + '-result').querySelector('.result-decimal').textContent = '= ' + R.decimalStr(simp) + ' = ' + R.percentStr(simp).replace(/^(\u2212?)(.*)%$/, '$1%$2');
                 $(op + '-result').querySelector('.result-mixed').textContent = (R.isInt(simp) || Math.abs(simp.n) < simp.d) ? '' : 'Tam sayılı kesir: ' + R.fmtMixed(simp);
             }
+            function fmtInt(k) { return k < 0 ? MINUS + Math.abs(k) : String(k); }
             /** Girdide payda negatifse işareti paya taşıdığımızı belirt. */
             function normSteps(r, i) {
-                return r.d < 0 ? '<li class="rule">Payda ' + i + ' negatif: ' + r.n + '/' + r.d + ' = ' + R.fmt(r.q) + ' (işareti paya taşıdık: −3/5 = 3/−5).</li>' : '';
+                return r.d < 0 ? '<li class="rule">Payda ' + i + ' negatif: ' + fmtInt(r.n) + '/' + fmtInt(r.d) + ' = ' + R.fmt(r.q) + ' (işareti paya taşıdık: −3/5 = 3/−5).</li>' : '';
             }
             function wrapNeg(q) { return q.n < 0 ? '(' + R.fmt(q) + ')' : R.fmt(q); }
 
@@ -673,7 +674,7 @@
                 var s = normSteps(r1, 1) + normSteps(r2, 2);
                 s += '<li class="rule">İşaret kuralı: ' + (sa === 0 || sb === 0 ? 'çarpanlardan biri 0 ise çarpım 0\'dır.' :
                     (sa === sb ? 'aynı işaretlerin çarpımı pozitiftir (' + (sa < 0 ? '(−) × (−) = (+)' : '(+) × (+) = (+)') + ').' : 'zıt işaretlerin çarpımı negatiftir ((−) × (+) = (−)).')) + '</li>';
-                s += '<li>Payları çarp: ' + wrapNeg(R.make(a.n, 1)) + ' × ' + wrapNeg(R.make(b.n, 1)) + ' = <b>' + raw.n + '</b></li>';
+                s += '<li>Payları çarp: ' + wrapNeg(R.make(a.n, 1)) + ' × ' + wrapNeg(R.make(b.n, 1)) + ' = <b>' + fmtInt(raw.n) + '</b></li>';
                 s += '<li>Paydaları çarp: ' + a.d + ' × ' + b.d + ' = <b>' + raw.d + '</b></li>';
                 var rf = R.fmt(raw), sf = R.fmt(simp);
                 s += '<li>Sonuç: <b>' + rf + '</b>' + (rf !== sf ? ' = <b>' + sf + '</b> (sadeleştirildi)' : '') + '</li>';
@@ -704,7 +705,7 @@
                 s += '<li>Bölenin çarpmaya göre tersini al: ' + R.fmt(b) + ' → ' + R.fmt(inv) + ' (işareti değişmez)</li>';
                 s += '<li>Bölmeyi çarpmaya çevir: ' + R.fmt(a) + ' × ' + wrapNeg(inv) + '</li>';
                 s += '<li class="rule">İşaret kuralı: ' + (sa === 0 ? 'bölünen 0 ise sonuç 0\'dır.' : sa === sb ? 'aynı işaretlerin bölümü pozitiftir.' : 'zıt işaretlerin bölümü negatiftir.') + '</li>';
-                s += '<li>Payları çarp: ' + wrapNeg(R.make(a.n, 1)) + ' × ' + wrapNeg(R.make(inv.n, 1)) + ' = <b>' + raw.n + '</b></li>';
+                s += '<li>Payları çarp: ' + wrapNeg(R.make(a.n, 1)) + ' × ' + wrapNeg(R.make(inv.n, 1)) + ' = <b>' + fmtInt(raw.n) + '</b></li>';
                 s += '<li>Paydaları çarp: ' + a.d + ' × ' + inv.d + ' = <b>' + raw.d + '</b></li>';
                 var rf = R.fmt(raw), sf = R.fmt(simp);
                 s += '<li>Sonuç: <b>' + rf + '</b>' + (rf !== sf ? ' = <b>' + sf + '</b> (sadeleştirildi)' : '') + '</li>';
@@ -714,7 +715,7 @@
             function calcEq() {
                 var op = 'eq', r1 = readQ(op, 1);
                 if (r1.err) { setMsg(op, r1.err); neutral(op); $('eq-grid').innerHTML = ''; return; }
-                setMsg(op, r1.d < 0 ? r1.n + '/' + r1.d + ' yazılışında payda negatif; ' + R.fmt(r1.q) + ' olarak okunur (işaret paya taşınır).' : '', true);
+                setMsg(op, r1.d < 0 ? fmtInt(r1.n) + '/' + fmtInt(r1.d) + ' yazılışında payda negatif; ' + R.fmt(r1.q) + ' olarak okunur (işaret paya taşınır).' : '', true);
                 var q = r1.q, simp = R.simplify(q), g = R.gcd(q.n, q.d);
                 showResult(op, simp, simp);
                 var grid = $('eq-grid'); grid.innerHTML = '';
@@ -725,9 +726,9 @@
                     (function (e) { card.onclick = function () { $('eq-num1').value = e.n; $('eq-den1').value = e.d; calcEq(); }; })(e);
                     grid.appendChild(card);
                 }
-                // işaret yazılışı: −a/b = a/−b
+                // işaret yazılışı: −a/b = a/−b ve a/b = −a/−b
                 var alt = document.createElement('div'); alt.className = 'eq-card';
-                alt.innerHTML = '<div class="fraction">' + simp.n + '/' + (-simp.d) + '</div><div class="decimal">işaret paydada = ' + R.fmt(simp) + '</div>';
+                alt.innerHTML = '<div class="fraction">' + fmtInt(-simp.n) + '/' + MINUS + simp.d + '</div><div class="decimal">' + (simp.n < 0 ? 'işaret paydada = ' : 'çift eksi = ') + R.fmt(simp) + '</div>';
                 if (simp.n !== 0) grid.appendChild(alt);
                 var bars = $('eq-bars'); bars.innerHTML = '';
                 [1, 2, 3].forEach(function (m) { var e = R.make(simp.n * m, simp.d * m); barRow(bars, R.fmt(e), e, 'filled'); });

@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>✨ Dağılma Özelliği Keşif Atölyesi — 7. Sınıf İnteraktif Ders</title>
-    <link rel="stylesheet" href="referans_baglanti.js">
     <style>
         * {
             box-sizing: border-box;
@@ -154,6 +153,18 @@
             justify-content: center;
             color: #1b4f72;
             font-weight: bold;
+        }
+
+        .rect-part-neg {
+            background: repeating-linear-gradient(45deg, #f5b7b1, #f5b7b1 8px, #fadbd8 8px, #fadbd8 16px) !important;
+            color: #922b21 !important;
+            border-color: #c0392b !important;
+        }
+
+        .rect-part-zero {
+            background: #eef2f5 !important;
+            color: #7f8c8d !important;
+            border: 2px dashed #95a5a6 !important;
         }
 
         .math-box {
@@ -355,15 +366,15 @@
                 <div class="sliders-row">
                     <div class="slider-box">
                         <label><b>Yükseklik (a):</b> <span id="val-a">3</span></label>
-                        <input type="range" id="slider-a" min="1" max="10" value="3">
+                        <input type="range" id="slider-a" min="-20" max="20" value="3">
                     </div>
                     <div class="slider-box">
                         <label><b>1. Taban (b):</b> <span id="val-b">4</span></label>
-                        <input type="range" id="slider-b" min="1" max="10" value="4">
+                        <input type="range" id="slider-b" min="-20" max="20" value="4">
                     </div>
                     <div class="slider-box">
                         <label><b>2. Taban (c):</b> <span id="val-c">2</span></label>
-                        <input type="range" id="slider-c" min="1" max="10" value="2">
+                        <input type="range" id="slider-c" min="-20" max="20" value="2">
                     </div>
                 </div>
 
@@ -460,7 +471,7 @@
             </p>
             <div style="margin: 15px 0;">
                 <label><b>99 ile çarpılacak sayıyı seç:</b> 
-                    <input type="number" id="mental-mult" value="7" min="1" max="50" style="padding:6px; width:70px;">
+                    <input type="number" id="mental-mult" value="7" min="-50" max="50" style="padding:6px; width:70px;">
                 </label>
             </div>
             <div id="mental-out" class="math-box"></div>
